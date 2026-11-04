@@ -94,11 +94,46 @@
   }
 
   function identity(element) {
-    return element.getAttribute("data-message-id") ||
-      singleMessageIdentity(element) ||
-      singleMessageIdentity(element.closest(CARRIER) || element) ||
-      element.getAttribute("data-turn-id") ||
-      element.closest("[data-turn-id]")?.getAttribute("data-turn-id") || null;
+    // Message identities can live below the outer assistant unit. Repeated
+    // copies of one ID agree; conflicts must not fall back to a positional key.
+    const ids = new Set();
+    function read(node) {
+      const legacy = node.getAttribute("data-message-id");
+      if (legacy) {
+        if (legacy.length > 160 || /\s/.test(legacy)) return false;
+        ids.add(legacy);
+      }
+      if (node.getAttribute("data-chatgpt-search-message-ids")?.trim() ||
+          node.getAttribute("data-chatgpt-selection-message-id")?.trim()) {
+        const id = singleMessageIdentity(node);
+        if (!id || id.length > 160) return false;
+        ids.add(id);
+      }
+      return ids.size <= 1;
+    }
+    if (!read(element)) return null;
+    for (const child of element.querySelectorAll('[data-message-id], ' + CARRIER)) {
+      if (!child.closest(OWN) && !read(child)) return null;
+    }
+    if (!ids.size) {
+      const parent = element.parentElement?.closest(CARRIER);
+      if (parent && !parent.closest(USER) && !parent.querySelector(USER) && !read(parent)) return null;
+    }
+    if (ids.size === 1) return `message:${ids.values().next().value}`;
+    // A legacy turn ID can still anchor append discovery. It is deliberately
+    // separate from a message identity and is not used for remembered openings.
+    const turn = element.closest('[data-turn="assistant"][data-turn-id]');
+    const turnId = turn?.getAttribute("data-turn-id");
+    return turnId && turnId.length <= 160 && !/\s/.test(turnId) ? `turn:${turnId}` : null;
+  }
+
+  function identityHint(element) {
+    // Volatile evidence for the SAME live node only, never a history key. Unit
+    // positions may be reused for another answer when the page window changes.
+    const values = UNIT_ATTRIBUTES.map(name => element.getAttribute(name) || "");
+    values.push(element.closest('[data-turn="assistant"][data-turn-id]')?.getAttribute("data-turn-id") || "");
+    values.push(element.closest("[data-turn-key]")?.getAttribute("data-turn-key") || "");
+    return values.some(value => value.length > 512) ? null : JSON.stringify(values);
   }
 
   function ownRole(element) {
@@ -287,5 +322,5 @@
     return active;
   }
 
-  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, USER, OWN, STOP, STREAMING, collect, scanRoot, diagnostics, identity, isAssistant, inactive, createScanContext, hasDirectText, preview, streamingElements });
+  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, USER, OWN, STOP, STREAMING, collect, scanRoot, diagnostics, identity, identityHint, isAssistant, inactive, createScanContext, hasDirectText, preview, streamingElements });
 })(globalThis);
