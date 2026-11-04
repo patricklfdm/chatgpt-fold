@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPT Fold · 回答折叠",
+  "version": "0.1.0",
+  "description": "折叠旧回答，按需展开，减少 ChatGPT 长对话的渲染负担。仅本地处理。",
+  "minimum_chrome_version": "109",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "ChatGPT Fold",
+    "default_popup": "src/popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["src/shared.js", "src/adapter.js", "src/content.js"],
+      "css": ["src/content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

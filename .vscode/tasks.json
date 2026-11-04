@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Fold: 检查扩展文件",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Fold: 运行策略测试",
+      "type": "shell",
+      "command": "npm",
+      "args": ["test"],
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Fold: 浏览器集成测试（可选）",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "test:browser"],
+      "problemMatcher": []
+    }
+  ]
+}

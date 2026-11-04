@@ -1,0 +1,70 @@
+/* Hide complete native content containers; do not crop a fully laid-out answer. */
+html[data-cgf-active="true"] [data-cgf-message][data-cgf-collapsed="true"] > :not([data-cgf-control]) {
+  display: none !important;
+}
+
+html:not([data-cgf-active="true"]) [data-cgf-control] {
+  display: none !important;
+}
+
+[data-cgf-control] {
+  --cgf-border: #dce2e6;
+  --cgf-surface: #f7f9fa;
+  --cgf-text: #34444d;
+  --cgf-muted: #687b85;
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 12px;
+  margin: 0 0 6px;
+  border: 1px solid var(--cgf-border, #dce2e6);
+  border-radius: 9px;
+  background: var(--cgf-surface, #f7f9fa);
+  color: var(--cgf-text, #34444d);
+  font: 500 13px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+
+html.dark [data-cgf-control],
+html[data-theme="dark"] [data-cgf-control] {
+  --cgf-border: #3c4448;
+  --cgf-surface: #292e31;
+  --cgf-text: #d7e1e5;
+  --cgf-muted: #9eafb8;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not([data-theme="light"]) [data-cgf-control] {
+    --cgf-border: #3c4448;
+    --cgf-surface: #292e31;
+    --cgf-text: #d7e1e5;
+    --cgf-muted: #9eafb8;
+  }
+}
+
+[data-cgf-control]:hover:not(:disabled) { border-color: #639b94; }
+[data-cgf-control]:focus-visible { outline: 2px solid #168877; outline-offset: 3px; }
+[data-cgf-control]:disabled { cursor: default; opacity: .82; }
+[data-cgf-control] .cgf-chevron { flex: 0 0 12px; color: #168877; }
+[data-cgf-control] .cgf-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+[data-cgf-control] .cgf-badge { flex: 0 0 auto; color: var(--cgf-muted, #687b85); font-size: 11px; }
+
+@media print {
+  [data-cgf-control] { display: none !important; }
+  html[data-cgf-active="true"] [data-cgf-message][data-cgf-collapsed="true"] > :not([data-cgf-control]) {
+    display: revert !important;
+  }
+}

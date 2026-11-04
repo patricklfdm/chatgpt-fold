@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChatGPT Fold — synthetic browser fixture</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.7 system-ui, sans-serif; background: #fafafa; color: #1e293b; }
+    body { margin: 0; }
+    header { padding: 16px 24px; border-bottom: 1px solid #ddd; background: white; }
+    header p { margin: 0; font-size: 13px; color: #64748b; }
+    main { width: min(760px, calc(100% - 40px)); margin: 24px auto; }
+    article { margin: 0 0 24px; }
+    [data-message-author-role="assistant"] { padding: 18px; border: 1px solid #ddd; border-radius: 12px; background: white; }
+    [data-message-author-role="user"] { padding: 12px 18px; border-radius: 12px; background: #e8edf5; }
+    .markdown { display: block; }
+    .markdown > :first-child { margin-top: 0; }
+    .markdown p { margin: 10px 0; }
+    .native-actions { margin-top: 12px; font-size: 13px; }
+    button { cursor: pointer; font: inherit; }
+    pre { overflow: auto; background: #f1f5f9; border-radius: 8px; padding: 12px; }
+    #composer { width: min(760px, calc(100% - 40px)); margin: 24px auto 40px; }
+    #composer textarea { box-sizing: border-box; width: 100%; height: 72px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>ChatGPT Fold：合成测试页</strong>
+    <p>这不是 ChatGPT。页面、回答和按钮均为测试数据，不会向网络发送聊天内容。</p>
+  </header>
+  <main id="thread" aria-label="合成对话"></main>
+  <form id="composer" onsubmit="return false">
+    <label for="prompt-textarea">测试输入框</label>
+    <textarea id="prompt-textarea" aria-label="测试输入框"></textarea>
+  </form>
+  <script>
+    (() => {
+      "use strict";
+      const thread = document.getElementById("thread");
+      const composer = document.getElementById("composer");
+      const original = new Map();
+      const retired = [];
+      let sequence = 0;
+
+      function bodyFor(id, summary) {
+        const markdown = document.createElement("div");
+        markdown.className = "markdown prose";
+        const first = document.createElement("p");
+        first.textContent = summary;
+        const paragraph = document.createElement("p");
+        paragraph.textContent = "这里是保留原始节点和事件处理器的测试正文。隐藏时应停止显示这部分，再次显示时应保留同一个 DOM 对象。";
+        const code = document.createElement("pre");
+        const innerCode = document.createElement("code");
+        innerCode.textContent = 'const message = "synthetic fixture";\nconsole.log(message);';
+        code.append(innerCode);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.fixtureNative = id;
+        button.textContent = "原生测试按钮";
+        button.dataset.clicks = "0";
+        button.addEventListener("click", () => {
+          button.dataset.clicks = String(Number(button.dataset.clicks) + 1);
+        });
+        markdown.append(first, paragraph, code, button);
+        const actions = document.createElement("div");
+        actions.className = "native-actions";
+        actions.textContent = "原生操作区域（测试）";
+        return { markdown, actions, button, first };
+      }
+
+      function addAnswer(options = {}) {
+        const id = options.id || `answer-${++sequence}`;
+        const summary = options.summary || `${id}：这是合成回答的首行预览。`;
+        const article = document.createElement("article");
+        article.dataset.testid = `conversation-turn-${id}`;
+        article.dataset.turn = "assistant";
+        const root = document.createElement("div");
+        root.id = id;
+        root.dataset.messageAuthorRole = "assistant";
+        root.dataset.messageId = `fixture-${id}`;
+        const body = bodyFor(id, summary);
+        root.append(body.markdown, body.actions);
+        article.append(root);
+        thread.append(article);
+        original.set(id, { root, article, ...body });
+        return id;
+      }
+
+      function addQuestion(text) {
+        const article = document.createElement("article");
+        article.dataset.turn = "user";
+        const root = document.createElement("div");
+        root.dataset.messageAuthorRole = "user";
+        root.textContent = text;
+        article.append(root);
+        thread.append(article);
+      }
+
+      function reset(count = 5, prefix = "answer") {
+        for (const entry of original.values()) retired.push(entry);
+        original.clear();
+        thread.replaceChildren();
+        for (let i = 1; i <= count; i += 1) {
+          addQuestion(`测试问题 ${i}：请解释这一项。`);
+          addAnswer({ id: `${prefix}-${i}`, summary: `回答 ${i} 的首行：这是用于折叠验证的合成内容。` });
+        }
+        sequence = count;
+      }
+
+      function replaceBody(id, summary = "替换后的首行：异步更新已完成。") {
+        const saved = original.get(id);
+        if (!saved) throw new Error(`Unknown fixture answer: ${id}`);
+        const body = bodyFor(id, summary);
+        // Simulates a framework replacing all children, including extension UI.
+        saved.root.replaceChildren(body.markdown, body.actions);
+        original.set(id, { root: saved.root, article: saved.article, ...body });
+      }
+
+      function startStreaming() {
+        if (composer.querySelector('[data-testid="stop-button"]')) return;
+        const stop = document.createElement("button");
+        stop.type = "button";
+        stop.dataset.testid = "stop-button";
+        stop.textContent = "停止生成（测试）";
+        composer.append(stop);
+      }
+
+      function finishStreaming() {
+        composer.querySelector('[data-testid="stop-button"]')?.remove();
+      }
+
+      function appendText(id, text) {
+        const entry = original.get(id);
+        if (!entry) throw new Error(`Unknown fixture answer: ${id}`);
+        entry.first.append(document.createTextNode(text));
+      }
+
+      function identitiesIntact() {
+        return [...original.entries()].every(([id, entry]) =>
+          document.getElementById(id) === entry.root &&
+          entry.root.querySelector(".markdown") === entry.markdown &&
+          entry.root.querySelector("[data-fixture-native]") === entry.button &&
+          entry.markdown.parentNode === entry.root
+        );
+      }
+
+      function navigate(path, count = 3) {
+        finishStreaming();
+        history.pushState({}, "", path);
+        reset(count, "route-answer");
+        // Client routers can also emit popstate; the DOM replacement is the
+        // essential signal a content script observes without patching history.
+        window.dispatchEvent(new PopStateEvent("popstate", { state: {} }));
+      }
+
+      window.fixture = {
+        addAnswer, appendText, startStreaming, finishStreaming,
+        replaceBody, navigate, reset, identitiesIntact,
+        clicks: id => Number(original.get(id)?.button.dataset.clicks || 0),
+        retiredControls: () => retired.reduce((n, entry) =>
+          n + entry.root.querySelectorAll("[data-cgf-control]").length, 0),
+        retiredConnected: () => retired.some(entry => entry.root.isConnected),
+        summaries: () => [...original.values()].map(entry => entry.first.textContent),
+      };
+      reset();
+    })();
+  </script>
+</body>
+</html>

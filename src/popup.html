@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>ChatGPT Fold</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="shared.js" defer></script>
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="header">
+      <div class="brand-icon" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div><h1>ChatGPT Fold</h1><p class="subtitle">按需展开，轻装阅读</p></div>
+      <span class="version">0.1.0</span>
+    </header>
+
+    <section class="card settings" aria-label="折叠设置">
+      <label class="toggle-row" for="enabled">
+        <span><strong>自动折叠回答</strong><span class="field-help">设置适用于所有 ChatGPT 标签页</span></span>
+        <span class="switch"><input id="enabled" type="checkbox" disabled><span class="switch-track"></span></span>
+      </label>
+      <div class="setting-fields">
+        <label class="select-row" for="keep-recent"><span>默认展开最近</span><select id="keep-recent" disabled><option value="0">0 条</option><option value="1">1 条</option><option value="2">2 条</option><option value="3">3 条</option><option value="4">4 条</option><option value="5">5 条</option></select></label>
+        <label class="select-row" for="max-expanded"><span>最多同时展开</span><select id="max-expanded" disabled><option value="1">1 条</option><option value="2">2 条</option><option value="3">3 条</option><option value="4">4 条</option><option value="5">5 条</option></select></label>
+        <p class="field-help settings-help">展开旧回答时，超出上限的其他回答会收起。</p>
+      </div>
+    </section>
+
+    <section class="card page-card" aria-labelledby="page-title">
+      <div class="section-heading"><h2 id="page-title">当前页面</h2><span id="page-state" class="state" data-state="loading">连接中</span></div>
+      <div id="stats" class="stats" aria-label="回答统计">
+        <div><span id="stat-total">—</span><span class="stat-label">已识别</span></div>
+        <div><span id="stat-collapsed">—</span><span class="stat-label">已折叠</span></div>
+        <div><span id="stat-expanded">—</span><span class="stat-label">已展开</span></div>
+      </div>
+      <p id="page-note" class="page-note">正在读取当前会话…</p>
+      <div class="actions"><button id="collapse-all" type="button" disabled>收起全部</button><button id="expand-recent" type="button" disabled>展开最近</button></div>
+      <button id="pause-resume" type="button" class="restore-button" disabled>临时恢复本页全部回答</button>
+    </section>
+
+    <p id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></p>
+    <footer>
+      <p>折叠减少渲染负担，原始节点与网站数据仍保留，内存不会完全释放。</p>
+      <p class="privacy"><span aria-hidden="true">◈</span> 仅在本机保存偏好，不保存或上传对话。</p>
+    </footer>
+  </main>
+</body>
+</html>
