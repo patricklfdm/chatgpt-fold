@@ -17,6 +17,8 @@
       this.destroyed = false;
       this.active = false;
       this.knownLatest = null;
+      this.stopVisible = false;
+      this.stopTarget = null;
       this.openIntents = new Map();
       this.records = new Map();
       this.order = [];
@@ -129,6 +131,19 @@
       this.knownLatest = last ? { id: last.id, identity: last.identity } : null;
     }
 
+    observeStop() {
+      const visible = adapter.hasVisibleStop(document);
+      // Stop describes the request, not the last completed answer. A new
+      // session starts without a target until an actual new tail is confirmed.
+      if (!visible || !this.stopVisible) this.stopTarget = null;
+      this.stopVisible = visible;
+    }
+
+    bindStopTarget(record) {
+      // One scalar key; never retain a message node or a copy of its contents.
+      if (this.stopVisible && record) this.stopTarget = record.intentKey;
+    }
+
     rememberOpen(record) {
       if (!this.openIntents.has(record.intentKey)) this.openIntents.set(record.intentKey, ++this.rank);
       this.trimOpenIntents();
@@ -154,6 +169,10 @@
         const sameHint = hint !== null && hint === record.identityHint;
         const enriched = !strongIdentity && identity?.startsWith("message:") && sameHint;
         const sameMessage = (identity === record.identity && (strongIdentity || sameHint)) || enriched;
+        if (oldKey !== null && this.stopTarget === oldKey) {
+          if (sameMessage) this.stopTarget = key;
+          else if (typeof oldKey === "number") this.stopTarget = null;
+        }
         if (!sameMessage && typeof oldKey === "number") this.openIntents.delete(oldKey);
         if (oldKey !== null && oldKey !== key) {
           const rank = this.openIntents.get(oldKey);
@@ -227,6 +246,8 @@
       this.order = [];
       if (!preserveChoices) {
         this.knownLatest = null;
+        this.stopVisible = false;
+        this.stopTarget = null;
         this.openIntents.clear();
       }
       this.scanRoots.clear();
@@ -347,6 +368,9 @@
         return;
       }
       if (!this.active) return;
+      // Observe Stop before discovery advances knownLatest, including when
+      // Stop and the first answer arrive in the same mutation batch.
+      this.observeStop();
       this.mutationBatches += 1;
       const scanContext = adapter.createScanContext();
       const previousNextId = this.nextId;
@@ -376,7 +400,11 @@
         // Removing the real tail must not turn the remaining historical window
         // into "recent" answers. Match the known tail using current identities;
         // only a unique stable identity can reconnect it after a DOM remount.
-        if (!this.knownLatest) this.setRecent();
+        if (!this.knownLatest) {
+          this.setRecent();
+          const last = this.order[this.order.length - 1];
+          if (last?.id > previousNextId) this.bindStopTarget(last);
+        }
         else {
           const matches = this.order.filter(record => record.identity === this.knownLatest.identity &&
             (record.id === this.knownLatest.id || Boolean(record.identity)));
@@ -389,6 +417,7 @@
               if (this.settings.keepRecent > 0) {
                 for (const record of added.slice(-this.settings.keepRecent)) this.rememberOpen(record);
               }
+              this.bindStopTarget(last);
               this.rememberLatest();
             }
             else this.knownLatest.id = matches[0].id;
@@ -412,7 +441,10 @@
 
     applyPolicy() {
       if (!this.active) return;
-      const streaming = adapter.streamingElements(document, this.records, this.order);
+      this.observeStop();
+      const streaming = adapter.streamingElements(document, this.records);
+      const stopTarget = this.stopTarget === null ? null : this.order.find(record => record.intentKey === this.stopTarget);
+      if (stopTarget) streaming.add(stopTarget.element);
       const selection = document.getSelection();
       const focused = document.activeElement;
       for (const record of this.order) {

@@ -284,13 +284,15 @@
     return root.CGFShared.compactPreview(text) || "图片、附件或尚无文字的回答";
   }
 
-  function streamingElements(doc, recordMap, ordered) {
+  function hasVisibleStop(doc) {
+    const context = createScanContext();
+    return Array.from(doc.querySelectorAll(STOP)).some(button => !inactive(button, context));
+  }
+
+  function streamingElements(doc, recordMap) {
     const active = new Set();
     const context = createScanContext();
     const ownedMarkers = new Map();
-    if (ordered.length && Array.from(doc.querySelectorAll(STOP)).some(button => !inactive(button, context))) {
-      active.add(ordered[ordered.length - 1].element);
-    }
     for (const marker of doc.querySelectorAll(STREAMING)) {
       if (marker.closest(OWN)) continue;
       const owner = marker.closest("[data-cgf-message]");
@@ -322,5 +324,5 @@
     return active;
   }
 
-  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, USER, OWN, STOP, STREAMING, collect, scanRoot, diagnostics, identity, identityHint, isAssistant, inactive, createScanContext, hasDirectText, preview, streamingElements });
+  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, USER, OWN, STOP, STREAMING, collect, scanRoot, diagnostics, identity, identityHint, isAssistant, inactive, createScanContext, hasDirectText, preview, hasVisibleStop, streamingElements });
 })(globalThis);
