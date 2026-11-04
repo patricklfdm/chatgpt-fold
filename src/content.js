@@ -7,8 +7,8 @@
 
   const SINGLETON = "__chatGPTFoldControllerV1";
   globalThis[SINGLETON]?.destroy();
-  const QUIET_MS = 1200;
   const BATCH_MS = 120;
+  const DISCOVERY_NODES = [adapter.CANDIDATE, adapter.USER, adapter.STREAMING, adapter.STOP].join(",");
 
   class FoldController {
     constructor() {
@@ -16,6 +16,7 @@
       this.paused = false;
       this.destroyed = false;
       this.active = false;
+      this.knownLatest = null;
       this.records = new Map();
       this.order = [];
       this.nextId = 0;
@@ -25,7 +26,6 @@
       this.fullScan = false;
       this.pruneNeeded = false;
       this.timer = null;
-      this.settleTimer = null;
       this.observedBody = null;
       this.lastZeroRescanAt = 0;
       this.mutationBatches = 0;
@@ -64,7 +64,7 @@
       if (this.settings.enabled) this.startActive();
     }
 
-    createRecord(element, initial = false) {
+    createRecord(element) {
       if (!element.isConnected || this.records.has(element)) return false;
       // A previous interrupted instance must not leave duplicate controls behind.
       for (const child of [...element.children]) {
@@ -97,8 +97,7 @@
         unsupported: false,
         rank: 0,
         order: 0,
-        dirty: !initial,
-        busyUntil: initial ? 0 : Date.now() + QUIET_MS
+        dirty: false
       };
       this.records.set(element, record);
       element.setAttribute("data-cgf-message", String(record.id));
@@ -120,6 +119,9 @@
         record.wantsOpen = index >= first;
         if (record.wantsOpen) record.rank = ++this.rank;
       });
+      const last = this.order[this.order.length - 1];
+      // One scalar token survives windowing, never a reference to detached DOM.
+      this.knownLatest = last ? { id: last.id, identity: last.identity } : null;
     }
 
     startActive() {
@@ -127,7 +129,7 @@
       this.path = location.pathname;
       this.active = true;
       document.documentElement.setAttribute("data-cgf-active", "true");
-      for (const element of adapter.collect(document)) this.createRecord(element, true);
+      for (const element of adapter.collect(document)) this.createRecord(element);
       this.reorder();
       this.setRecent();
       this.applyPolicy();
@@ -158,13 +160,12 @@
       this.observer.disconnect();
       this.observedBody = null;
       clearTimeout(this.timer);
-      clearTimeout(this.settleTimer);
       this.timer = null;
-      this.settleTimer = null;
       document.documentElement.removeAttribute("data-cgf-active");
       for (const record of this.records.values()) this.releaseRecord(record);
       this.records.clear();
       this.order = [];
+      this.knownLatest = null;
       this.scanRoots.clear();
       this.fullScan = false;
       this.pruneNeeded = false;
@@ -197,6 +198,7 @@
     onMutation(mutations) {
       if (!this.active || this.destroyed) return;
       let relevant = location.pathname !== this.path;
+      let beforePaint = relevant;
       for (const mutation of mutations) {
         const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
         if (!target || target.closest(adapter.OWN)) continue;
@@ -209,8 +211,9 @@
             // Style-only updates must not mark an answer dirty or reopen it.
             const containsAnswers = target.matches(adapter.CANDIDATE) || Boolean(target.querySelector(adapter.CANDIDATE));
             const containsStop = target.matches(adapter.STOP) || Boolean(target.querySelector(adapter.STOP));
+            const containsStreaming = target.matches(adapter.STREAMING) || Boolean(target.querySelector(adapter.STREAMING));
             if (containsAnswers) { this.queueScan(target); this.pruneNeeded = true; }
-            if (containsAnswers || containsStop) relevant = true;
+            if (containsAnswers || containsStop || containsStreaming) relevant = beforePaint = true;
             continue;
           }
         }
@@ -235,25 +238,31 @@
           const affectedAnswer = target.closest(adapter.CANDIDATE);
           if (affectedAnswer) this.queueScan(affectedAnswer);
           this.pruneNeeded = true;
+          // A mounted/reclassified answer must receive its fold state in this
+          // observer microtask, before rendering. Plain text/markup updates
+          // inside a known answer already inherit its CSS and stay batched.
+          if ((affectedAnswer && !record) || target === record?.element || nodes.some(node =>
+            node.nodeType === 1 && (node.matches(DISCOVERY_NODES) || node.querySelector(DISCOVERY_NODES)))) {
+            beforePaint = true;
+          }
         } else if (mutation.type === "attributes") {
           this.queueScan(target);
           this.pruneNeeded = true;
+          beforePaint = true;
         }
-        if (record) {
-          record.dirty = true;
-          record.busyUntil = Date.now() + QUIET_MS;
-          // A regenerated / streaming answer should become visible immediately.
-          if (record.element.getAttribute("data-cgf-collapsed") === "true") {
-            record.element.setAttribute("data-cgf-collapsed", "false");
-          }
-        }
+        // Hydration and historical remounts are not generation signals. Keep
+        // folded content hidden; explicit streaming/focus/selection can open it.
+        if (record) record.dirty = true;
         relevant = true;
       }
-      if (relevant) this.schedule();
+      if (beforePaint) this.flush();
+      else if (relevant) this.schedule();
     }
 
     flush() {
       if (this.destroyed) return;
+      clearTimeout(this.timer);
+      this.timer = null;
       try {
         if (!chrome.runtime.id) { this.destroy(); return; }
       } catch {
@@ -277,7 +286,7 @@
       if (!this.active) return;
       this.mutationBatches += 1;
       const scanContext = adapter.createScanContext();
-      const previousLast = this.order[this.order.length - 1];
+      const previousNextId = this.nextId;
       let changed = false;
       if (this.pruneNeeded) {
         for (const record of this.records.values()) {
@@ -295,20 +304,30 @@
         if (scope !== document && !scope.isConnected) continue;
         for (const element of adapter.collect(scope, scanContext)) changed = this.createRecord(element) || changed;
       }
-      if (changed) {
-        this.reorder();
-        // Lazy-loading older history must not steal the user's open answer.
-        if (this.order[this.order.length - 1] !== previousLast) this.setRecent();
-      }
+      if (changed) this.reorder();
       for (const record of this.order) {
         if (record.control.parentNode !== record.element) record.element.prepend(record.control);
         const nextIdentity = adapter.identity(record.element);
         if (nextIdentity !== record.identity) {
           record.identity = nextIdentity;
           record.dirty = true;
-          record.busyUntil = Date.now() + QUIET_MS;
-          record.wantsOpen = true;
-          record.rank = ++this.rank;
+          // A recycled DOM root is not evidence of a newly generated answer.
+          // In particular, never expand a folded historical answer on ID churn.
+        }
+      }
+      if (changed) {
+        // Removing the real tail must not turn the remaining historical window
+        // into "recent" answers. Match the known tail using current identities;
+        // only a unique stable identity can reconnect it after a DOM remount.
+        if (!this.knownLatest) this.setRecent();
+        else {
+          const matches = this.order.filter(record => record.identity === this.knownLatest.identity &&
+            (record.id === this.knownLatest.id || Boolean(record.identity)));
+          if (matches.length === 1) {
+            const last = this.order[this.order.length - 1];
+            if (last !== matches[0] && last.id > previousNextId) this.setRecent();
+            else this.knownLatest.id = matches[0].id;
+          }
         }
       }
       this.applyPolicy();
@@ -328,19 +347,15 @@
 
     applyPolicy() {
       if (!this.active) return;
-      const now = Date.now();
       const streaming = adapter.streamingElements(document, this.records, this.order);
       const selection = document.getSelection();
       const focused = document.activeElement;
-      let nextSettle = Infinity;
       for (const record of this.order) {
         record.unsupported = adapter.hasDirectText(record.element);
-        const busy = record.busyUntil > now;
         record.reason = record.unsupported ? "保持原样" : streaming.has(record.element) ? "生成中" :
-          this.interactionReason(record, selection, focused) || (busy ? "更新中" : "");
+          this.interactionReason(record, selection, focused);
         record.protected = Boolean(record.reason);
-        if (busy) nextSettle = Math.min(nextSettle, record.busyUntil - now);
-        if (record.dirty && !busy && !streaming.has(record.element)) {
+        if (record.dirty && !streaming.has(record.element)) {
           record.preview = adapter.preview(record.element);
           record.dirty = false;
         }
@@ -365,14 +380,6 @@
         if (record.control.getAttribute("aria-label") !== accessibleLabel) record.control.setAttribute("aria-label", accessibleLabel);
         const title = record.reason ? `${record.reason}：暂时保留完整回答` : `${isOpen ? "收起" : "展开"}这条回答`;
         if (record.control.title !== title) record.control.title = title;
-      }
-      clearTimeout(this.settleTimer);
-      this.settleTimer = null;
-      if (Number.isFinite(nextSettle)) {
-        this.settleTimer = setTimeout(() => {
-          this.settleTimer = null;
-          this.schedule();
-        }, Math.max(20, nextSettle + 20));
       }
     }
 
