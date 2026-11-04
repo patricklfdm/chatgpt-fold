@@ -26,6 +26,8 @@
       this.pruneNeeded = false;
       this.timer = null;
       this.settleTimer = null;
+      this.observedBody = null;
+      this.lastZeroRescanAt = 0;
       this.mutationBatches = 0;
       this.onMutation = this.onMutation.bind(this);
       this.onClick = this.onClick.bind(this);
@@ -135,8 +137,13 @@
         characterData: true,
         attributes: true,
         attributeOldValue: true,
-        attributeFilter: ["data-message-id", "data-message-author-role", "data-turn", "data-testid", "data-is-streaming", "aria-busy", "class", "aria-label"]
+        attributeFilter: ["data-message-id", "data-turn-id", "data-message-author-role", "data-message-role", "data-turn", "data-testid",
+          "data-chatgpt-search-unit-key", "data-content-search-unit-key", "data-chatgpt-search-message-ids", "data-chatgpt-selection-message-id",
+          "data-markdown-text-style", "data-user-message-bubble", "data-turn-key", "data-content-search-turn-key", "data-talvt-turn-state",
+          "data-chatgpt-composer", "data-app-action-timeline-scroll",
+          "data-is-streaming", "aria-busy", "class", "style", "hidden", "aria-hidden", "role", "aria-label"]
       });
+      this.observedBody = document.body;
     }
 
     releaseRecord(record) {
@@ -149,6 +156,7 @@
     stopActive() {
       this.active = false;
       this.observer.disconnect();
+      this.observedBody = null;
       clearTimeout(this.timer);
       clearTimeout(this.settleTimer);
       this.timer = null;
@@ -172,6 +180,12 @@
 
     queueScan(element) {
       if (!element || element.nodeType !== 1 || element.closest(adapter.OWN)) return;
+      element = adapter.scanRoot(element);
+      // Keep the batch small when several mutations affect the same answer.
+      for (const scope of this.scanRoots) {
+        if (scope.contains(element)) return;
+        if (element.contains(scope)) this.scanRoots.delete(scope);
+      }
       if (this.scanRoots.size >= 80) {
         this.fullScan = true;
         this.scanRoots.clear();
@@ -186,12 +200,22 @@
       for (const mutation of mutations) {
         const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
         if (!target || target.closest(adapter.OWN)) continue;
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
-          const wasStreaming = (mutation.oldValue || "").split(/\s+/).includes("result-streaming");
-          if (wasStreaming === target.classList.contains("result-streaming")) continue;
+        if (mutation.type === "attributes") {
+          const attribute = mutation.attributeName;
+          const streamClassChanged = attribute === "class" &&
+            (mutation.oldValue || "").split(/\s+/).includes("result-streaming") !== target.classList.contains("result-streaming");
+          if (["class", "style", "hidden", "aria-hidden", "role"].includes(attribute) && !streamClassChanged) {
+            // Cached timelines can become active without adding any messages.
+            // Style-only updates must not mark an answer dirty or reopen it.
+            const containsAnswers = target.matches(adapter.CANDIDATE) || Boolean(target.querySelector(adapter.CANDIDATE));
+            const containsStop = target.matches(adapter.STOP) || Boolean(target.querySelector(adapter.STOP));
+            if (containsAnswers) { this.queueScan(target); this.pruneNeeded = true; }
+            if (containsAnswers || containsStop) relevant = true;
+            continue;
+          }
         }
         if (mutation.type === "attributes" && mutation.attributeName === "aria-label") {
-          const stopLabel = /^(Stop generating|Stop streaming|停止生成|停止生成回复)$/;
+          const stopLabel = /^(Stop generating|Stop streaming|停止生成|停止生成回复|Stop|停止)$/;
           if (target.tagName !== "BUTTON" || (!stopLabel.test(mutation.oldValue || "") && !stopLabel.test(target.getAttribute("aria-label") || ""))) continue;
         }
         const owner = target.closest("[data-cgf-message]");
@@ -205,6 +229,11 @@
             continue;
           }
           for (const node of mutation.addedNodes) this.queueScan(node);
+          // A deletion can make the surviving turn container eligible, even
+          // when no element was added. Avoid rescanning an entire main/history
+          // container for every streamed token: only revisit semantic answers.
+          const affectedAnswer = target.closest(adapter.CANDIDATE);
+          if (affectedAnswer) this.queueScan(affectedAnswer);
           this.pruneNeeded = true;
         } else if (mutation.type === "attributes") {
           this.queueScan(target);
@@ -238,13 +267,21 @@
         if (this.settings.enabled) this.startActive();
         return;
       }
+      // Rescan/status or the next document interaction can recover a replaced
+      // body; do not keep records or an observer attached to its detached tree.
+      if (this.active && this.observedBody !== document.body) {
+        this.stopActive();
+        if (this.settings.enabled && !this.paused) this.startActive();
+        return;
+      }
       if (!this.active) return;
       this.mutationBatches += 1;
+      const scanContext = adapter.createScanContext();
       const previousLast = this.order[this.order.length - 1];
       let changed = false;
       if (this.pruneNeeded) {
         for (const record of this.records.values()) {
-          if (!record.element.isConnected || !adapter.isAssistant(record.element)) {
+          if (!record.element.isConnected || !adapter.isAssistant(record.element, scanContext)) {
             this.releaseRecord(record);
             changed = true;
           }
@@ -256,7 +293,7 @@
       this.fullScan = false;
       for (const scope of scopes) {
         if (scope !== document && !scope.isConnected) continue;
-        for (const element of adapter.collect(scope)) changed = this.createRecord(element) || changed;
+        for (const element of adapter.collect(scope, scanContext)) changed = this.createRecord(element) || changed;
       }
       if (changed) {
         this.reorder();
@@ -394,7 +431,7 @@
     status() {
       if (!this.active) {
         const total = adapter.collect(document).length;
-        return { ok: true, enabled: this.settings.enabled, paused: this.paused, total, collapsed: 0,
+        return { ok: true, enabled: this.settings.enabled, active: false, paused: this.paused, total, collapsed: 0,
           expanded: total, protected: 0, unsupported: 0, version: shared.VERSION };
       }
       let collapsed = 0;
@@ -405,9 +442,42 @@
         if (record.protected) protectedCount += 1;
         if (record.unsupported) unsupported += 1;
       }
-      return { ok: true, enabled: this.settings.enabled, paused: this.paused, total: this.records.size,
+      return { ok: true, enabled: this.settings.enabled, active: true, paused: this.paused, total: this.records.size,
         collapsed, expanded: this.records.size - collapsed, protected: protectedCount, unsupported,
         version: shared.VERSION };
+    }
+
+    rescan() {
+      this.lastZeroRescanAt = Date.now();
+      if (!this.active && this.settings.enabled && !this.paused) this.startActive();
+      if (this.active) {
+        this.fullScan = true;
+        this.pruneNeeded = true;
+        this.flush();
+      }
+      // Paused/disabled scans report detected answers without restoring folding.
+      return this.status();
+    }
+
+    diagnostics() {
+      let connectedRegisteredCount = 0;
+      for (const element of this.records.keys()) {
+        if (element.isConnected) connectedRegisteredCount += 1;
+      }
+      return {
+        schemaVersion: 2,
+        scriptVersion: shared.VERSION,
+        readyState: document.readyState,
+        topFrame: window.top === window,
+        hasBody: Boolean(document.body),
+        enabled: this.settings.enabled,
+        active: this.active,
+        paused: this.paused,
+        observerConnected: Boolean(this.active && this.observedBody?.isConnected && this.observedBody === document.body),
+        registeredAnswerCount: this.records.size,
+        connectedRegisteredCount,
+        ...adapter.diagnostics(document)
+      };
     }
 
     command(name) {
@@ -423,6 +493,8 @@
       } else if (name === "recent" && this.active) {
         this.setRecent();
         this.applyPolicy();
+      } else if (name === "rescan") {
+        return this.rescan();
       } else {
         return { ok: false, error: "当前页面未启用折叠，或命令不受支持。" };
       }
@@ -430,7 +502,7 @@
     }
 
     onMessage(message, sender, sendResponse) {
-      if (!message || !["CGF_GET_STATUS", "CGF_COMMAND"].includes(message.type)) return false;
+      if (!message || !["CGF_GET_STATUS", "CGF_COMMAND", "CGF_GET_DIAGNOSTICS"].includes(message.type)) return false;
       if (sender?.id && sender.id !== chrome.runtime.id) return false;
       // Reconcile preferences before replying, avoiding storage-event races with
       // the popup's immediately-following status request.
@@ -438,7 +510,16 @@
         if (this.destroyed) return sendResponse({ ok: false, error: "扩展已重新加载，请刷新页面。" });
         this.updateSettings(stored[shared.SETTINGS_KEY]);
         this.flush();
-        sendResponse(message.type === "CGF_COMMAND" ? this.command(message.command) : this.status());
+        if (message.type === "CGF_GET_DIAGNOSTICS") {
+          sendResponse({ ok: true, diagnostics: this.diagnostics() });
+        } else if (message.type === "CGF_COMMAND") {
+          sendResponse(this.command(message.command));
+        } else {
+          // A popup request may recover a missed discovery. This is throttled
+          // and request-driven, with no whole-document polling timer.
+          if (this.settings.enabled && !this.paused && !this.records.size && Date.now() - this.lastZeroRescanAt >= 2000) this.rescan();
+          sendResponse(this.status());
+        }
       }).catch(() => {
         this.destroy();
         sendResponse({ ok: false, error: "扩展连接已失效，请刷新 ChatGPT 页面。" });

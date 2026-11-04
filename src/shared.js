@@ -7,7 +7,7 @@
 })(typeof globalThis === "object" ? globalThis : this, function () {
   "use strict";
 
-  const VERSION = "0.1.0";
+  const VERSION = "0.1.2";
   const SETTINGS_KEY = "cgf.settings.v1";
   const DEFAULT_SETTINGS = Object.freeze({ enabled: true, keepRecent: 1, maxExpanded: 1 });
 

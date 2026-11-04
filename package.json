@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-fold",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "description": "A small, local-only ChatGPT answer folding extension.",
   "license": "MIT",
@@ -8,6 +8,7 @@
   "scripts": {
     "check": "node scripts/check.cjs",
     "test": "node --test tests/policy.test.cjs",
+    "test:dom": "node tests/adapter-dom.cjs",
     "test:browser": "node tests/browser-smoke.cjs"
   }
 }

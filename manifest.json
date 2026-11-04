@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Fold · 回答折叠",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "折叠旧回答，按需展开，减少 ChatGPT 长对话的渲染负担。仅本地处理。",
   "minimum_chrome_version": "109",
   "permissions": ["storage"],

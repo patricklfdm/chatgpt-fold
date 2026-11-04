@@ -2,7 +2,17 @@
 (function (root) {
   "use strict";
   const ROLE = '[data-message-author-role="assistant"]';
-  const FALLBACK = 'article[data-turn="assistant"]';
+  const FALLBACK = '[data-turn="assistant"]';
+  const MESSAGE_ROLE = '[data-message-role="assistant"]';
+  const UNIT_ATTRIBUTES = ["data-chatgpt-search-unit-key", "data-content-search-unit-key"];
+  const UNIT = UNIT_ATTRIBUTES.map(name => `[${name}$=":assistant"]`).join(",");
+  const BODY = '[data-markdown-text-style="assistant-message"]';
+  const CARRIER = '[data-chatgpt-search-message-ids], [data-chatgpt-selection-message-id]';
+  const TURN = '[data-turn-key], [data-content-search-turn-key], [data-talvt-turn-state]';
+  const ROLE_CONTEXT = '[data-message-author-role], [data-message-role], [data-chatgpt-search-unit-key], [data-content-search-unit-key]';
+  const USER = '[data-message-author-role="user"], [data-message-role="user"], [data-turn="user"], [data-user-message-bubble="true"], ' +
+    UNIT_ATTRIBUTES.map(name => `[${name}$=":user"]`).join(",");
+  const CANDIDATE = [ROLE, MESSAGE_ROLE, FALLBACK, UNIT, CARRIER, BODY].join(",");
   const OWN = "[data-cgf-control]";
   const STOP = [
     'button[data-testid="stop-button"]',
@@ -10,41 +20,205 @@
     'button[aria-label="Stop generating"]',
     'button[aria-label="Stop streaming"]',
     'button[aria-label="停止生成"]',
-    'button[aria-label="停止生成回复"]'
+    'button[aria-label="停止生成回复"]',
+    'form[data-chatgpt-composer] button[aria-label="Stop"]',
+    'form[data-chatgpt-composer] button[aria-label="停止"]'
   ].join(",");
   const STREAMING = '[data-is-streaming="true"], [aria-busy="true"], .result-streaming';
 
-  function collect(scope) {
+  function createScanContext() {
+    // A scan owns these caches. Never retain visibility decisions across updates.
+    return { reasons: new WeakMap(), hidden: new WeakMap() };
+  }
+
+  function inactive(element, context = createScanContext()) {
+    if (!element || element.nodeType !== 1) return false;
+    if (context.hidden.has(element)) return context.hidden.get(element);
+    let hidden = element.hasAttribute("hidden") || element.getAttribute("aria-hidden") === "true" ||
+      element.matches('[data-app-action-timeline-scroll][role="presentation"]') || inactive(element.parentElement, context);
+    if (!hidden) {
+      const view = element.ownerDocument?.defaultView;
+      const style = typeof view?.getComputedStyle === "function" ? view.getComputedStyle(element) : element.style;
+      hidden = style?.display === "none" || style?.visibility === "hidden" || style?.visibility === "collapse";
+    }
+    // display:contents and off-screen content are valid: do not measure boxes.
+    context.hidden.set(element, hidden);
+    return hidden;
+  }
+
+  function collect(scope, context = createScanContext()) {
     if (!scope || !scope.querySelectorAll) return [];
     const found = [];
-    if (scope.nodeType === 1 && scope.matches(ROLE)) found.push(scope);
-    found.push(...scope.querySelectorAll(ROLE));
-    const fallback = [];
-    if (scope.nodeType === 1 && scope.matches(FALLBACK)) fallback.push(scope);
-    fallback.push(...scope.querySelectorAll(FALLBACK));
-    for (const element of fallback) {
-      if (!element.hasAttribute("data-message-author-role") && !element.querySelector("[data-message-author-role]")) found.push(element);
+    if (scope.nodeType === 1 && scope.matches(CANDIDATE)) found.push(scope);
+    found.push(...scope.querySelectorAll(CANDIDATE));
+    return found.filter(element => isAssistant(element, context));
+  }
+
+  function singleMessageIdentity(element) {
+    const selectionId = element.getAttribute("data-chatgpt-selection-message-id");
+    if (selectionId && (selectionId.length > 160 || /\s/.test(selectionId))) return null;
+    const ids = element.getAttribute("data-chatgpt-search-message-ids");
+    if (!ids || !ids.trim()) return selectionId || null;
+    if (ids.length > 512) return null;
+    const unique = new Set(ids.trim().split(/\s+/).filter(Boolean));
+    if (unique.size !== 1) return null;
+    const id = unique.values().next().value;
+    return selectionId && selectionId !== id ? null : id;
+  }
+
+  function consistentCarrier(element) {
+    const id = singleMessageIdentity(element);
+    if (!id) return false;
+    for (const child of element.querySelectorAll(CARRIER)) {
+      const hasIdentity = child.getAttribute("data-chatgpt-selection-message-id")?.trim() ||
+        child.getAttribute("data-chatgpt-search-message-ids")?.trim();
+      if (hasIdentity && singleMessageIdentity(child) !== id) return false;
     }
-    return [...new Set(found)].filter(isAssistant);
+    return true;
+  }
+
+  function unambiguousBody(element) {
+    const boundary = [CARRIER, TURN, ROLE_CONTEXT].join(",");
+    const owner = element.parentElement?.closest(boundary);
+    if (!owner) return false;
+    let fragments = 0;
+    for (const body of owner.querySelectorAll(BODY)) {
+      const outerBody = body.parentElement?.closest(BODY);
+      if (outerBody && owner.contains(outerBody)) continue;
+      if (body.parentElement?.closest(boundary) === owner) fragments += 1;
+      if (fragments > 1) return false;
+    }
+    // Without an explicit unit or a consistent ID carrier, do not turn pieces
+    // of one answer into separate records and hide all but its last fragment.
+    return fragments === 1;
   }
 
   function identity(element) {
     return element.getAttribute("data-message-id") ||
+      singleMessageIdentity(element) ||
+      singleMessageIdentity(element.closest(CARRIER) || element) ||
       element.getAttribute("data-turn-id") ||
       element.closest("[data-turn-id]")?.getAttribute("data-turn-id") || null;
   }
 
-  function isAssistant(element) {
-    if (element.hasAttribute("data-message-author-role")) {
-      if (!element.matches(ROLE)) return false;
-    } else if (!element.matches(FALLBACK) || element.querySelector("[data-message-author-role]")) {
-      return false;
+  function ownRole(element) {
+    let role = null;
+    for (const name of ["data-message-author-role", "data-message-role"]) {
+      if (!element.hasAttribute(name)) continue;
+      if (element.getAttribute(name) !== "assistant") return "blocked";
+      role = "assistant";
     }
-    if (element.parentElement?.closest("[data-message-author-role]")) return false;
-    for (let parent = element.parentElement?.closest(FALLBACK); parent; parent = parent.parentElement?.closest(FALLBACK)) {
-      if (!parent.hasAttribute("data-message-author-role") && !parent.querySelector("[data-message-author-role]")) return false;
+    for (const name of UNIT_ATTRIBUTES) {
+      const value = element.getAttribute(name);
+      if (!value) continue;
+      if (/:(user|system|tool|developer)$/.test(value)) return "blocked";
+      if (value.endsWith(":assistant")) role = "assistant";
     }
-    return true;
+    return role;
+  }
+
+  function baseReason(element, context) {
+    if (context.reasons.has(element)) return context.reasons.get(element);
+    let reason = "";
+    const role = ownRole(element);
+    if (role === "blocked") reason = "conflicting-role";
+    else if (role !== "assistant") {
+      if (element.matches(FALLBACK)) {
+        if (element.querySelector(ROLE_CONTEXT)) reason = "fallback-suppressed";
+      } else if (element.matches(CARRIER)) {
+        if (element.querySelector(ROLE_CONTEXT)) reason = "fallback-suppressed";
+        else if (!consistentCarrier(element) || !(element.matches(BODY) || element.querySelector(BODY))) reason = "not-candidate";
+      } else if (element.matches(BODY)) {
+        const strongerChild = element.querySelector(ROLE_CONTEXT) ||
+          Array.from(element.querySelectorAll(CARRIER)).some(child => !baseReason(child, context));
+        if (strongerChild) reason = "fallback-suppressed";
+        else if (!unambiguousBody(element)) reason = "not-candidate";
+      } else reason = "not-candidate";
+    }
+    if (!reason && (element.closest(USER) || element.querySelector(USER))) reason = "conflicting-role";
+    if (!reason) {
+      for (let parent = element.parentElement?.closest(ROLE_CONTEXT); parent; parent = parent.parentElement?.closest(ROLE_CONTEXT)) {
+        if (ownRole(parent) === "blocked") { reason = "nested"; break; }
+      }
+    }
+    if (!reason && inactive(element, context)) reason = "inactive-context";
+    context.reasons.set(element, reason);
+    return reason;
+  }
+
+  function rejectionReason(element, context = createScanContext()) {
+    const reason = baseReason(element, context);
+    if (reason) return reason;
+    for (let parent = element.parentElement?.closest(CANDIDATE); parent; parent = parent.parentElement?.closest(CANDIDATE)) {
+      if (!baseReason(parent, context)) return "nested";
+    }
+    return "";
+  }
+
+  function isAssistant(element, context = createScanContext()) {
+    return !rejectionReason(element, context);
+  }
+
+  function scanRoot(element) {
+    // An ID carrier may take over when its explicit unit role disappears.
+    // A shared modern turn is only a boundary, never an inferred answer root.
+    let scope = element;
+    for (let parent = element.parentElement?.closest(CANDIDATE); parent; parent = parent.parentElement?.closest(CANDIDATE)) {
+      scope = parent;
+    }
+    return scope;
+  }
+
+  function diagnostics(doc) {
+    // On-demand counts only. Do not export text, HTML, paths, IDs, class names,
+    // unknown attribute values or other potentially user-controlled strings.
+    const count = selector => doc.querySelectorAll(selector).length;
+    function roleCounts(attribute) {
+      const counts = { assistant: 0, user: 0, system: 0, tool: 0, developer: 0, empty: 0, other: 0 };
+      for (const element of doc.querySelectorAll(`[${attribute}]`)) {
+        const value = element.getAttribute(attribute);
+        const key = value === "" ? "empty" : ["assistant", "user", "system", "tool", "developer"].includes(value) ? value : "other";
+        counts[key] += 1;
+      }
+      return counts;
+    }
+    const result = {
+      rawAssistantRoleCount: count(ROLE),
+      rawAssistantTurnCount: count(FALLBACK),
+      nonArticleAssistantTurnCount: count(FALLBACK + ":not(article)"),
+      eligibleAnswerCount: 0,
+      nestedRejectedCount: 0,
+      fallbackSuppressedCount: 0,
+      conflictingRoleCount: 0,
+      roleCounts: roleCounts("data-message-author-role"),
+      turnCounts: roleCounts("data-turn"),
+      conversationTurnCount: count('[data-testid^="conversation-turn-"]'),
+      messageIdElementCount: count("[data-message-id]"),
+      articleCount: count("article"),
+      mainCount: count('main, [role="main"]'),
+      iframeCount: count("iframe")
+    };
+    result.modern = {
+      messageRoleAssistantCount: count(MESSAGE_ROLE),
+      searchUnitAssistantCount: count('[data-chatgpt-search-unit-key$=":assistant"]'),
+      contentUnitAssistantCount: count('[data-content-search-unit-key$=":assistant"]'),
+      assistantBodyCount: count(BODY),
+      searchMessageContainerCount: count("[data-chatgpt-search-message-ids]"),
+      selectionMessageContainerCount: count("[data-chatgpt-selection-message-id]"),
+      userBubbleCount: count('[data-user-message-bubble="true"]'),
+      turnContainerCount: count("[data-turn-key]"),
+      inactiveCandidateCount: 0
+    };
+    const context = createScanContext();
+    for (const element of doc.querySelectorAll(CANDIDATE)) {
+      const reason = rejectionReason(element, context);
+      if (!reason) result.eligibleAnswerCount += 1;
+      else if (reason === "nested") result.nestedRejectedCount += 1;
+      else if (reason === "fallback-suppressed") result.fallbackSuppressedCount += 1;
+      else if (reason === "conflicting-role") result.conflictingRoleCount += 1;
+      else if (reason === "inactive-context") result.modern.inactiveCandidateCount += 1;
+    }
+    return result;
   }
 
   function hasDirectText(element) {
@@ -77,9 +251,12 @@
 
   function streamingElements(doc, recordMap, ordered) {
     const active = new Set();
-    if (doc.querySelector(STOP) && ordered.length) active.add(ordered[ordered.length - 1].element);
+    const context = createScanContext();
+    if (ordered.length && Array.from(doc.querySelectorAll(STOP)).some(button => !inactive(button, context))) {
+      active.add(ordered[ordered.length - 1].element);
+    }
     for (const marker of doc.querySelectorAll(STREAMING)) {
-      if (marker.closest(OWN)) continue;
+      if (marker.closest(OWN) || inactive(marker, context)) continue;
       const owner = marker.closest("[data-cgf-message]");
       if (owner && recordMap.has(owner)) active.add(owner);
       else {
@@ -92,5 +269,5 @@
     return active;
   }
 
-  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, OWN, collect, identity, isAssistant, hasDirectText, preview, streamingElements });
+  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, OWN, STOP, collect, scanRoot, diagnostics, identity, isAssistant, inactive, createScanContext, hasDirectText, preview, streamingElements });
 })(globalThis);

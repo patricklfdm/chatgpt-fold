@@ -14,7 +14,7 @@
     <header class="header">
       <div class="brand-icon" aria-hidden="true"><span></span><span></span><span></span></div>
       <div><h1>ChatGPT Fold</h1><p class="subtitle">按需展开，轻装阅读</p></div>
-      <span class="version">0.1.0</span>
+      <span id="extension-version" class="version">0.1.2</span>
     </header>
 
     <section class="card settings" aria-label="折叠设置">
@@ -39,6 +39,12 @@
       <p id="page-note" class="page-note">正在读取当前会话…</p>
       <div class="actions"><button id="collapse-all" type="button" disabled>收起全部</button><button id="expand-recent" type="button" disabled>展开最近</button></div>
       <button id="pause-resume" type="button" class="restore-button" disabled>临时恢复本页全部回答</button>
+      <div class="tools-row"><button id="rescan" type="button" disabled>重新扫描</button><button id="show-diagnostics" type="button" aria-expanded="false" aria-controls="diagnostics-panel" disabled>查看诊断</button></div>
+      <section id="diagnostics-panel" class="diagnostics-panel" aria-labelledby="diagnostics-title" hidden>
+        <div class="section-heading"><h3 id="diagnostics-title">页面诊断</h3><button id="copy-diagnostics" type="button" disabled>复制报告</button></div>
+        <p id="diagnostics-help">仅含版本、标记数量与扫描状态，不含对话正文、会话 ID 或完整网址。</p>
+        <textarea id="diagnostics-report" readonly spellcheck="false" aria-label="诊断报告" aria-describedby="diagnostics-help"></textarea>
+      </section>
     </section>
 
     <p id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></p>
