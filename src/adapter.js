@@ -252,22 +252,40 @@
   function streamingElements(doc, recordMap, ordered) {
     const active = new Set();
     const context = createScanContext();
+    const ownedMarkers = new Map();
     if (ordered.length && Array.from(doc.querySelectorAll(STOP)).some(button => !inactive(button, context))) {
       active.add(ordered[ordered.length - 1].element);
     }
     for (const marker of doc.querySelectorAll(STREAMING)) {
-      if (marker.closest(OWN) || inactive(marker, context)) continue;
+      if (marker.closest(OWN)) continue;
       const owner = marker.closest("[data-cgf-message]");
-      if (owner && recordMap.has(owner)) active.add(owner);
-      else {
+      if (owner && recordMap.has(owner)) {
+        if (!ownedMarkers.has(owner)) ownedMarkers.set(owner, []);
+        ownedMarkers.get(owner).push(marker);
+      } else if (!inactive(marker, context)) {
         // A global loading/busy container must never reopen the entire history.
         // An external marker is useful only when it identifies a single answer.
         const children = marker.querySelectorAll("[data-cgf-message]");
         if (children.length === 1 && recordMap.has(children[0])) active.add(children[0]);
       }
     }
+    for (const [owner, markers] of ownedMarkers) {
+      if (inactive(owner, context)) continue;
+      const folded = owner.getAttribute("data-cgf-collapsed") === "true";
+      // Our display:none rule can hide a genuine generation marker. Probe only
+      // this marked answer's native visibility, restoring the fold in the same
+      // synchronous call (before any paint). A fresh context still respects the
+      // site's own hidden/class/style/timeline rules, including on direct children.
+      if (folded) owner.removeAttribute("data-cgf-collapsed");
+      try {
+        const visibleContext = folded ? createScanContext() : context;
+        if (markers.some(marker => !inactive(marker, visibleContext))) active.add(owner);
+      } finally {
+        if (folded) owner.setAttribute("data-cgf-collapsed", "true");
+      }
+    }
     return active;
   }
 
-  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, OWN, STOP, collect, scanRoot, diagnostics, identity, isAssistant, inactive, createScanContext, hasDirectText, preview, streamingElements });
+  root.CGFAdapter = Object.freeze({ ROLE, FALLBACK, CANDIDATE, USER, OWN, STOP, STREAMING, collect, scanRoot, diagnostics, identity, isAssistant, inactive, createScanContext, hasDirectText, preview, streamingElements });
 })(globalThis);
