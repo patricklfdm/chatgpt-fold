@@ -2,7 +2,7 @@
 "use strict";
 
 /*
- * First-frame regressions for historical answers mounted by a windowed page.
+ * First-frame regressions for history mounts and generation ownership.
  * Actual Chromium DOM/CSS/MutationObserver; explicitly mocked Chrome APIs.
  * Every fixture is synthetic and all network requests are intercepted.
  * These tests observe the next rendering opportunity after a page mutation.
@@ -143,8 +143,26 @@ function fixtureRuntime() {
       bodyDisplay: body ? getComputedStyle(body).display : null,
       bodyHasLayout: Boolean(body?.getClientRects().length),
       controlCount: answer?.querySelectorAll("[data-cgf-control]").length || 0,
-      controlHasLayout: Boolean(control?.getClientRects().length)
+      controlHasLayout: Boolean(control?.getClientRects().length),
+      controlDisabled: control?.disabled ?? null,
+      badge: control?.querySelector(".cgf-badge")?.textContent || null
     };
+  }
+
+  function makePendingTurn(key) {
+    const turn = makeTurn(key);
+    turn.querySelector('[data-chatgpt-search-unit-key$=":assistant"]').remove();
+    return turn;
+  }
+
+  function addStop() {
+    const stop = document.createElement("button");
+    stop.id = "generation-stop";
+    stop.type = "button";
+    stop.setAttribute("aria-label", "Stop");
+    stop.textContent = "Stop synthetic generation";
+    document.getElementById("composer").append(stop);
+    return stop;
   }
 
   async function frames(id, duration = 240) {
@@ -164,7 +182,7 @@ function fixtureRuntime() {
   for (const key of ["old", "middle", "latest"]) {
     document.getElementById("thread").append(makeTurn(key));
   }
-  globalThis.paintFixture = { makeTurn, snapshot, frames };
+  globalThis.paintFixture = { makeTurn, makePendingTurn, addStop, snapshot, frames };
 }
 
 function assertFoldedFrames(samples, message) {
@@ -180,6 +198,19 @@ function assertVisibleFrames(samples, message, withControl = true) {
     (withControl && (sample.controlCount !== 1 || !sample.controlHasLayout)) ||
     (!withControl && (sample.registered || sample.controlCount !== 0)));
   assert.equal(hidden, undefined, `${message}; first unexpected frame: ${JSON.stringify(hidden)}`);
+}
+
+function assertOperableFrames(samples, message) {
+  assert.ok(samples.length > 0, "No animation frames were sampled");
+  const blocked = samples.find(sample => !sample.registered || sample.controlCount !== 1 ||
+    !sample.controlHasLayout || sample.controlDisabled !== false || sample.badge === "生成中");
+  assert.equal(blocked, undefined, `${message}; first unexpected frame: ${JSON.stringify(blocked)}`);
+}
+
+function assertGeneratingFrames(samples, message) {
+  assertVisibleFrames(samples, message);
+  const unprotected = samples.find(sample => !sample.controlDisabled || sample.badge !== "生成中");
+  assert.equal(unprotected, undefined, `${message}; first unexpected frame: ${JSON.stringify(unprotected)}`);
 }
 
 async function main() {
@@ -370,6 +401,229 @@ async function main() {
         return paintFixture.frames("answer-streaming");
       });
       assertVisibleFrames(samples, "The streaming answer was hidden or registered too late");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("Stop before the new prompt leaves the previous answer operable", async page => {
+      const thinking = await page.evaluate(async () => {
+        paintFixture.addStop();
+        return paintFixture.frames("answer-latest");
+      });
+      assertVisibleFrames(thinking, "Thinking changed the previous answer's expansion");
+      assertOperableFrames(thinking, "Stop alone mislabeled the previous completed answer as generating");
+
+      const folded = await page.evaluate(async () => {
+        document.querySelector("#answer-latest [data-cgf-control]").click();
+        return paintFixture.frames("answer-latest");
+      });
+      assertFoldedFrames(folded, "The previous answer could not be folded while the next reply was thinking");
+      assertOperableFrames(folded, "Folding the previous answer incorrectly disabled its control");
+
+      const pending = await page.evaluate(async () => {
+        document.getElementById("thread").append(paintFixture.makePendingTurn("pending"));
+        return paintFixture.frames("answer-latest");
+      });
+      assertFoldedFrames(pending, "Mounting only a new question reopened the previous answer");
+      assertOperableFrames(pending, "Mounting the pending question locked the previous answer");
+
+      const generated = await page.evaluate(async () => {
+        const answer = paintFixture.makeTurn("pending").querySelector("#answer-pending");
+        document.getElementById("turn-pending").append(answer);
+        const [current, previous] = await Promise.all([
+          paintFixture.frames("answer-pending"), paintFixture.frames("answer-latest")
+        ]);
+        return { current, previous };
+      });
+      assertGeneratingFrames(generated.current, "The real new reply did not acquire generation protection");
+      assertFoldedFrames(generated.previous, "The real new reply reopened the previous answer");
+      assertOperableFrames(generated.previous, "The previous answer stayed locked after the new reply arrived");
+    });
+
+    await test("a pending user question never transfers Stop protection to a folded old answer", async page => {
+      await page.evaluate(() => {
+        document.getElementById("thread").append(paintFixture.makePendingTurn("pending"));
+      });
+      const thinking = await page.evaluate(async () => {
+        paintFixture.addStop();
+        return paintFixture.frames("answer-latest");
+      });
+      assertOperableFrames(thinking, "A pending user question left the old answer marked as generating");
+      assertFoldedFrames(thinking, "Thinking reopened a previously folded answer");
+
+      const generated = await page.evaluate(async () => {
+        document.getElementById("turn-pending").append(
+          paintFixture.makeTurn("pending").querySelector("#answer-pending"));
+        return paintFixture.frames("answer-pending");
+      });
+      assertGeneratingFrames(generated, "A new reply was folded despite active generation and keepRecent zero");
+      await page.evaluate(() => document.getElementById("generation-stop").remove());
+      // Completion can use the normal debounced cleanup; no status or rescan
+      // request may be used to force that cleanup.
+      await page.waitForFunction(() => document.querySelector("#answer-pending [data-cgf-control]")?.disabled === false);
+      const finished = await page.evaluate(() => paintFixture.frames("answer-pending"));
+      assertFoldedFrames(finished, "Completed generation ignored keepRecent zero");
+      assertOperableFrames(finished, "Completed generation retained a stale protection reason");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("cancelling thinking before an answer leaves no stale generation target", async page => {
+      const thinking = await page.evaluate(async () => {
+        document.getElementById("thread").append(paintFixture.makePendingTurn("cancelled"));
+        paintFixture.addStop();
+        return paintFixture.frames("answer-latest");
+      });
+      assertOperableFrames(thinking, "A cancelled request first locked an unrelated completed answer");
+      assertFoldedFrames(thinking, "A cancelled request reopened the previous answer");
+      const cancelled = await page.evaluate(async () => {
+        document.getElementById("generation-stop").remove();
+        return paintFixture.frames("answer-latest");
+      });
+      assertFoldedFrames(cancelled, "Cancelling thinking changed the previous answer's expansion");
+      assertOperableFrames(cancelled, "Cancelling thinking left the previous answer disabled");
+      const afterCancel = await page.evaluate(async () => {
+        document.getElementById("turn-cancelled").append(
+          paintFixture.makeTurn("cancelled").querySelector("#answer-cancelled"));
+        return paintFixture.frames("answer-cancelled");
+      });
+      assertFoldedFrames(afterCancel, "An answer arriving after Stop disappeared inherited stale protection");
+      assertOperableFrames(afterCancel, "The cancelled generation session remained attached to a later answer");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("historical unmounts and remounts cannot acquire a pending request's Stop protection", async page => {
+      await page.evaluate(async () => {
+        document.getElementById("thread").append(paintFixture.makePendingTurn("pending"));
+        paintFixture.addStop();
+        await new Promise(requestAnimationFrame);
+      });
+      const olderTail = await page.evaluate(async () => {
+        document.getElementById("turn-latest").remove();
+        return paintFixture.frames("answer-middle");
+      });
+      assertOperableFrames(olderTail, "Unmounting the latest old answer moved Stop protection onto older history");
+      assertFoldedFrames(olderTail, "Unmounting the latest old answer reopened the historical tail");
+
+      const remounted = await page.evaluate(async () => {
+        const thread = document.getElementById("thread");
+        thread.prepend(paintFixture.makeTurn("history"));
+        thread.insertBefore(paintFixture.makeTurn("latest"), document.getElementById("turn-pending"));
+        const [latest, history] = await Promise.all([
+          paintFixture.frames("answer-latest"), paintFixture.frames("answer-history")
+        ]);
+        return { latest, history };
+      });
+      assertOperableFrames(remounted.latest, "Remounting the completed latest answer stole pending generation protection");
+      assertFoldedFrames(remounted.latest, "Remounting the completed latest answer reopened it during thinking");
+      assertOperableFrames(remounted.history, "Mounting older history acquired pending generation protection");
+      assertFoldedFrames(remounted.history, "Mounting older history reopened it during thinking");
+
+      const generated = await page.evaluate(async () => {
+        document.getElementById("turn-pending").append(
+          paintFixture.makeTurn("pending").querySelector("#answer-pending"));
+        return paintFixture.frames("answer-pending");
+      });
+      assertGeneratingFrames(generated, "History remounts prevented the real answer from acquiring protection");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("an explicit local regeneration marker protects only its own answer", async page => {
+      const samples = await page.evaluate(async () => {
+        paintFixture.addStop();
+        document.querySelector('#answer-old [data-markdown-text-style="assistant-message"]').classList.add("result-streaming");
+        const [regenerating, unrelated] = await Promise.all([
+          paintFixture.frames("answer-old"), paintFixture.frames("answer-latest")
+        ]);
+        return { regenerating, unrelated };
+      });
+      assertGeneratingFrames(samples.regenerating, "A local marker failed to protect regeneration of an older answer");
+      assertOperableFrames(samples.unrelated, "Composer Stop additionally locked an unrelated completed answer");
+      assertFoldedFrames(samples.unrelated, "Composer Stop additionally reopened an unrelated completed answer");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("an active target survives identity enrichment and stable remounts without protecting history", async page => {
+      const anonymous = await page.evaluate(async () => {
+        paintFixture.addStop();
+        const turn = paintFixture.makeTurn("target");
+        const answer = turn.querySelector("#answer-target");
+        answer.removeAttribute("data-chatgpt-search-message-ids");
+        answer.removeAttribute("data-chatgpt-selection-message-id");
+        document.getElementById("thread").append(turn);
+        return paintFixture.frames("answer-target");
+      });
+      assertGeneratingFrames(anonymous, "A genuine append without stable IDs did not acquire generation protection");
+
+      const enriched = await page.evaluate(async () => {
+        const answer = document.getElementById("answer-target");
+        answer.setAttribute("data-chatgpt-search-message-ids", "message-target");
+        answer.setAttribute("data-chatgpt-selection-message-id", "message-target");
+        return paintFixture.frames("answer-target");
+      });
+      assertGeneratingFrames(enriched, "Adding stable IDs to the same live answer lost generation protection");
+
+      const unmounted = await page.evaluate(async () => {
+        document.getElementById("turn-target").remove();
+        return paintFixture.frames("answer-latest");
+      });
+      assertFoldedFrames(unmounted, "Unmounting the active target reopened an older answer");
+      assertOperableFrames(unmounted, "Unmounting the active target transferred its protection to history");
+      const history = await page.evaluate(async () => {
+        document.getElementById("thread").append(paintFixture.makeTurn("history-tail"));
+        return paintFixture.frames("answer-history-tail");
+      });
+      assertFoldedFrames(history, "History mounted in place of an absent generation target reopened");
+      assertOperableFrames(history, "History mounted in place of an absent generation target acquired protection");
+
+      const remounted = await page.evaluate(async () => {
+        document.getElementById("thread").append(paintFixture.makeTurn("target"));
+        return paintFixture.frames("answer-target");
+      });
+      assertGeneratingFrames(remounted, "The target's stable message identity failed to survive remounting");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("a later request uses a fresh target and anonymous remounts cannot inherit it", async page => {
+      const first = await page.evaluate(async () => {
+        paintFixture.addStop();
+        document.getElementById("thread").append(paintFixture.makeTurn("first-request"));
+        return paintFixture.frames("answer-first-request");
+      });
+      assertGeneratingFrames(first, "The first request did not acquire a generation target");
+      await page.evaluate(() => document.getElementById("generation-stop").remove());
+      await page.waitForFunction(() => document.querySelector("#answer-first-request [data-cgf-control]")?.disabled === false);
+
+      const thinking = await page.evaluate(async () => {
+        paintFixture.addStop();
+        return paintFixture.frames("answer-first-request");
+      });
+      assertFoldedFrames(thinking, "Starting a later request reopened the completed previous target");
+      assertOperableFrames(thinking, "Starting a later request reused the previous generation target");
+
+      const second = await page.evaluate(async () => {
+        const turn = paintFixture.makeTurn("second-request");
+        const answer = turn.querySelector("#answer-second-request");
+        answer.removeAttribute("data-chatgpt-search-message-ids");
+        answer.removeAttribute("data-chatgpt-selection-message-id");
+        document.getElementById("thread").append(turn);
+        const [current, previous] = await Promise.all([
+          paintFixture.frames("answer-second-request"), paintFixture.frames("answer-first-request")
+        ]);
+        return { current, previous };
+      });
+      assertGeneratingFrames(second.current, "A later request failed to protect its own new answer");
+      assertOperableFrames(second.previous, "The previous target remained protected during the later reply");
+      assertFoldedFrames(second.previous, "The previous target reopened during the later reply");
+
+      await page.evaluate(async () => {
+        document.getElementById("turn-second-request").remove();
+        await paintFixture.frames("answer-first-request");
+      });
+      const replacement = await page.evaluate(async () => {
+        // A positional key can be reused by another historical DOM root. With
+        // no stable message ID it cannot prove ownership of the retired target.
+        const turn = paintFixture.makeTurn("second-request");
+        const answer = turn.querySelector("#answer-second-request");
+        answer.removeAttribute("data-chatgpt-search-message-ids");
+        answer.removeAttribute("data-chatgpt-selection-message-id");
+        document.getElementById("thread").append(turn);
+        return paintFixture.frames("answer-second-request");
+      });
+      assertOperableFrames(replacement, "An anonymous replacement root inherited a retired record's protection");
+      assertFoldedFrames(replacement, "An anonymous replacement root was mistaken for the active reply");
     }, { ...DEFAULTS, keepRecent: 0 });
 
     await test("a streaming marker inside a collapsed answer restores it before paint", async page => {

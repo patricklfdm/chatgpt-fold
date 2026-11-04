@@ -523,8 +523,8 @@ async function main() {
         // No status()/waitStatus()/commands during either attribute cycle.
         await page.evaluate(() => document.querySelector("#risk-streaming-answer .markdown").classList.add("result-streaming"));
         await waitCollapsed("risk-streaming-answer", false);
-        // Exhaust the content-change quiet timer while the marker remains.
-        // Its removal must then be observed, rather than rescued by that timer.
+        // Leave the marker in place beyond any ordinary mutation batch;
+        // removing it must be observed without a status request.
         await page.waitForTimeout(1800);
         assert.equal(await isCollapsed("risk-streaming-answer"), false);
         assert.equal(await page.locator("#risk-streaming-answer [data-cgf-toggle]").isDisabled(), true);
@@ -532,12 +532,30 @@ async function main() {
         await waitCollapsed("risk-streaming-answer", true);
         await waitDomCounts(originalCount + 1, originalCount + 1);
         await page.evaluate(() => document.getElementById("risk-stop-label").setAttribute("aria-label", "Stop generating"));
-        await waitCollapsed("risk-streaming-answer", false);
-        await waitDomCounts(originalCount + 1, originalCount);
-        assert.equal(await page.locator("#risk-streaming-answer [data-cgf-toggle]").isDisabled(), true);
+        await page.waitForTimeout(200);
+        assert.equal(await isCollapsed("risk-streaming-answer"), true, "Stop before the next answer reopened completed history");
+        assert.equal(await page.locator("#risk-streaming-answer [data-cgf-toggle]").isDisabled(), false);
+        await page.evaluate(() => {
+          const article = document.createElement("article");
+          article.dataset.turn = "assistant";
+          const message = document.createElement("div");
+          message.id = "risk-streaming-new-answer";
+          message.dataset.messageAuthorRole = "assistant";
+          message.dataset.messageId = "risk-streaming-new-message";
+          const markdown = document.createElement("div");
+          markdown.className = "markdown";
+          markdown.textContent = "Stop belongs to this newly appended answer.";
+          message.append(markdown);
+          article.append(message);
+          document.getElementById("risk-streaming-case").append(article);
+        });
+        await waitCollapsed("risk-streaming-new-answer", false);
+        await waitDomCounts(originalCount + 2, originalCount + 1);
+        assert.equal(await page.locator("#risk-streaming-new-answer [data-cgf-toggle]").isDisabled(), true);
+        assert.equal(await page.locator("#risk-streaming-answer [data-cgf-toggle]").isDisabled(), false);
         await page.evaluate(() => document.getElementById("risk-stop-label").removeAttribute("aria-label"));
-        await waitCollapsed("risk-streaming-answer", true);
-        await waitDomCounts(originalCount + 1, originalCount + 1);
+        await waitCollapsed("risk-streaming-new-answer", true);
+        await waitDomCounts(originalCount + 2, originalCount + 2);
       } finally {
         await page.evaluate(() => document.getElementById("risk-streaming-case")?.remove());
         await setSettings(DEFAULTS);
@@ -1063,7 +1081,7 @@ async function main() {
       });
     });
 
-    await test("scoped modern composer Stop protects the latest answer and unrelated or hidden Stop buttons do not", async () => {
+    await test("scoped modern Stop protects only a confirmed new answer and hidden or ended sessions release it", async () => {
       await withTemporaryCase("modern-streaming-case", `
         <div data-turn-key="modern-streaming-turn" data-talvt-turn-state="complete">
           <div data-user-message-bubble="true"><p id="modern-streaming-question">Question remains visible.</p></div>
@@ -1074,27 +1092,59 @@ async function main() {
         <button type="button" aria-label="Stop">Unrelated rich-content Stop action</button>
         <form id="modern-composer" data-chatgpt-composer><button type="button" id="modern-stop" aria-label="Ready">Synthetic composer control</button></form>
       `, async originalCount => {
+        const appendStreamingAnswer = async index => {
+          await page.evaluate(value => {
+            const answer = document.createElement("div");
+            answer.id = `modern-streaming-new-${value}`;
+            answer.setAttribute("data-chatgpt-search-unit-key", `modern-streaming-new-${value}:assistant`);
+            answer.setAttribute("data-chatgpt-search-message-ids", `modern-streaming-message-${value}`);
+            const body = document.createElement("div");
+            body.setAttribute("data-markdown-text-style", "assistant-message");
+            const paragraph = document.createElement("p");
+            paragraph.id = `modern-streaming-new-${value}-text`;
+            paragraph.textContent = "A new answer in this observed Stop session.";
+            body.append(paragraph);
+            answer.append(body);
+            document.getElementById("modern-composer").before(answer);
+          }, index);
+          await waitParagraph(`modern-streaming-new-${index}-text`, true);
+          assert.equal(await page.locator(`#modern-streaming-new-${index} > [data-cgf-toggle]`).isDisabled(), true);
+          assert.equal(await page.locator("#modern-streaming-answer > [data-cgf-toggle]").isDisabled(), false);
+        };
         await waitDomCounts(originalCount + 1, originalCount + 1);
         await waitParagraph("modern-streaming-text", false);
         await page.evaluate(() => document.getElementById("modern-stop").setAttribute("aria-label", "Stop"));
-        await waitParagraph("modern-streaming-text", true);
+        await page.waitForTimeout(200);
+        assert.equal(await page.locator("#modern-streaming-text").isVisible(), false);
+        assert.equal(await page.locator("#modern-streaming-answer > [data-cgf-toggle]").isDisabled(), false);
+        await appendStreamingAnswer(1);
         await page.waitForTimeout(1600);
-        assert.equal(await page.locator("#modern-streaming-answer > [data-cgf-toggle]").isDisabled(), true);
-        assert.equal(await page.locator("#modern-streaming-text").isVisible(), true, "Protection came only from a quiet timer");
+        assert.equal(await page.locator("#modern-streaming-new-1 > [data-cgf-toggle]").isDisabled(), true);
+        assert.equal(await page.locator("#modern-streaming-new-1-text").isVisible(), true, "Generation protection expired during the same Stop session");
         await page.evaluate(() => { document.getElementById("modern-composer").hidden = true; });
-        await waitParagraph("modern-streaming-text", false);
+        await waitParagraph("modern-streaming-new-1-text", false);
         await page.evaluate(() => { document.getElementById("modern-composer").hidden = false; });
-        await waitParagraph("modern-streaming-text", true);
+        await page.waitForTimeout(200);
+        assert.equal(await page.locator("#modern-streaming-new-1-text").isVisible(), false, "Reappearing Stop reused a previous session's target");
+        await appendStreamingAnswer(2);
         await page.evaluate(() => document.getElementById("modern-composer").removeAttribute("data-chatgpt-composer"));
-        await waitParagraph("modern-streaming-text", false);
+        await waitParagraph("modern-streaming-new-2-text", false);
         await page.evaluate(() => document.getElementById("modern-composer").setAttribute("data-chatgpt-composer", ""));
-        await waitParagraph("modern-streaming-text", true);
-        await page.evaluate(() => document.getElementById("modern-stop").removeAttribute("aria-label"));
-        await waitParagraph("modern-streaming-text", false);
+        await page.waitForTimeout(200);
+        assert.equal(await page.locator("#modern-streaming-new-2-text").isVisible(), false);
+        await appendStreamingAnswer(3);
         await page.evaluate(() => document.getElementById("modern-stop").setAttribute("aria-label", "停止"));
-        await waitParagraph("modern-streaming-text", true);
+        await page.waitForTimeout(200);
+        assert.equal(await page.locator("#modern-streaming-new-3-text").isVisible(), true, "Equivalent visible Stop labels broke the current association");
+        await page.evaluate(() => document.getElementById("modern-stop").removeAttribute("aria-label"));
+        await waitParagraph("modern-streaming-new-3-text", false);
+        await page.evaluate(() => document.getElementById("modern-stop").setAttribute("aria-label", "停止"));
+        await page.waitForTimeout(200);
+        assert.equal(await page.locator("#modern-streaming-new-3-text").isVisible(), false);
+        await appendStreamingAnswer(4);
         await page.evaluate(() => document.getElementById("modern-stop").remove());
-        await waitDomCounts(originalCount + 1, originalCount + 1);
+        await waitDomCounts(originalCount + 5, originalCount + 5);
+        await waitParagraph("modern-streaming-new-4-text", false);
         await waitParagraph("modern-streaming-text", false);
         assert.equal(await page.locator("#modern-streaming-question").isVisible(), true);
       });
