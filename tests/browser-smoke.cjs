@@ -746,9 +746,9 @@ async function main() {
           "conversationTurnCount", "messageIdElementCount", "articleCount", "mainCount", "iframeCount"
         ];
         const flagKeys = ["topFrame", "hasBody", "enabled", "active", "paused", "observerConnected"];
-        const allowedKeys = ["schemaVersion", "scriptVersion", "readyState", "roleCounts", "turnCounts", "modern", ...countKeys, ...flagKeys];
+        const allowedKeys = ["schemaVersion", "scriptVersion", "readyState", "roleCounts", "turnCounts", "modern", "maintenance", ...countKeys, ...flagKeys];
         assert.deepEqual(Object.keys(report).sort(), allowedKeys.sort(), "Diagnostics schema must remain explicitly allowlisted");
-        assert.equal(report.schemaVersion, 2);
+        assert.equal(report.schemaVersion, 3);
         assert.equal(report.scriptVersion, manifest.version);
         assert.ok(["interactive", "complete"].includes(report.readyState));
         for (const key of flagKeys) assert.equal(typeof report[key], "boolean", `${key} is not a boolean`);
@@ -775,6 +775,18 @@ async function main() {
         for (const [key, value] of Object.entries(report.modern)) {
           assert.ok(Number.isSafeInteger(value) && value >= 0, `modern.${key} is not a count`);
         }
+        const maintenanceCounts = ["disconnectedRegisteredCount", "openIntentCount", "pendingScanRootCount",
+          "pendingDirtyRecordCount", "fullFlushCount", "incrementalFlushCount", "previewRefreshCount",
+          "bodyReplacementCount", "releasedRecordCount"];
+        const maintenanceFlags = ["bodyObserverConnected", "pageSuspended", "fullScanPending", "policyPending", "timerPending"];
+        assert.deepEqual(Object.keys(report.maintenance).sort(), [...maintenanceCounts, ...maintenanceFlags].sort());
+        for (const key of maintenanceCounts) assert.ok(Number.isSafeInteger(report.maintenance[key]) && report.maintenance[key] >= 0,
+          `maintenance.${key} is not a count`);
+        for (const key of maintenanceFlags) assert.equal(typeof report.maintenance[key], "boolean", `maintenance.${key} is not a boolean`);
+        assert.equal(report.maintenance.disconnectedRegisteredCount, 0);
+        assert.ok(report.maintenance.openIntentCount <= 5);
+        assert.ok(report.maintenance.pendingScanRootCount <= 80);
+        assert.ok(report.maintenance.pendingDirtyRecordCount <= 80);
         const serialized = JSON.stringify(response);
         for (const sentinel of [...sentinels, new URL(page.url()).pathname, page.url()]) {
           assert.equal(serialized.includes(sentinel), false, "Diagnostics leaked page text, metadata, or an identifier");

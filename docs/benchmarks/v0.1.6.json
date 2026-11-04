@@ -1,0 +1,6580 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "startedAt": "2026-11-04T06:04:08.908Z",
+  "finishedAt": "2026-11-04T06:07:44.355Z",
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "architecture": "x64",
+    "chromium": "153.0.8010.0",
+    "headless": true
+  },
+  "configuration": {
+    "counts": [
+      100,
+      300,
+      600
+    ],
+    "windowSize": 20,
+    "turns": 1200,
+    "updates": 24,
+    "repeats": 3,
+    "viewport": {
+      "width": 1100,
+      "height": 900
+    }
+  },
+  "sources": {
+    "fold": {
+      "version": "0.1.6",
+      "revision": "7d69c4187dec9184730f0398bd7c6d864e20ed5f",
+      "sha256": {
+        "manifest.json": "bc293429c8cd73bf6c84e85c71caa3c70be6dd26fd4540664226c34ea509626c",
+        "src/content.css": "d0e01610171a75d5e57121cc2e93ed6516b7fe6e8572ebb18d78f0bde75ded28",
+        "src/shared.js": "628282a27459db50f42f56179cf754646c6c10d117a07309ca94fb300b683d00",
+        "src/adapter.js": "5a5c1820c3ba4e5fe85e4fff41d47c4f5881b1c3342631e39f3d70d5f46b131b",
+        "src/content.js": "ff5bd1ad2b17635bdc5bf66f860592faf066a296a26bf9a6e0cc5867645780c5"
+      }
+    },
+    "compare": {
+      "version": "0.1.5",
+      "revision": "7d69c4187dec9184730f0398bd7c6d864e20ed5f",
+      "sha256": {
+        "manifest.json": "6214f750c60fdf7e28c38e5a1f47ff2999102f2273c58f0e6bfa74b69257a39e",
+        "src/content.css": "d0e01610171a75d5e57121cc2e93ed6516b7fe6e8572ebb18d78f0bde75ded28",
+        "src/shared.js": "49dad3bb21224fa3daf38f8dc2016f97a3524de80e96eaef15dff9dee8aabe26",
+        "src/adapter.js": "5a5c1820c3ba4e5fe85e4fff41d47c4f5881b1c3342631e39f3d70d5f46b131b",
+        "src/content.js": "f7e9d47a52c14bf3c915a261d96fb91debbc3cfbe5b8a95a118c2528a5e4ba93"
+      }
+    }
+  },
+  "methodology": {
+    "chromeAPIs": "mocked",
+    "network": "intercepted; synthetic fixture only",
+    "siteDataCache": "none",
+    "gc": "beforeGC followed by two HeapProfiler.collectGarbage calls and 120 ms; then afterGC",
+    "memoryScope": "CDP heap/DOM/layout metrics only; no RSS, GPU or total-tab-memory measurement",
+    "instrumentation": "fixed scalar adapter counters only in update scenarios; no per-call history",
+    "thresholds": "structural invariants only; no absolute byte/timing pass threshold"
+  },
+  "results": [
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1276872,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 17814,
+          "Documents": 4,
+          "Nodes": 17730,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 17730,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1276872,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 22254760,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 787152,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 17809,
+          "Documents": 1,
+          "Nodes": 17717,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 17717,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 787152,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 14239832,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10412,
+        "controls": 100,
+        "expanded": 1,
+        "records": 100,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2532396,
+          "JSHeapTotalSize": 5443584,
+          "LayoutObjects": 18514,
+          "Documents": 4,
+          "Nodes": 18442,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 18442,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2532396,
+          "totalSize": 5443584,
+          "embedderHeapUsedSize": 26185752,
+          "backingStorageSize": 212654
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1498732,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 1283,
+          "Documents": 1,
+          "Nodes": 18429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 18429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1498732,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 4175208,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10412,
+        "controls": 100,
+        "expanded": 1,
+        "records": 100,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2452328,
+          "JSHeapTotalSize": 5300224,
+          "LayoutObjects": 18514,
+          "Documents": 4,
+          "Nodes": 18442,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 18442,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2452328,
+          "totalSize": 5300224,
+          "embedderHeapUsedSize": 26186888,
+          "backingStorageSize": 193406
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1492112,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 1283,
+          "Documents": 1,
+          "Nodes": 18429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 18429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1492112,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 4175272,
+          "backingStorageSize": 48828
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 30008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1007624,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 53414,
+          "Documents": 4,
+          "Nodes": 53130,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 53117,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1007624,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 43792648,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 884960,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 53409,
+          "Documents": 1,
+          "Nodes": 53117,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 53117,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 884960,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 42093512,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 31212,
+        "controls": 300,
+        "expanded": 1,
+        "records": 300,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2490864,
+          "JSHeapTotalSize": 7278592,
+          "LayoutObjects": 55509,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2490864,
+          "totalSize": 7278592,
+          "embedderHeapUsedSize": 54786696,
+          "backingStorageSize": 301587
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1687652,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 3483,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1687652,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 11483992,
+          "backingStorageSize": 56054
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 31212,
+        "controls": 300,
+        "expanded": 1,
+        "records": 300,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2798336,
+          "JSHeapTotalSize": 6610944,
+          "LayoutObjects": 55509,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2798336,
+          "totalSize": 6610944,
+          "embedderHeapUsedSize": 54916896,
+          "backingStorageSize": 282339
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1692732,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 3483,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1692732,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 11483584,
+          "backingStorageSize": 49638
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 60008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1315552,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 106809,
+          "Documents": 2,
+          "Nodes": 106221,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 106221,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1315552,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 86574352,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 972328,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 106809,
+          "Documents": 1,
+          "Nodes": 106217,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 106217,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 972328,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 83875568,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 62412,
+        "controls": 600,
+        "expanded": 1,
+        "records": 600,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 4168176,
+          "JSHeapTotalSize": 8065024,
+          "LayoutObjects": 111009,
+          "Documents": 2,
+          "Nodes": 110433,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 110433,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 4168176,
+          "totalSize": 8065024,
+          "embedderHeapUsedSize": 110434064,
+          "backingStorageSize": 444054
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1977096,
+          "JSHeapTotalSize": 2940928,
+          "LayoutObjects": 6783,
+          "Documents": 1,
+          "Nodes": 110429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 110429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1977096,
+          "totalSize": 2940928,
+          "embedderHeapUsedSize": 22444528,
+          "backingStorageSize": 55644
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 62412,
+        "controls": 600,
+        "expanded": 1,
+        "records": 600,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 4193308,
+          "JSHeapTotalSize": 7921664,
+          "LayoutObjects": 111009,
+          "Documents": 2,
+          "Nodes": 110433,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 110433,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 4193308,
+          "totalSize": 7921664,
+          "embedderHeapUsedSize": 110400336,
+          "backingStorageSize": 424806
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1956700,
+          "JSHeapTotalSize": 2678784,
+          "LayoutObjects": 6783,
+          "Documents": 1,
+          "Nodes": 110429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 110429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1956700,
+          "totalSize": 2678784,
+          "embedderHeapUsedSize": 22443832,
+          "backingStorageSize": 49228
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1268700,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 3574,
+          "Documents": 4,
+          "Nodes": 3570,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3570,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1268700,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 5504864,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 767048,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 767048,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3122920,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1153540,
+          "JSHeapTotalSize": 2883584,
+          "LayoutObjects": 10689,
+          "Documents": 1,
+          "Nodes": 10641,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 10641,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1153540,
+          "totalSize": 2883584,
+          "embedderHeapUsedSize": 12173856,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 828744,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 828744,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3144336,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 923528,
+          "JSHeapTotalSize": 3932160,
+          "LayoutObjects": 5349,
+          "Documents": 1,
+          "Nodes": 5328,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 5328,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 923528,
+          "totalSize": 3932160,
+          "embedderHeapUsedSize": 5389712,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 834296,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 834296,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3146472,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 885768,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 885768,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 3764712,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 834296,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 834296,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3153936,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 990920,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 7099,
+          "Documents": 1,
+          "Nodes": 7098,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7098,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 990920,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 8005816,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 837712,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 837712,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3180600,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "baseline",
+      "repetition": 1,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4491.6365430000005,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 414.89700000000005,
+            "ScriptDuration": 0,
+            "LayoutDuration": 39.419000000000004,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": null
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4747.397518999998,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 492.7809999999999,
+            "ScriptDuration": 0,
+            "LayoutDuration": 76.03399999999999,
+            "RecalcStyleDuration": 7.237
+          },
+          "adapter": null
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 60008,
+          "controls": 0,
+          "expanded": 0,
+          "records": null,
+          "openIntents": null,
+          "queuedScanRoots": null,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": null,
+          "observingCurrentBody": null
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 1132744,
+            "JSHeapTotalSize": 4456448,
+            "LayoutObjects": 106809,
+            "Documents": 2,
+            "Nodes": 106221,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 106221,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1132744,
+            "totalSize": 4456448,
+            "embedderHeapUsedSize": 86659536,
+            "backingStorageSize": 385
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 787224,
+            "JSHeapTotalSize": 1572864,
+            "LayoutObjects": 106809,
+            "Documents": 1,
+            "Nodes": 106217,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106217,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 787224,
+            "totalSize": 1572864,
+            "embedderHeapUsedSize": 83875888,
+            "backingStorageSize": 238
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 60010,
+          "controls": 0,
+          "expanded": 0,
+          "records": null,
+          "openIntents": null,
+          "queuedScanRoots": null,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": null,
+          "observingCurrentBody": null
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 946880,
+            "JSHeapTotalSize": 2097152,
+            "LayoutObjects": 106905,
+            "Documents": 1,
+            "Nodes": 106313,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106313,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 946880,
+            "totalSize": 2097152,
+            "embedderHeapUsedSize": 89255232,
+            "backingStorageSize": 432
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 804200,
+            "JSHeapTotalSize": 1835008,
+            "LayoutObjects": 106812,
+            "Documents": 1,
+            "Nodes": 106220,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106220,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 804200,
+            "totalSize": 1835008,
+            "embedderHeapUsedSize": 83873424,
+            "backingStorageSize": 269
+          }
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2669572,
+          "JSHeapTotalSize": 4919296,
+          "LayoutObjects": 3714,
+          "Documents": 4,
+          "Nodes": 3722,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3722,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2669572,
+          "totalSize": 4919296,
+          "embedderHeapUsedSize": 6484032,
+          "backingStorageSize": 176010
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1427168,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1427168,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1238736,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 8,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 80
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2459204,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 14566,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 14566,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2459204,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 14209536,
+          "backingStorageSize": 89757
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1553136,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1553136,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1253528,
+          "backingStorageSize": 57450
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 28,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 280
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2495612,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 12973,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 12973,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2495612,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 13842376,
+          "backingStorageSize": 86529
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1606136,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1606136,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1272288,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 58,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 580
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1880092,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 13045,
+          "Documents": 1,
+          "Nodes": 25866,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 25866,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1880092,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 19223312,
+          "backingStorageSize": 93201
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1633808,
+          "JSHeapTotalSize": 1892352,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1633808,
+          "totalSize": 1892352,
+          "embedderHeapUsedSize": 1308216,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 118,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 1180
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1721616,
+          "JSHeapTotalSize": 5300224,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1721616,
+          "totalSize": 5300224,
+          "embedderHeapUsedSize": 1804712,
+          "backingStorageSize": 58178
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1671336,
+          "JSHeapTotalSize": 1892352,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1671336,
+          "totalSize": 1892352,
+          "embedderHeapUsedSize": 1356464,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "fold",
+      "repetition": 1,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4490.922497,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 237.78499999999997,
+            "ScriptDuration": 7.559999999999997,
+            "LayoutDuration": 35.961999999999996,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            }
+          }
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4494.827151999998,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 204.271,
+            "ScriptDuration": 4.486000000000004,
+            "LayoutDuration": 34.94100000000001,
+            "RecalcStyleDuration": 5.202
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            }
+          }
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 62412,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": 0,
+          "workCounts": {
+            "fullFlushCount": 1,
+            "incrementalFlushCount": 0,
+            "previewRefreshCount": 0,
+            "bodyReplacementCount": 0,
+            "releasedRecordCount": 0
+          },
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2978052,
+            "JSHeapTotalSize": 7921664,
+            "LayoutObjects": 111010,
+            "Documents": 2,
+            "Nodes": 110434,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 110434,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2978052,
+            "totalSize": 7921664,
+            "embedderHeapUsedSize": 110870800,
+            "backingStorageSize": 560844
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1793228,
+            "JSHeapTotalSize": 2678784,
+            "LayoutObjects": 6783,
+            "Documents": 1,
+            "Nodes": 110429,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110429,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1793228,
+            "totalSize": 2678784,
+            "embedderHeapUsedSize": 22450368,
+            "backingStorageSize": 56172
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 62414,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": 0,
+          "workCounts": {
+            "fullFlushCount": 2,
+            "incrementalFlushCount": 48,
+            "previewRefreshCount": 1,
+            "bodyReplacementCount": 0,
+            "releasedRecordCount": 0
+          },
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2736508,
+            "JSHeapTotalSize": 3465216,
+            "LayoutObjects": 6881,
+            "Documents": 1,
+            "Nodes": 110527,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110527,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2736508,
+            "totalSize": 3465216,
+            "embedderHeapUsedSize": 28393224,
+            "backingStorageSize": 196307
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1834580,
+            "JSHeapTotalSize": 2678784,
+            "LayoutObjects": 6786,
+            "Documents": 1,
+            "Nodes": 110432,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110432,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1834580,
+            "totalSize": 2678784,
+            "embedderHeapUsedSize": 22451080,
+            "backingStorageSize": 57602
+          }
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2172772,
+          "JSHeapTotalSize": 5300224,
+          "LayoutObjects": 3714,
+          "Documents": 4,
+          "Nodes": 3722,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3722,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2172772,
+          "totalSize": 5300224,
+          "embedderHeapUsedSize": 6483880,
+          "backingStorageSize": 156762
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1420340,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1420340,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1237280,
+          "backingStorageSize": 48828
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2447768,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 14566,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 14566,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2447768,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 14211064,
+          "backingStorageSize": 82833
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1543004,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1543004,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1250928,
+          "backingStorageSize": 50526
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1859640,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 4097,
+          "Documents": 1,
+          "Nodes": 7414,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7414,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1859640,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 6210520,
+          "backingStorageSize": 59974
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1589512,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1589512,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1264152,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1851624,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 13045,
+          "Documents": 1,
+          "Nodes": 25866,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 25866,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1851624,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 19037848,
+          "backingStorageSize": 86277
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1620008,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1620008,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1304072,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2360120,
+          "JSHeapTotalSize": 5824512,
+          "LayoutObjects": 7741,
+          "Documents": 1,
+          "Nodes": 9280,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 9280,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2360120,
+          "totalSize": 5824512,
+          "embedderHeapUsedSize": 10907560,
+          "backingStorageSize": 71334
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1690608,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1690608,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1348936,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "compare",
+      "repetition": 1,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4484.593712999995,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 1210.522,
+            "ScriptDuration": 990.814,
+            "LayoutDuration": 31.987999999999996,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 14400,
+              "identityHint": 14400,
+              "preview": 0,
+              "hasDirectText": 14400,
+              "hasVisibleStop": 48,
+              "streamingElements": 24
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 188.49999995529652,
+              "identityHint": 45.00000002607703,
+              "preview": 0,
+              "hasDirectText": 42.79999999329448,
+              "hasVisibleStop": 467.40000001713634,
+              "streamingElements": 117.29999999329448
+            }
+          }
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4471.297177,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 1632.7109999999998,
+            "ScriptDuration": 1381.1580000000001,
+            "LayoutDuration": 37.57900000000001,
+            "RecalcStyleDuration": 2.644
+          },
+          "adapter": {
+            "calls": {
+              "collect": 24,
+              "isAssistant": 14400,
+              "identity": 14400,
+              "identityHint": 14400,
+              "preview": 0,
+              "hasDirectText": 14400,
+              "hasVisibleStop": 48,
+              "streamingElements": 24
+            },
+            "elapsedMs": {
+              "collect": 5.199999988079071,
+              "isAssistant": 416.80000000074506,
+              "identity": 172.10000005364418,
+              "identityHint": 45.499999955296516,
+              "preview": 0,
+              "hasDirectText": 37.79999999701977,
+              "hasVisibleStop": 489.5000000074506,
+              "streamingElements": 114.59999999776483
+            }
+          }
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 62412,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 3073568,
+            "JSHeapTotalSize": 7921664,
+            "LayoutObjects": 111010,
+            "Documents": 2,
+            "Nodes": 110434,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 110434,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 3073568,
+            "totalSize": 7921664,
+            "embedderHeapUsedSize": 110850808,
+            "backingStorageSize": 541596
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1792428,
+            "JSHeapTotalSize": 2416640,
+            "LayoutObjects": 6783,
+            "Documents": 1,
+            "Nodes": 110429,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110429,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1792428,
+            "totalSize": 2416640,
+            "embedderHeapUsedSize": 22450208,
+            "backingStorageSize": 49819
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 62414,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2676128,
+            "JSHeapTotalSize": 7659520,
+            "LayoutObjects": 6864,
+            "Documents": 1,
+            "Nodes": 110510,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110510,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2676128,
+            "totalSize": 7659520,
+            "embedderHeapUsedSize": 29964032,
+            "backingStorageSize": 189446
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1867960,
+            "JSHeapTotalSize": 2678784,
+            "LayoutObjects": 6786,
+            "Documents": 1,
+            "Nodes": 110432,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110432,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1867960,
+            "totalSize": 2678784,
+            "embedderHeapUsedSize": 22469152,
+            "backingStorageSize": 50665
+          }
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10412,
+        "controls": 100,
+        "expanded": 1,
+        "records": 100,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2541460,
+          "JSHeapTotalSize": 5443584,
+          "LayoutObjects": 18514,
+          "Documents": 4,
+          "Nodes": 18442,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 18442,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2541460,
+          "totalSize": 5443584,
+          "embedderHeapUsedSize": 26200120,
+          "backingStorageSize": 212654
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1498732,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 1283,
+          "Documents": 1,
+          "Nodes": 18429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 18429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1498732,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 4175464,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10412,
+        "controls": 100,
+        "expanded": 1,
+        "records": 100,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2442456,
+          "JSHeapTotalSize": 5300224,
+          "LayoutObjects": 18514,
+          "Documents": 4,
+          "Nodes": 18442,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 18442,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2442456,
+          "totalSize": 5300224,
+          "embedderHeapUsedSize": 26200120,
+          "backingStorageSize": 193406
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1498576,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 1283,
+          "Documents": 1,
+          "Nodes": 18429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 18429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1498576,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 4174800,
+          "backingStorageSize": 48891
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1276872,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 17814,
+          "Documents": 4,
+          "Nodes": 17730,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 17730,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1276872,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 22256192,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 787152,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 17809,
+          "Documents": 1,
+          "Nodes": 17717,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 17717,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 787152,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 14239832,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 31212,
+        "controls": 300,
+        "expanded": 1,
+        "records": 300,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2226476,
+          "JSHeapTotalSize": 6873088,
+          "LayoutObjects": 55509,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2226476,
+          "totalSize": 6873088,
+          "embedderHeapUsedSize": 54852848,
+          "backingStorageSize": 305054
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1684616,
+          "JSHeapTotalSize": 2678784,
+          "LayoutObjects": 3483,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1684616,
+          "totalSize": 2678784,
+          "embedderHeapUsedSize": 11483992,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 31212,
+        "controls": 300,
+        "expanded": 1,
+        "records": 300,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2500184,
+          "JSHeapTotalSize": 7397376,
+          "LayoutObjects": 55509,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2500184,
+          "totalSize": 7397376,
+          "embedderHeapUsedSize": 54783776,
+          "backingStorageSize": 282339
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1689972,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 3483,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1689972,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 11483584,
+          "backingStorageSize": 49638
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 30008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 948996,
+          "JSHeapTotalSize": 4980736,
+          "LayoutObjects": 53414,
+          "Documents": 4,
+          "Nodes": 53130,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 53130,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 948996,
+          "totalSize": 4980736,
+          "embedderHeapUsedSize": 42093960,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 880600,
+          "JSHeapTotalSize": 1572864,
+          "LayoutObjects": 53409,
+          "Documents": 1,
+          "Nodes": 53117,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 53117,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 880600,
+          "totalSize": 1572864,
+          "embedderHeapUsedSize": 42093512,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 62412,
+        "controls": 600,
+        "expanded": 1,
+        "records": 600,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 4203240,
+          "JSHeapTotalSize": 8589312,
+          "LayoutObjects": 111009,
+          "Documents": 2,
+          "Nodes": 110433,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 110433,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 4203240,
+          "totalSize": 8589312,
+          "embedderHeapUsedSize": 108412016,
+          "backingStorageSize": 444054
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1957656,
+          "JSHeapTotalSize": 2940928,
+          "LayoutObjects": 6783,
+          "Documents": 1,
+          "Nodes": 110429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 110429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1957656,
+          "totalSize": 2940928,
+          "embedderHeapUsedSize": 22445400,
+          "backingStorageSize": 55644
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 62412,
+        "controls": 600,
+        "expanded": 1,
+        "records": 600,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 4180144,
+          "JSHeapTotalSize": 7921664,
+          "LayoutObjects": 111009,
+          "Documents": 2,
+          "Nodes": 110433,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 110433,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 4180144,
+          "totalSize": 7921664,
+          "embedderHeapUsedSize": 108441096,
+          "backingStorageSize": 424806
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1953244,
+          "JSHeapTotalSize": 2940928,
+          "LayoutObjects": 6783,
+          "Documents": 1,
+          "Nodes": 110429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 110429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1953244,
+          "totalSize": 2940928,
+          "embedderHeapUsedSize": 22443944,
+          "backingStorageSize": 49228
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 60008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1310084,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 106809,
+          "Documents": 2,
+          "Nodes": 106221,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 106221,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1310084,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 86574352,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 966872,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 106809,
+          "Documents": 1,
+          "Nodes": 106217,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 106217,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 966872,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 83875568,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2669572,
+          "JSHeapTotalSize": 4919296,
+          "LayoutObjects": 3714,
+          "Documents": 4,
+          "Nodes": 3722,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3722,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2669572,
+          "totalSize": 4919296,
+          "embedderHeapUsedSize": 6483880,
+          "backingStorageSize": 176010
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1427168,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1427168,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1237688,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 8,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 80
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2456588,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 14566,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 14566,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2456588,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 14229992,
+          "backingStorageSize": 88909
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1552976,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1552976,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1251720,
+          "backingStorageSize": 57450
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 28,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 280
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1879728,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 4097,
+          "Documents": 1,
+          "Nodes": 7414,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7414,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1879728,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 6032480,
+          "backingStorageSize": 66898
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1606268,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1606268,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1263272,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 58,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 580
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2184512,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 7459,
+          "Documents": 1,
+          "Nodes": 20307,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 20307,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2184512,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 11184248,
+          "backingStorageSize": 73636
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1666860,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1666860,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1303488,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 118,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 1180
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2126072,
+          "JSHeapTotalSize": 6348800,
+          "LayoutObjects": 4127,
+          "Documents": 1,
+          "Nodes": 7415,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7415,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2126072,
+          "totalSize": 6348800,
+          "embedderHeapUsedSize": 7445840,
+          "backingStorageSize": 72158
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1672260,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1672260,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1343624,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "fold",
+      "repetition": 2,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4497.398614000005,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 229.128,
+            "ScriptDuration": 5.227000000000002,
+            "LayoutDuration": 33.494,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            }
+          }
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4511.978474000003,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 268.958,
+            "ScriptDuration": 9.640000000000002,
+            "LayoutDuration": 40.18,
+            "RecalcStyleDuration": 3.4270000000000005
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            }
+          }
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 62412,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": 0,
+          "workCounts": {
+            "fullFlushCount": 1,
+            "incrementalFlushCount": 0,
+            "previewRefreshCount": 0,
+            "bodyReplacementCount": 0,
+            "releasedRecordCount": 0
+          },
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2887272,
+            "JSHeapTotalSize": 8708096,
+            "LayoutObjects": 111010,
+            "Documents": 2,
+            "Nodes": 110434,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 110434,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2887272,
+            "totalSize": 8708096,
+            "embedderHeapUsedSize": 108818016,
+            "backingStorageSize": 560844
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1964952,
+            "JSHeapTotalSize": 2416640,
+            "LayoutObjects": 6783,
+            "Documents": 1,
+            "Nodes": 110429,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110429,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1964952,
+            "totalSize": 2416640,
+            "embedderHeapUsedSize": 22449720,
+            "backingStorageSize": 56172
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 62414,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": 0,
+          "workCounts": {
+            "fullFlushCount": 2,
+            "incrementalFlushCount": 48,
+            "previewRefreshCount": 1,
+            "bodyReplacementCount": 0,
+            "releasedRecordCount": 0
+          },
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2902304,
+            "JSHeapTotalSize": 5038080,
+            "LayoutObjects": 6881,
+            "Documents": 1,
+            "Nodes": 110527,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110527,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2902304,
+            "totalSize": 5038080,
+            "embedderHeapUsedSize": 28348360,
+            "backingStorageSize": 196307
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 2006252,
+            "JSHeapTotalSize": 2416640,
+            "LayoutObjects": 6786,
+            "Documents": 1,
+            "Nodes": 110432,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110432,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2006252,
+            "totalSize": 2416640,
+            "embedderHeapUsedSize": 22450624,
+            "backingStorageSize": 57602
+          }
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2172440,
+          "JSHeapTotalSize": 5562368,
+          "LayoutObjects": 3714,
+          "Documents": 4,
+          "Nodes": 3722,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3722,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2172440,
+          "totalSize": 5562368,
+          "embedderHeapUsedSize": 6483552,
+          "backingStorageSize": 156762
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1420340,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1420340,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1237280,
+          "backingStorageSize": 48828
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2444876,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 14566,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 14566,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2444876,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 14195232,
+          "backingStorageSize": 81985
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1542684,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1542684,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1250928,
+          "backingStorageSize": 50526
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2063948,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 4127,
+          "Documents": 1,
+          "Nodes": 7415,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7415,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2063948,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 7169648,
+          "backingStorageSize": 64968
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1589584,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1589584,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1262616,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2168400,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 7459,
+          "Documents": 1,
+          "Nodes": 20307,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 20307,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2168400,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 11235912,
+          "backingStorageSize": 66712
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1652984,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1652984,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1303888,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2583872,
+          "JSHeapTotalSize": 6086656,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 12973,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 12973,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2583872,
+          "totalSize": 6086656,
+          "embedderHeapUsedSize": 13820344,
+          "backingStorageSize": 79846
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1689700,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1689700,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1349152,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "compare",
+      "repetition": 2,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4503.661672999995,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 1234.794,
+            "ScriptDuration": 1013.712,
+            "LayoutDuration": 33.983,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 14400,
+              "identityHint": 14400,
+              "preview": 0,
+              "hasDirectText": 14400,
+              "hasVisibleStop": 48,
+              "streamingElements": 24
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 204.9999999627471,
+              "identityHint": 36.10000002756715,
+              "preview": 0,
+              "hasDirectText": 45.400000009685755,
+              "hasVisibleStop": 482.80000000819564,
+              "streamingElements": 123.00000000372529
+            }
+          }
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4556.223857999998,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 1647.759,
+            "ScriptDuration": 1387.6210000000003,
+            "LayoutDuration": 41.897999999999996,
+            "RecalcStyleDuration": 2.865
+          },
+          "adapter": {
+            "calls": {
+              "collect": 24,
+              "isAssistant": 14400,
+              "identity": 14400,
+              "identityHint": 14400,
+              "preview": 0,
+              "hasDirectText": 14400,
+              "hasVisibleStop": 48,
+              "streamingElements": 24
+            },
+            "elapsedMs": {
+              "collect": 2.7999999932944775,
+              "isAssistant": 422.399999987334,
+              "identity": 167.40000004693866,
+              "identityHint": 43.69999997317791,
+              "preview": 0,
+              "hasDirectText": 39.99999999627471,
+              "hasVisibleStop": 471.20000000298023,
+              "streamingElements": 107.09999998286366
+            }
+          }
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 62412,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 3079140,
+            "JSHeapTotalSize": 8183808,
+            "LayoutObjects": 111010,
+            "Documents": 2,
+            "Nodes": 110434,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 110434,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 3079140,
+            "totalSize": 8183808,
+            "embedderHeapUsedSize": 108762880,
+            "backingStorageSize": 541596
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1784948,
+            "JSHeapTotalSize": 2678784,
+            "LayoutObjects": 6783,
+            "Documents": 1,
+            "Nodes": 110429,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110429,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1784948,
+            "totalSize": 2678784,
+            "embedderHeapUsedSize": 22450096,
+            "backingStorageSize": 49756
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 62414,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2764164,
+            "JSHeapTotalSize": 7135232,
+            "LayoutObjects": 6864,
+            "Documents": 1,
+            "Nodes": 110510,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110510,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2764164,
+            "totalSize": 7135232,
+            "embedderHeapUsedSize": 29953504,
+            "backingStorageSize": 189446
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1868552,
+            "JSHeapTotalSize": 2678784,
+            "LayoutObjects": 6786,
+            "Documents": 1,
+            "Nodes": 110432,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110432,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1868552,
+            "totalSize": 2678784,
+            "embedderHeapUsedSize": 22465456,
+            "backingStorageSize": 50665
+          }
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1273168,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 3574,
+          "Documents": 4,
+          "Nodes": 3570,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3570,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1273168,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 5504864,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 767048,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 767048,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3122920,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1196488,
+          "JSHeapTotalSize": 2883584,
+          "LayoutObjects": 10689,
+          "Documents": 1,
+          "Nodes": 10641,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 10641,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1196488,
+          "totalSize": 2883584,
+          "embedderHeapUsedSize": 12407872,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 828744,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 828744,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3144448,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1064868,
+          "JSHeapTotalSize": 3407872,
+          "LayoutObjects": 8879,
+          "Documents": 1,
+          "Nodes": 8869,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 8869,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1064868,
+          "totalSize": 3407872,
+          "embedderHeapUsedSize": 9254608,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 828744,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 828744,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3154408,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1198168,
+          "JSHeapTotalSize": 3932160,
+          "LayoutObjects": 12439,
+          "Documents": 1,
+          "Nodes": 12411,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 12411,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1198168,
+          "totalSize": 3932160,
+          "embedderHeapUsedSize": 13649744,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 834296,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 834296,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3166424,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 904068,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 904068,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 3823840,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 837584,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 837584,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3176888,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "baseline",
+      "repetition": 2,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4507.824393999996,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 331.144,
+            "ScriptDuration": 0,
+            "LayoutDuration": 25.517000000000003,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": null
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4514.841679000005,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 294.7359999999999,
+            "ScriptDuration": 0,
+            "LayoutDuration": 29.348999999999997,
+            "RecalcStyleDuration": 1.9189999999999998
+          },
+          "adapter": null
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 60008,
+          "controls": 0,
+          "expanded": 0,
+          "records": null,
+          "openIntents": null,
+          "queuedScanRoots": null,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": null,
+          "observingCurrentBody": null
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 1324624,
+            "JSHeapTotalSize": 4456448,
+            "LayoutObjects": 106809,
+            "Documents": 2,
+            "Nodes": 106221,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 106221,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1324624,
+            "totalSize": 4456448,
+            "embedderHeapUsedSize": 86676944,
+            "backingStorageSize": 385
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 978840,
+            "JSHeapTotalSize": 1835008,
+            "LayoutObjects": 106809,
+            "Documents": 1,
+            "Nodes": 106217,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106217,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 978840,
+            "totalSize": 1835008,
+            "embedderHeapUsedSize": 83875888,
+            "backingStorageSize": 238
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 60010,
+          "controls": 0,
+          "expanded": 0,
+          "records": null,
+          "openIntents": null,
+          "queuedScanRoots": null,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": null,
+          "observingCurrentBody": null
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 1138480,
+            "JSHeapTotalSize": 2097152,
+            "LayoutObjects": 106905,
+            "Documents": 1,
+            "Nodes": 106313,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106313,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1138480,
+            "totalSize": 2097152,
+            "embedderHeapUsedSize": 89257032,
+            "backingStorageSize": 432
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 995800,
+            "JSHeapTotalSize": 1835008,
+            "LayoutObjects": 106812,
+            "Documents": 1,
+            "Nodes": 106220,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106220,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 995800,
+            "totalSize": 1835008,
+            "embedderHeapUsedSize": 83873424,
+            "backingStorageSize": 269
+          }
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10412,
+        "controls": 100,
+        "expanded": 1,
+        "records": 100,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2470704,
+          "JSHeapTotalSize": 5562368,
+          "LayoutObjects": 18514,
+          "Documents": 4,
+          "Nodes": 18442,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 18442,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2470704,
+          "totalSize": 5562368,
+          "embedderHeapUsedSize": 26187216,
+          "backingStorageSize": 193406
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1494752,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 1283,
+          "Documents": 1,
+          "Nodes": 18429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 18429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1494752,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 4174800,
+          "backingStorageSize": 48828
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1276808,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 17814,
+          "Documents": 4,
+          "Nodes": 17730,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 17730,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1276808,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 22256192,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 787152,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 17809,
+          "Documents": 1,
+          "Nodes": 17717,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 17717,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 787152,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 14239832,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 100,
+        "originalAnswerElements": 9700,
+        "connectedElements": 10412,
+        "controls": 100,
+        "expanded": 1,
+        "records": 100,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2557536,
+          "JSHeapTotalSize": 5443584,
+          "LayoutObjects": 18514,
+          "Documents": 4,
+          "Nodes": 18442,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 18442,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2557536,
+          "totalSize": 5443584,
+          "embedderHeapUsedSize": 26186840,
+          "backingStorageSize": 212654
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1498732,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 1283,
+          "Documents": 1,
+          "Nodes": 18429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 18429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1498732,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 4175208,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 31212,
+        "controls": 300,
+        "expanded": 1,
+        "records": 300,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2500816,
+          "JSHeapTotalSize": 7397376,
+          "LayoutObjects": 55509,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2500816,
+          "totalSize": 7397376,
+          "embedderHeapUsedSize": 54785000,
+          "backingStorageSize": 282339
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1698216,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 3483,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1698216,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 11483584,
+          "backingStorageSize": 49701
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 30008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 990516,
+          "JSHeapTotalSize": 4194304,
+          "LayoutObjects": 53416,
+          "Documents": 4,
+          "Nodes": 53130,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 53130,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 990516,
+          "totalSize": 4194304,
+          "embedderHeapUsedSize": 42093960,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 883160,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 53409,
+          "Documents": 1,
+          "Nodes": 53117,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 53117,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 883160,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 42093512,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 300,
+        "originalAnswerElements": 29100,
+        "connectedElements": 31212,
+        "controls": 300,
+        "expanded": 1,
+        "records": 300,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2492564,
+          "JSHeapTotalSize": 7540736,
+          "LayoutObjects": 55509,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2492564,
+          "totalSize": 7540736,
+          "embedderHeapUsedSize": 54786080,
+          "backingStorageSize": 301587
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1690436,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 3483,
+          "Documents": 1,
+          "Nodes": 55229,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 55229,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1690436,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 11483992,
+          "backingStorageSize": 56054
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 62412,
+        "controls": 600,
+        "expanded": 1,
+        "records": 600,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 4186560,
+          "JSHeapTotalSize": 8445952,
+          "LayoutObjects": 111009,
+          "Documents": 2,
+          "Nodes": 110433,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 110433,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 4186560,
+          "totalSize": 8445952,
+          "embedderHeapUsedSize": 110399784,
+          "backingStorageSize": 424806
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1956564,
+          "JSHeapTotalSize": 2678784,
+          "LayoutObjects": 6783,
+          "Documents": 1,
+          "Nodes": 110429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 110429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1956564,
+          "totalSize": 2678784,
+          "embedderHeapUsedSize": 22443832,
+          "backingStorageSize": 49291
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 60008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1130304,
+          "JSHeapTotalSize": 4456448,
+          "LayoutObjects": 106809,
+          "Documents": 2,
+          "Nodes": 106221,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 106221,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1130304,
+          "totalSize": 4456448,
+          "embedderHeapUsedSize": 86476160,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 787208,
+          "JSHeapTotalSize": 1572864,
+          "LayoutObjects": 106809,
+          "Documents": 1,
+          "Nodes": 106217,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 106217,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 787208,
+          "totalSize": 1572864,
+          "embedderHeapUsedSize": 83875568,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "all-mounted",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 600,
+        "originalAnswerElements": 58200,
+        "connectedElements": 62412,
+        "controls": 600,
+        "expanded": 1,
+        "records": 600,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 4184344,
+          "JSHeapTotalSize": 8327168,
+          "LayoutObjects": 111009,
+          "Documents": 2,
+          "Nodes": 110433,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 110433,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 4184344,
+          "totalSize": 8327168,
+          "embedderHeapUsedSize": 108442400,
+          "backingStorageSize": 444054
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1969248,
+          "JSHeapTotalSize": 2940928,
+          "LayoutObjects": 6783,
+          "Documents": 1,
+          "Nodes": 110429,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 110429,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1969248,
+          "totalSize": 2940928,
+          "embedderHeapUsedSize": 22444240,
+          "backingStorageSize": 55707
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2172348,
+          "JSHeapTotalSize": 5300224,
+          "LayoutObjects": 3714,
+          "Documents": 4,
+          "Nodes": 3722,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3722,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2172348,
+          "totalSize": 5300224,
+          "embedderHeapUsedSize": 6483280,
+          "backingStorageSize": 156762
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1420340,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1420340,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1237400,
+          "backingStorageSize": 48828
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2445172,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 14743,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 14743,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2445172,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 14276400,
+          "backingStorageSize": 81985
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1542684,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1542684,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1353520,
+          "backingStorageSize": 50526
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2063536,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 4127,
+          "Documents": 1,
+          "Nodes": 7415,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7415,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2063536,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 7192648,
+          "backingStorageSize": 64968
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1589264,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1589264,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1265504,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1654728,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 11545,
+          "Documents": 1,
+          "Nodes": 14826,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 10721,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1654728,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 1299528,
+          "backingStorageSize": 51294
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1620008,
+          "JSHeapTotalSize": 2154496,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1620008,
+          "totalSize": 2154496,
+          "embedderHeapUsedSize": 1299528,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2356856,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 5989,
+          "Documents": 1,
+          "Nodes": 9268,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 9268,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2356856,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 9575248,
+          "backingStorageSize": 71334
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1689360,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1689360,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1352008,
+          "backingStorageSize": 50615
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "compare",
+      "repetition": 3,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4467.561826999998,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 863.423,
+            "ScriptDuration": 703.7479999999999,
+            "LayoutDuration": 23.171,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 14400,
+              "identityHint": 14400,
+              "preview": 0,
+              "hasDirectText": 14400,
+              "hasVisibleStop": 48,
+              "streamingElements": 24
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 142.7000000178814,
+              "identityHint": 30.49999999627471,
+              "preview": 0,
+              "hasDirectText": 29.19999998062849,
+              "hasVisibleStop": 341.59999998658895,
+              "streamingElements": 80.40000000968575
+            }
+          }
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4467.03026900001,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 1128.9719999999998,
+            "ScriptDuration": 965.0609999999999,
+            "LayoutDuration": 22.640000000000004,
+            "RecalcStyleDuration": 1.732
+          },
+          "adapter": {
+            "calls": {
+              "collect": 24,
+              "isAssistant": 14400,
+              "identity": 14400,
+              "identityHint": 14400,
+              "preview": 0,
+              "hasDirectText": 14400,
+              "hasVisibleStop": 48,
+              "streamingElements": 24
+            },
+            "elapsedMs": {
+              "collect": 2.3000000193715096,
+              "isAssistant": 291.70000000298023,
+              "identity": 120.09999996051192,
+              "identityHint": 25.700000051409006,
+              "preview": 0,
+              "hasDirectText": 23.399999976158142,
+              "hasVisibleStop": 344.4999999962747,
+              "streamingElements": 74.59999999776483
+            }
+          }
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 62412,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2837780,
+            "JSHeapTotalSize": 8183808,
+            "LayoutObjects": 111010,
+            "Documents": 2,
+            "Nodes": 110434,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 110434,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2837780,
+            "totalSize": 8183808,
+            "embedderHeapUsedSize": 108790912,
+            "backingStorageSize": 541596
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1968476,
+            "JSHeapTotalSize": 2940928,
+            "LayoutObjects": 6783,
+            "Documents": 1,
+            "Nodes": 110429,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110429,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1968476,
+            "totalSize": 2940928,
+            "embedderHeapUsedSize": 22449624,
+            "backingStorageSize": 49819
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 62414,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 3592208,
+            "JSHeapTotalSize": 7397376,
+            "LayoutObjects": 6860,
+            "Documents": 1,
+            "Nodes": 110506,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110506,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 3592208,
+            "totalSize": 7397376,
+            "embedderHeapUsedSize": 29363048,
+            "backingStorageSize": 189446
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 2046652,
+            "JSHeapTotalSize": 2940928,
+            "LayoutObjects": 6786,
+            "Documents": 1,
+            "Nodes": 110432,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110432,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2046652,
+            "totalSize": 2940928,
+            "embedderHeapUsedSize": 22450200,
+            "backingStorageSize": 50665
+          }
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1252092,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 3574,
+          "Documents": 4,
+          "Nodes": 3570,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3570,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1252092,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 5504832,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 767048,
+          "JSHeapTotalSize": 1572864,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 767048,
+          "totalSize": 1572864,
+          "embedderHeapUsedSize": 3122920,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1155112,
+          "JSHeapTotalSize": 2621440,
+          "LayoutObjects": 10689,
+          "Documents": 1,
+          "Nodes": 10641,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 10641,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1155112,
+          "totalSize": 2621440,
+          "embedderHeapUsedSize": 12193872,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 828744,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 828744,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3144336,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1181176,
+          "JSHeapTotalSize": 3145728,
+          "LayoutObjects": 12439,
+          "Documents": 1,
+          "Nodes": 12411,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 12411,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1181176,
+          "totalSize": 3145728,
+          "embedderHeapUsedSize": 13441336,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 828744,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 828744,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3154408,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 931132,
+          "JSHeapTotalSize": 3670016,
+          "LayoutObjects": 5349,
+          "Documents": 1,
+          "Nodes": 5328,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 5328,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 931132,
+          "totalSize": 3670016,
+          "embedderHeapUsedSize": 5913168,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 834296,
+          "JSHeapTotalSize": 1572864,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 834296,
+          "totalSize": 1572864,
+          "embedderHeapUsedSize": 3157904,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2008,
+        "controls": 0,
+        "expanded": 0,
+        "records": null,
+        "openIntents": null,
+        "queuedScanRoots": null,
+        "queuedRecordUpdates": null,
+        "workCounts": null,
+        "disconnectedRecords": null,
+        "observingCurrentBody": null
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 1495792,
+          "JSHeapTotalSize": 4194304,
+          "LayoutObjects": 17779,
+          "Documents": 1,
+          "Nodes": 17724,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 17724,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1495792,
+          "totalSize": 4194304,
+          "embedderHeapUsedSize": 20125656,
+          "backingStorageSize": 344
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 837712,
+          "JSHeapTotalSize": 1835008,
+          "LayoutObjects": 3569,
+          "Documents": 1,
+          "Nodes": 3557,
+          "JSEventListeners": 0
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3557,
+          "jsEventListeners": 0
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 837712,
+          "totalSize": 1835008,
+          "embedderHeapUsedSize": 3206824,
+          "backingStorageSize": 238
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "baseline",
+      "repetition": 3,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4539.732038999995,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 323.5129999999999,
+            "ScriptDuration": 0,
+            "LayoutDuration": 28.396,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": null
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4466.876126000017,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 315.184,
+            "ScriptDuration": 0,
+            "LayoutDuration": 30.152,
+            "RecalcStyleDuration": 2.053
+          },
+          "adapter": null
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 60008,
+          "controls": 0,
+          "expanded": 0,
+          "records": null,
+          "openIntents": null,
+          "queuedScanRoots": null,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": null,
+          "observingCurrentBody": null
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 1132868,
+            "JSHeapTotalSize": 4456448,
+            "LayoutObjects": 106809,
+            "Documents": 2,
+            "Nodes": 106221,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 106221,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1132868,
+            "totalSize": 4456448,
+            "embedderHeapUsedSize": 86533752,
+            "backingStorageSize": 385
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 787224,
+            "JSHeapTotalSize": 1835008,
+            "LayoutObjects": 106809,
+            "Documents": 1,
+            "Nodes": 106217,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106217,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 787224,
+            "totalSize": 1835008,
+            "embedderHeapUsedSize": 83875888,
+            "backingStorageSize": 238
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 60010,
+          "controls": 0,
+          "expanded": 0,
+          "records": null,
+          "openIntents": null,
+          "queuedScanRoots": null,
+          "queuedRecordUpdates": null,
+          "workCounts": null,
+          "disconnectedRecords": null,
+          "observingCurrentBody": null
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 946880,
+            "JSHeapTotalSize": 2097152,
+            "LayoutObjects": 106905,
+            "Documents": 1,
+            "Nodes": 106313,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106313,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 946880,
+            "totalSize": 2097152,
+            "embedderHeapUsedSize": 89257432,
+            "backingStorageSize": 432
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 804200,
+            "JSHeapTotalSize": 1835008,
+            "LayoutObjects": 106812,
+            "Documents": 1,
+            "Nodes": 106220,
+            "JSEventListeners": 0
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 106220,
+            "jsEventListeners": 0
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 804200,
+            "totalSize": 1835008,
+            "embedderHeapUsedSize": 83873248,
+            "backingStorageSize": 269
+          }
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 20,
+      "documentCounts": {
+        "created": 20,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 0,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 0
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2184224,
+          "JSHeapTotalSize": 5300224,
+          "LayoutObjects": 3714,
+          "Documents": 4,
+          "Nodes": 3722,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 4,
+          "nodes": 3722,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2184224,
+          "totalSize": 5300224,
+          "embedderHeapUsedSize": 6481728,
+          "backingStorageSize": 176010
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1425132,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1425132,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1237688,
+          "backingStorageSize": 55244
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 100,
+      "documentCounts": {
+        "created": 100,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 8,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 80
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2458376,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 9683,
+          "Documents": 1,
+          "Nodes": 14566,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 14566,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2458376,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 14328056,
+          "backingStorageSize": 89757
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1552552,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1552552,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1251832,
+          "backingStorageSize": 57450
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 300,
+      "documentCounts": {
+        "created": 300,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 28,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 280
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2263824,
+          "JSHeapTotalSize": 5038080,
+          "LayoutObjects": 16799,
+          "Documents": 1,
+          "Nodes": 29573,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 29573,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2263824,
+          "totalSize": 5038080,
+          "embedderHeapUsedSize": 24803960,
+          "backingStorageSize": 110769
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1605300,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1605300,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1278720,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 600,
+      "documentCounts": {
+        "created": 600,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 58,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 580
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2307388,
+          "JSHeapTotalSize": 4775936,
+          "LayoutObjects": 5989,
+          "Documents": 1,
+          "Nodes": 9268,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 9268,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2307388,
+          "totalSize": 4775936,
+          "embedderHeapUsedSize": 9621400,
+          "backingStorageSize": 78168
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1666548,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1666548,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1293816,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "fixed-window-no-data-cache",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 1200,
+      "documentCounts": {
+        "created": 1200,
+        "mountedAnswers": 20,
+        "originalAnswerElements": 1940,
+        "connectedElements": 2092,
+        "controls": 20,
+        "expanded": 1,
+        "records": 20,
+        "openIntents": 1,
+        "queuedScanRoots": 0,
+        "queuedRecordUpdates": 0,
+        "workCounts": {
+          "fullFlushCount": 118,
+          "incrementalFlushCount": 0,
+          "previewRefreshCount": 0,
+          "bodyReplacementCount": 0,
+          "releasedRecordCount": 1180
+        },
+        "disconnectedRecords": 0,
+        "observingCurrentBody": true
+      },
+      "beforeGC": {
+        "performance": {
+          "JSHeapUsedSize": 2138416,
+          "JSHeapTotalSize": 5562368,
+          "LayoutObjects": 4127,
+          "Documents": 1,
+          "Nodes": 7415,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 7415,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 2138416,
+          "totalSize": 5562368,
+          "embedderHeapUsedSize": 7362288,
+          "backingStorageSize": 71690
+        }
+      },
+      "afterGC": {
+        "performance": {
+          "JSHeapUsedSize": 1671016,
+          "JSHeapTotalSize": 2416640,
+          "LayoutObjects": 403,
+          "Documents": 1,
+          "Nodes": 3709,
+          "JSEventListeners": 27
+        },
+        "dom": {
+          "documents": 1,
+          "nodes": 3709,
+          "jsEventListeners": 27
+        },
+        "runtimeHeap": {
+          "available": true,
+          "usedSize": 1671016,
+          "totalSize": 2416640,
+          "embedderHeapUsedSize": 1345008,
+          "backingStorageSize": 57539
+        }
+      }
+    },
+    {
+      "scenario": "paced-updates",
+      "mode": "fold",
+      "repetition": 3,
+      "count": 600,
+      "phases": [
+        {
+          "kind": "character-data",
+          "updates": 24,
+          "elapsedMs": 4645.892091999995,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 252.39899999999997,
+            "ScriptDuration": 8.792000000000002,
+            "LayoutDuration": 37.943000000000005,
+            "RecalcStyleDuration": 0
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            }
+          }
+        },
+        {
+          "kind": "neutral-markup",
+          "updates": 24,
+          "elapsedMs": 4833.516219000012,
+          "requestedWaitMs": 4320,
+          "durationDeltaMs": {
+            "TaskDuration": 444.488,
+            "ScriptDuration": 15.054000000000006,
+            "LayoutDuration": 45.166999999999994,
+            "RecalcStyleDuration": 2.1229999999999998
+          },
+          "adapter": {
+            "calls": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            },
+            "elapsedMs": {
+              "collect": 0,
+              "isAssistant": 0,
+              "identity": 0,
+              "identityHint": 0,
+              "preview": 0,
+              "hasDirectText": 0,
+              "hasVisibleStop": 0,
+              "streamingElements": 0
+            }
+          }
+        }
+      ],
+      "beforeUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58200,
+          "connectedElements": 62412,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": 0,
+          "workCounts": {
+            "fullFlushCount": 1,
+            "incrementalFlushCount": 0,
+            "previewRefreshCount": 0,
+            "bodyReplacementCount": 0,
+            "releasedRecordCount": 0
+          },
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2985004,
+            "JSHeapTotalSize": 8183808,
+            "LayoutObjects": 111010,
+            "Documents": 2,
+            "Nodes": 110434,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 110434,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2985004,
+            "totalSize": 8183808,
+            "embedderHeapUsedSize": 108795184,
+            "backingStorageSize": 560844
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1799500,
+            "JSHeapTotalSize": 2416640,
+            "LayoutObjects": 6783,
+            "Documents": 1,
+            "Nodes": 110429,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110429,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1799500,
+            "totalSize": 2416640,
+            "embedderHeapUsedSize": 22450368,
+            "backingStorageSize": 56235
+          }
+        }
+      },
+      "afterUpdates": {
+        "documentCounts": {
+          "created": 600,
+          "mountedAnswers": 600,
+          "originalAnswerElements": 58202,
+          "connectedElements": 62414,
+          "controls": 600,
+          "expanded": 1,
+          "records": 600,
+          "openIntents": 1,
+          "queuedScanRoots": 0,
+          "queuedRecordUpdates": 0,
+          "workCounts": {
+            "fullFlushCount": 2,
+            "incrementalFlushCount": 48,
+            "previewRefreshCount": 1,
+            "bodyReplacementCount": 0,
+            "releasedRecordCount": 0
+          },
+          "disconnectedRecords": 0,
+          "observingCurrentBody": true
+        },
+        "beforeGC": {
+          "performance": {
+            "JSHeapUsedSize": 2739860,
+            "JSHeapTotalSize": 3465216,
+            "LayoutObjects": 6881,
+            "Documents": 1,
+            "Nodes": 110527,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110527,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 2739860,
+            "totalSize": 3465216,
+            "embedderHeapUsedSize": 28418864,
+            "backingStorageSize": 196307
+          }
+        },
+        "afterGC": {
+          "performance": {
+            "JSHeapUsedSize": 1834544,
+            "JSHeapTotalSize": 2678784,
+            "LayoutObjects": 6786,
+            "Documents": 1,
+            "Nodes": 110432,
+            "JSEventListeners": 27
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 110432,
+            "jsEventListeners": 27
+          },
+          "runtimeHeap": {
+            "available": true,
+            "usedSize": 1834544,
+            "totalSize": 2678784,
+            "embedderHeapUsedSize": 22451232,
+            "backingStorageSize": 57602
+          }
+        }
+      }
+    }
+  ],
+  "error": null
+}
