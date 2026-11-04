@@ -8,12 +8,24 @@
   const SINGLETON = "__chatGPTFoldControllerV1";
   globalThis[SINGLETON]?.destroy();
   const BATCH_MS = 120;
+  const QUEUE_LIMIT = 80;
   const DISCOVERY_NODES = [adapter.CANDIDATE, adapter.USER, adapter.STREAMING, adapter.STOP].join(",");
+  // Neutral markup must not silently change a message identity, suppress a
+  // fallback root, or introduce/remove a generation or visibility boundary.
+  // Match attributes regardless of their value, including non-assistant roles.
+  const SEMANTIC_NODES = [DISCOVERY_NODES, "style", "link", "script", "[data-cgf-message]", "[data-cgf-control]",
+    ...["data-message-id", "data-turn-id", "data-message-author-role", "data-message-role", "data-turn",
+      "data-chatgpt-search-unit-key", "data-content-search-unit-key", "data-chatgpt-search-message-ids",
+      "data-chatgpt-selection-message-id", "data-markdown-text-style", "data-user-message-bubble",
+      "data-turn-key", "data-content-search-turn-key", "data-talvt-turn-state", "data-chatgpt-composer",
+      "data-app-action-timeline-scroll", "data-is-streaming", "aria-busy", "aria-label"].map(name => `[${name}]`)
+  ].join(",");
 
   class FoldController {
     constructor() {
       this.settings = { ...shared.DEFAULT_SETTINGS };
       this.paused = false;
+      this.pageSuspended = false;
       this.destroyed = false;
       this.active = false;
       this.knownLatest = null;
@@ -26,23 +38,36 @@
       this.rank = 0;
       this.path = location.pathname;
       this.scanRoots = new Set();
+      this.dirtyRecords = new Set();
       this.fullScan = false;
       this.pruneNeeded = false;
+      this.policyNeeded = false;
       this.timer = null;
       this.observedBody = null;
+      this.bodyObserverConnected = false;
       this.lastZeroRescanAt = 0;
       this.mutationBatches = 0;
+      // Fixed-size scalar counters, never a sample history or a node log.
+      this.workCounts = { fullFlushCount: 0, incrementalFlushCount: 0, previewRefreshCount: 0,
+        bodyReplacementCount: 0, releasedRecordCount: 0 };
       this.onMutation = this.onMutation.bind(this);
       this.onClick = this.onClick.bind(this);
-      this.onInteraction = () => this.schedule();
-      this.onNavigation = () => this.schedule();
+      this.onInteraction = () => {
+        if (this.active) { this.policyNeeded = true; this.schedule(); }
+      };
+      this.onNavigation = () => { this.policyNeeded = true; this.schedule(); };
       this.onStorage = this.onStorage.bind(this);
       this.onMessage = this.onMessage.bind(this);
-      this.onPageHide = () => this.stopActive();
+      this.onPageHide = () => { this.pageSuspended = true; this.stopActive(); };
       this.onPageShow = () => {
+        this.pageSuspended = false;
         if (!this.destroyed && this.settings.enabled && !this.paused) this.startActive();
       };
       this.observer = new MutationObserver(this.onMutation);
+      this.bodyObserver = new MutationObserver(() => {
+        if (!this.destroyed && !this.pageSuspended && this.settings.enabled && !this.paused &&
+            (!this.active || this.observedBody !== document.body)) this.flush();
+      });
     }
 
     async start() {
@@ -98,6 +123,7 @@
         preview: adapter.preview(element),
         wantsOpen: false,
         protected: false,
+        streaming: false,
         reason: "",
         unsupported: false,
         rank: 0,
@@ -202,7 +228,14 @@
     }
 
     startActive(preserveChoices = false) {
-      if (this.destroyed || this.active || !this.settings.enabled || this.paused || !document.body) return;
+      if (this.destroyed || !this.settings.enabled || this.paused || this.pageSuspended) return;
+      // Observe only direct html children, not a second copy of the body subtree.
+      // Keep this connected while body is absent so a later insertion recovers.
+      if (!this.bodyObserverConnected && document.documentElement) {
+        this.bodyObserver.observe(document.documentElement, { childList: true });
+        this.bodyObserverConnected = true;
+      }
+      if (this.active || !document.body) return;
       this.path = location.pathname;
       this.active = true;
       document.documentElement.setAttribute("data-cgf-active", "true");
@@ -227,16 +260,23 @@
     }
 
     releaseRecord(record) {
-      if (typeof record.intentKey === "number") this.openIntents.delete(record.intentKey);
+      if (typeof record.intentKey === "number") {
+        this.openIntents.delete(record.intentKey);
+        if (this.stopTarget === record.intentKey) this.stopTarget = null;
+      }
+      this.dirtyRecords.delete(record);
       record.element.removeAttribute("data-cgf-collapsed");
       record.element.removeAttribute("data-cgf-message");
       record.control.remove();
       this.records.delete(record.element);
+      this.countWork("releasedRecordCount");
     }
 
     stopActive(preserveChoices = false) {
       this.active = false;
       this.observer.disconnect();
+      this.bodyObserver.disconnect();
+      this.bodyObserverConnected = false;
       this.observedBody = null;
       clearTimeout(this.timer);
       this.timer = null;
@@ -251,12 +291,27 @@
         this.openIntents.clear();
       }
       this.scanRoots.clear();
+      this.dirtyRecords.clear();
       this.fullScan = false;
       this.pruneNeeded = false;
+      this.policyNeeded = false;
+    }
+
+    countWork(name, amount = 1) {
+      this.workCounts[name] = Math.min(Number.MAX_SAFE_INTEGER, this.workCounts[name] + amount);
+    }
+
+    markDirty(record) {
+      record.dirty = true;
+      if (this.policyNeeded) return;
+      if (this.dirtyRecords.size >= QUEUE_LIMIT && !this.dirtyRecords.has(record)) {
+        this.dirtyRecords.clear();
+        this.policyNeeded = true;
+      } else this.dirtyRecords.add(record);
     }
 
     schedule() {
-      if (this.destroyed || this.timer !== null) return;
+      if (this.destroyed || this.pageSuspended || this.timer !== null) return;
       this.timer = setTimeout(() => {
         this.timer = null;
         this.flush();
@@ -271,7 +326,7 @@
         if (scope.contains(element)) return;
         if (element.contains(scope)) this.scanRoots.delete(scope);
       }
-      if (this.scanRoots.size >= 80) {
+      if (this.scanRoots.size >= QUEUE_LIMIT) {
         this.fullScan = true;
         this.scanRoots.clear();
       } else if (!this.fullScan) {
@@ -279,10 +334,22 @@
       }
     }
 
+    neutralContentMutation(mutation, target, record) {
+      if (!record || target === record.element || !record.element.isConnected || target.closest("style, script") ||
+          ["操作中", "已选文字"].includes(record.reason)) return false;
+      if (mutation.type === "characterData") return true;
+      if (mutation.type !== "childList") return false;
+      for (const node of [...mutation.addedNodes, ...mutation.removedNodes]) {
+        if (node.nodeType === 1 && (node.matches(SEMANTIC_NODES) || node.querySelector(SEMANTIC_NODES))) return false;
+      }
+      return true;
+    }
+
     onMutation(mutations) {
       if (!this.active || this.destroyed) return;
       let relevant = location.pathname !== this.path;
       let beforePaint = relevant;
+      if (relevant) this.policyNeeded = true;
       for (const mutation of mutations) {
         const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
         if (!target || target.closest(adapter.OWN)) continue;
@@ -297,7 +364,9 @@
             const containsStop = target.matches(adapter.STOP) || Boolean(target.querySelector(adapter.STOP));
             const containsStreaming = target.matches(adapter.STREAMING) || Boolean(target.querySelector(adapter.STREAMING));
             if (containsAnswers) { this.queueScan(target); this.pruneNeeded = true; }
-            if (containsAnswers || containsStop || containsStreaming) relevant = beforePaint = true;
+            if (containsAnswers || containsStop || containsStreaming) {
+              relevant = beforePaint = this.policyNeeded = true;
+            }
             continue;
           }
         }
@@ -307,12 +376,20 @@
         }
         const owner = target.closest("[data-cgf-message]");
         const record = owner ? this.records.get(owner) : null;
+        // Token and ordinary inner-markup changes cannot change identities,
+        // open intentions, or known generation signals. Refresh their bounded
+        // previews only; pending semantic/interaction work always takes priority.
+        if (this.neutralContentMutation(mutation, target, record)) {
+          this.markDirty(record);
+          relevant = true;
+          continue;
+        }
         if (mutation.type === "childList") {
           const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
           const onlyControls = nodes.length && nodes.every(node => node.nodeType === 1 && node.hasAttribute("data-cgf-control"));
           if (onlyControls) {
             // Repair a toolbar that a page update removed, but ignore our own insertions.
-            if (record && !record.control.isConnected) relevant = true;
+            if (record && record.control.parentNode !== record.element) relevant = this.policyNeeded = true;
             continue;
           }
           for (const node of mutation.addedNodes) this.queueScan(node);
@@ -326,18 +403,21 @@
           // observer microtask, before rendering. Plain text/markup updates
           // inside a known answer already inherit its CSS and stay batched.
           if ((affectedAnswer && !record) || target === record?.element || nodes.some(node =>
-            node.nodeType === 1 && (node.matches(DISCOVERY_NODES) || node.querySelector(DISCOVERY_NODES)))) {
+            node.nodeType === 1 && (node.matches(SEMANTIC_NODES) || node.querySelector(SEMANTIC_NODES)))) {
             beforePaint = true;
           }
         } else if (mutation.type === "attributes") {
           this.queueScan(target);
           this.pruneNeeded = true;
           beforePaint = true;
+        } else if (target === record?.element) {
+          // A direct text node may turn into unsupported bare answer text.
+          beforePaint = true;
         }
         // Hydration and historical remounts are not generation signals. Keep
         // folded content hidden; explicit streaming/focus/selection can open it.
-        if (record) record.dirty = true;
-        relevant = true;
+        if (record) this.markDirty(record);
+        relevant = this.policyNeeded = true;
       }
       if (beforePaint) this.flush();
       else if (relevant) this.schedule();
@@ -353,6 +433,7 @@
         this.destroy();
         return;
       }
+      if (this.pageSuspended) return;
       if (location.pathname !== this.path) {
         this.stopActive();
         this.path = location.pathname;
@@ -360,17 +441,31 @@
         if (this.settings.enabled) this.startActive();
         return;
       }
-      // Rescan/status or the next document interaction can recover a replaced
-      // body; do not keep records or an observer attached to its detached tree.
+      // The direct-child body observer reaches this without an interaction or
+      // a status request. Stop releases the detached tree before any restart.
       if (this.active && this.observedBody !== document.body) {
+        this.countWork("bodyReplacementCount");
         this.stopActive(true);
         if (this.settings.enabled && !this.paused) this.startActive(true);
         return;
       }
-      if (!this.active) return;
+      if (!this.active) {
+        if (this.bodyObserverConnected) this.startActive(true);
+        return;
+      }
+      if (!this.policyNeeded && !this.pruneNeeded && !this.fullScan && !this.scanRoots.size) {
+        if (!this.dirtyRecords.size) return;
+        if (this.refreshDirtyRecords()) {
+          this.countWork("incrementalFlushCount");
+          this.mutationBatches += 1;
+          return;
+        }
+        this.pruneNeeded = true;
+      }
       // Observe Stop before discovery advances knownLatest, including when
       // Stop and the first answer arrive in the same mutation batch.
       this.observeStop();
+      this.countWork("fullFlushCount");
       this.mutationBatches += 1;
       const scanContext = adapter.createScanContext();
       const previousNextId = this.nextId;
@@ -392,9 +487,6 @@
         for (const element of adapter.collect(scope, scanContext)) changed = this.createRecord(element) || changed;
       }
       if (changed) this.reorder();
-      for (const record of this.order) {
-        if (record.control.parentNode !== record.element) record.element.prepend(record.control);
-      }
       this.syncIntentKeys();
       if (changed) {
         // Removing the real tail must not turn the remaining historical window
@@ -424,7 +516,26 @@
           }
         }
       }
-      this.applyPolicy();
+      this.applyPolicy(false);
+    }
+
+    refreshDirtyRecords() {
+      for (const record of this.dirtyRecords) {
+        if (!record.element.isConnected || this.records.get(record.element) !== record ||
+            record.control.parentNode !== record.element) return false;
+      }
+      for (const record of this.dirtyRecords) {
+        // Generation end runs the full policy and refreshes the final preview.
+        // No retained node set or repeated preview extraction during streaming.
+        if (record.dirty && !record.streaming) {
+          record.preview = adapter.preview(record.element);
+          record.dirty = false;
+          this.countWork("previewRefreshCount");
+          this.renderRecord(record, record.element.getAttribute("data-cgf-collapsed") === "false");
+        }
+      }
+      this.dirtyRecords.clear();
+      return true;
     }
 
     interactionReason(record, selection, focused) {
@@ -439,9 +550,9 @@
       return "";
     }
 
-    applyPolicy() {
+    applyPolicy(observeStop = true) {
       if (!this.active) return;
-      this.observeStop();
+      if (observeStop) this.observeStop();
       const streaming = adapter.streamingElements(document, this.records);
       const stopTarget = this.stopTarget === null ? null : this.order.find(record => record.intentKey === this.stopTarget);
       if (stopTarget) streaming.add(stopTarget.element);
@@ -451,33 +562,41 @@
         record.wantsOpen = this.openIntents.has(record.intentKey);
         record.rank = this.openIntents.get(record.intentKey) || 0;
         record.unsupported = adapter.hasDirectText(record.element);
-        record.reason = record.unsupported ? "保持原样" : streaming.has(record.element) ? "生成中" :
+        record.streaming = streaming.has(record.element);
+        record.reason = record.unsupported ? "保持原样" : record.streaming ? "生成中" :
           this.interactionReason(record, selection, focused);
         record.protected = Boolean(record.reason);
-        if (record.dirty && !streaming.has(record.element)) {
+        if (record.dirty && !record.streaming) {
           record.preview = adapter.preview(record.element);
           record.dirty = false;
+          this.countWork("previewRefreshCount");
         }
       }
       const expanded = shared.planExpanded(this.order, this.settings.maxExpanded);
-      for (const record of this.order) {
-        const isOpen = expanded.has(record.id);
-        const value = isOpen ? "false" : "true";
-        if (record.element.getAttribute("data-cgf-collapsed") !== value) record.element.setAttribute("data-cgf-collapsed", value);
-        const label = `回答 ${record.order + 1} · ${record.preview}`;
-        if (record.label.textContent !== label) record.label.textContent = label;
-        const arrow = isOpen ? "▾" : "▸";
-        if (record.chevron.textContent !== arrow) record.chevron.textContent = arrow;
-        const badge = record.reason || (isOpen ? "收起" : "展开");
-        if (record.badge.textContent !== badge) record.badge.textContent = badge;
-        if (record.control.disabled !== record.protected) record.control.disabled = record.protected;
-        const expandedValue = String(isOpen);
-        if (record.control.getAttribute("aria-expanded") !== expandedValue) record.control.setAttribute("aria-expanded", expandedValue);
-        const accessibleLabel = `${isOpen ? "收起" : "展开"}${label}`;
-        if (record.control.getAttribute("aria-label") !== accessibleLabel) record.control.setAttribute("aria-label", accessibleLabel);
-        const title = record.reason ? `${record.reason}：暂时保留完整回答` : `${isOpen ? "收起" : "展开"}这条回答`;
-        if (record.control.title !== title) record.control.title = title;
-      }
+      for (const record of this.order) this.renderRecord(record, expanded.has(record.id));
+      this.dirtyRecords.clear();
+      this.policyNeeded = false;
+    }
+
+    renderRecord(record, isOpen) {
+      // A click/settings policy can run before the scheduled toolbar repair.
+      // Every render path must finish that repair before clearing pending work.
+      if (record.control.parentNode !== record.element) record.element.prepend(record.control);
+      const value = isOpen ? "false" : "true";
+      if (record.element.getAttribute("data-cgf-collapsed") !== value) record.element.setAttribute("data-cgf-collapsed", value);
+      const label = `回答 ${record.order + 1} · ${record.preview}`;
+      if (record.label.textContent !== label) record.label.textContent = label;
+      const arrow = isOpen ? "▾" : "▸";
+      if (record.chevron.textContent !== arrow) record.chevron.textContent = arrow;
+      const badge = record.reason || (isOpen ? "收起" : "展开");
+      if (record.badge.textContent !== badge) record.badge.textContent = badge;
+      if (record.control.disabled !== record.protected) record.control.disabled = record.protected;
+      const expandedValue = String(isOpen);
+      if (record.control.getAttribute("aria-expanded") !== expandedValue) record.control.setAttribute("aria-expanded", expandedValue);
+      const accessibleLabel = `${isOpen ? "收起" : "展开"}${label}`;
+      if (record.control.getAttribute("aria-label") !== accessibleLabel) record.control.setAttribute("aria-label", accessibleLabel);
+      const title = record.reason ? `${record.reason}：暂时保留完整回答` : `${isOpen ? "收起" : "展开"}这条回答`;
+      if (record.control.title !== title) record.control.title = title;
     }
 
     onClick(event) {
@@ -571,7 +690,7 @@
         if (element.isConnected) connectedRegisteredCount += 1;
       }
       return {
-        schemaVersion: 2,
+        schemaVersion: 3,
         scriptVersion: shared.VERSION,
         readyState: document.readyState,
         topFrame: window.top === window,
@@ -582,6 +701,18 @@
         observerConnected: Boolean(this.active && this.observedBody?.isConnected && this.observedBody === document.body),
         registeredAnswerCount: this.records.size,
         connectedRegisteredCount,
+        maintenance: {
+          bodyObserverConnected: this.bodyObserverConnected,
+          pageSuspended: this.pageSuspended,
+          disconnectedRegisteredCount: this.records.size - connectedRegisteredCount,
+          openIntentCount: this.openIntents.size,
+          pendingScanRootCount: this.scanRoots.size,
+          pendingDirtyRecordCount: this.dirtyRecords.size,
+          fullScanPending: this.fullScan,
+          policyPending: this.policyNeeded,
+          timerPending: this.timer !== null,
+          ...this.workCounts
+        },
         ...adapter.diagnostics(document)
       };
     }
