@@ -17,6 +17,7 @@
       this.destroyed = false;
       this.active = false;
       this.knownLatest = null;
+      this.openIntents = new Map();
       this.records = new Map();
       this.order = [];
       this.nextId = 0;
@@ -86,6 +87,8 @@
         id: ++this.nextId,
         element,
         identity: adapter.identity(element),
+        identityHint: adapter.identityHint(element),
+        intentKey: null,
         control: button,
         chevron,
         label,
@@ -115,23 +118,79 @@
 
     setRecent() {
       const first = Math.max(0, this.order.length - this.settings.keepRecent);
-      this.order.forEach((record, index) => {
-        record.wantsOpen = index >= first;
-        if (record.wantsOpen) record.rank = ++this.rank;
-      });
+      this.openIntents.clear();
+      for (const record of this.order.slice(first)) this.rememberOpen(record);
+      this.rememberLatest();
+    }
+
+    rememberLatest() {
       const last = this.order[this.order.length - 1];
       // One scalar token survives windowing, never a reference to detached DOM.
       this.knownLatest = last ? { id: last.id, identity: last.identity } : null;
     }
 
-    startActive() {
+    rememberOpen(record) {
+      if (!this.openIntents.has(record.intentKey)) this.openIntents.set(record.intentKey, ++this.rank);
+      this.trimOpenIntents();
+    }
+
+    trimOpenIntents() {
+      // Detached open replies still occupy a slot. Only scalar keys/ranks are
+      // retained, bounded by the configured cap (currently at most five).
+      const ranked = [...this.openIntents].sort((a, b) => b[1] - a[1]);
+      for (const [key] of ranked.slice(this.settings.maxExpanded)) this.openIntents.delete(key);
+    }
+
+    syncIntentKeys() {
+      const current = this.order.map(record => ({ record, identity: adapter.identity(record.element), hint: adapter.identityHint(record.element) }));
+      const counts = new Map();
+      for (const { identity } of current) {
+        if (identity) counts.set(identity, (counts.get(identity) || 0) + 1);
+      }
+      for (const { record, identity, hint } of current) {
+        const key = identity?.startsWith("message:") && counts.get(identity) === 1 ? identity : record.id;
+        const oldKey = record.intentKey;
+        const strongIdentity = record.identity?.startsWith("message:");
+        const sameHint = hint !== null && hint === record.identityHint;
+        const enriched = !strongIdentity && identity?.startsWith("message:") && sameHint;
+        const sameMessage = (identity === record.identity && (strongIdentity || sameHint)) || enriched;
+        if (!sameMessage && typeof oldKey === "number") this.openIntents.delete(oldKey);
+        if (oldKey !== null && oldKey !== key) {
+          const rank = this.openIntents.get(oldKey);
+          if (rank !== undefined && sameMessage) {
+            this.openIntents.delete(oldKey);
+            this.openIntents.set(key, Math.max(rank, this.openIntents.get(key) || 0));
+          } else if (typeof oldKey === "number") this.openIntents.delete(oldKey);
+        }
+        if (this.knownLatest?.id === record.id && !sameMessage && !strongIdentity) {
+          this.knownLatest.id = -1;
+        }
+        if (identity !== record.identity) {
+          // Identity enrichment on the same previously unidentified root is
+          // not a new answer; a different known ID must use its own open state.
+          if (enriched && this.knownLatest?.id === record.id) this.knownLatest.identity = identity;
+          record.identity = identity;
+          record.dirty = true;
+        }
+        record.identityHint = hint;
+        record.intentKey = key;
+      }
+      // Never restore one remembered identity into multiple mounted answers.
+      for (const [identity, count] of counts) {
+        if (count > 1) this.openIntents.delete(identity);
+      }
+      this.trimOpenIntents();
+    }
+
+    startActive(preserveChoices = false) {
       if (this.destroyed || this.active || !this.settings.enabled || this.paused || !document.body) return;
       this.path = location.pathname;
       this.active = true;
       document.documentElement.setAttribute("data-cgf-active", "true");
       for (const element of adapter.collect(document)) this.createRecord(element);
       this.reorder();
-      this.setRecent();
+      this.syncIntentKeys();
+      if (!preserveChoices || !this.knownLatest) this.setRecent();
       this.applyPolicy();
       this.observer.observe(document.body, {
         subtree: true,
@@ -149,13 +208,14 @@
     }
 
     releaseRecord(record) {
+      if (typeof record.intentKey === "number") this.openIntents.delete(record.intentKey);
       record.element.removeAttribute("data-cgf-collapsed");
       record.element.removeAttribute("data-cgf-message");
       record.control.remove();
       this.records.delete(record.element);
     }
 
-    stopActive() {
+    stopActive(preserveChoices = false) {
       this.active = false;
       this.observer.disconnect();
       this.observedBody = null;
@@ -165,7 +225,10 @@
       for (const record of this.records.values()) this.releaseRecord(record);
       this.records.clear();
       this.order = [];
-      this.knownLatest = null;
+      if (!preserveChoices) {
+        this.knownLatest = null;
+        this.openIntents.clear();
+      }
       this.scanRoots.clear();
       this.fullScan = false;
       this.pruneNeeded = false;
@@ -279,8 +342,8 @@
       // Rescan/status or the next document interaction can recover a replaced
       // body; do not keep records or an observer attached to its detached tree.
       if (this.active && this.observedBody !== document.body) {
-        this.stopActive();
-        if (this.settings.enabled && !this.paused) this.startActive();
+        this.stopActive(true);
+        if (this.settings.enabled && !this.paused) this.startActive(true);
         return;
       }
       if (!this.active) return;
@@ -307,14 +370,8 @@
       if (changed) this.reorder();
       for (const record of this.order) {
         if (record.control.parentNode !== record.element) record.element.prepend(record.control);
-        const nextIdentity = adapter.identity(record.element);
-        if (nextIdentity !== record.identity) {
-          record.identity = nextIdentity;
-          record.dirty = true;
-          // A recycled DOM root is not evidence of a newly generated answer.
-          // In particular, never expand a folded historical answer on ID churn.
-        }
       }
+      this.syncIntentKeys();
       if (changed) {
         // Removing the real tail must not turn the remaining historical window
         // into "recent" answers. Match the known tail using current identities;
@@ -325,7 +382,15 @@
             (record.id === this.knownLatest.id || Boolean(record.identity)));
           if (matches.length === 1) {
             const last = this.order[this.order.length - 1];
-            if (last !== matches[0] && last.id > previousNextId) this.setRecent();
+            if (last !== matches[0] && last.id > previousNextId) {
+              // New replies add intentions; they do not reset earlier choices.
+              // Remounts restore an existing rank instead of becoming newest.
+              const added = this.order.slice(matches[0].order + 1).filter(record => record.id > previousNextId);
+              if (this.settings.keepRecent > 0) {
+                for (const record of added.slice(-this.settings.keepRecent)) this.rememberOpen(record);
+              }
+              this.rememberLatest();
+            }
             else this.knownLatest.id = matches[0].id;
           }
         }
@@ -351,6 +416,8 @@
       const selection = document.getSelection();
       const focused = document.activeElement;
       for (const record of this.order) {
+        record.wantsOpen = this.openIntents.has(record.intentKey);
+        record.rank = this.openIntents.get(record.intentKey) || 0;
         record.unsupported = adapter.hasDirectText(record.element);
         record.reason = record.unsupported ? "保持原样" : streaming.has(record.element) ? "生成中" :
           this.interactionReason(record, selection, focused);
@@ -363,8 +430,6 @@
       const expanded = shared.planExpanded(this.order, this.settings.maxExpanded);
       for (const record of this.order) {
         const isOpen = expanded.has(record.id);
-        // Once evicted by the cap, a normal answer stays closed until requested.
-        if (!isOpen && !record.protected) record.wantsOpen = false;
         const value = isOpen ? "false" : "true";
         if (record.element.getAttribute("data-cgf-collapsed") !== value) record.element.setAttribute("data-cgf-collapsed", value);
         const label = `回答 ${record.order + 1} · ${record.preview}`;
@@ -392,8 +457,8 @@
       event.preventDefault();
       event.stopPropagation();
       const before = button.getBoundingClientRect().top;
-      record.wantsOpen = record.element.getAttribute("data-cgf-collapsed") === "true";
-      record.rank = ++this.rank;
+      if (record.element.getAttribute("data-cgf-collapsed") === "true") this.rememberOpen(record);
+      else this.openIntents.delete(record.intentKey);
       this.applyPolicy();
       // One user-triggered measurement pair, never a whole-history scroll scan.
       const after = button.getBoundingClientRect().top;
@@ -416,6 +481,7 @@
       const next = shared.normalizeSettings(value);
       const changed = JSON.stringify(next) !== JSON.stringify(this.settings);
       const wasEnabled = this.settings.enabled;
+      const recentChanged = next.keepRecent !== this.settings.keepRecent;
       this.settings = next;
       if (!changed) return;
       if (!next.enabled) this.stopActive();
@@ -424,7 +490,8 @@
         if (!this.paused) {
           if (!this.active) this.startActive();
           else {
-            this.setRecent();
+            if (recentChanged) this.setRecent();
+            else this.trimOpenIntents();
             this.applyPolicy();
           }
         }
@@ -495,7 +562,7 @@
         this.paused = false;
         if (this.settings.enabled) this.startActive();
       } else if (name === "collapse-all" && this.active) {
-        for (const record of this.order) record.wantsOpen = false;
+        this.openIntents.clear();
         this.applyPolicy();
       } else if (name === "recent" && this.active) {
         this.setRecent();

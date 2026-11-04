@@ -267,6 +267,47 @@ test("role removal and rollout key changes re-evaluate the surviving modern carr
   assert.deepEqual(ids(doc), ["carrier"]);
 });
 
+test("actual message identities survive wrapper and positional unit changes", () => {
+  const doc = fixture(`
+    <div id="legacy-id" data-message-author-role="assistant" data-message-id="answer-a"><p>Legacy.</p></div>
+    <div id="modern-id" data-chatgpt-search-unit-key="fallback-turn-7:0:assistant">
+      <div data-chatgpt-search-message-ids="answer-a answer-a" data-chatgpt-selection-message-id="answer-a">
+        <div data-markdown-text-style="assistant-message"><p>Modern nested identity.</p></div>
+      </div>
+    </div>
+    <div data-chatgpt-search-message-ids="answer-a"><div id="in-carrier" data-message-role="assistant"><p>Wrapper identity.</p></div></div>
+    <div id="positional" data-content-search-unit-key="fallback-turn-0:0:assistant"><p>No message ID.</p></div>
+  `);
+  const modern = doc.getElementById("modern-id");
+  assert.equal(adapter.identity(doc.getElementById("legacy-id")), "message:answer-a");
+  assert.equal(adapter.identity(modern), "message:answer-a");
+  const previousHint = adapter.identityHint(modern);
+  modern.setAttribute("data-chatgpt-search-unit-key", "fallback-turn-0:0:assistant");
+  assert.notEqual(adapter.identityHint(modern), previousHint, "A live-node reuse hint must notice a unit change");
+  assert.equal(adapter.identity(modern), "message:answer-a", "Positions must not replace actual message identity");
+  assert.equal(adapter.identity(doc.getElementById("in-carrier")), "message:answer-a");
+  assert.equal(adapter.identity(doc.getElementById("positional")), null, "Positional units are not durable message IDs");
+});
+
+test("ambiguous and excessive message identities do not fall back to weaker keys", () => {
+  const doc = fixture(`
+    <div id="different-ids" data-message-role="assistant" data-message-id="answer-a"><div data-chatgpt-search-message-ids="answer-b"><p>Conflict.</p></div></div>
+    <div id="multiple-ids" data-chatgpt-search-unit-key="fallback-turn-0:0:assistant" data-chatgpt-search-message-ids="answer-a answer-b"><p>Ambiguous.</p></div>
+    <div id="selection-conflict" data-message-role="assistant" data-chatgpt-search-message-ids="answer-a" data-chatgpt-selection-message-id="answer-b"><p>Conflict.</p></div>
+    <div data-chatgpt-search-message-ids="question-id"><div data-user-message-bubble="true"><p>Question.</p></div><div id="shared-parent" data-message-role="assistant"><p>Unidentified answer.</p></div></div>
+    <div id="turn-fallback" data-turn="assistant" data-turn-id="same-value"><p>Legacy turn.</p></div>
+  `);
+  for (const id of ["different-ids", "multiple-ids", "selection-conflict", "shared-parent"]) {
+    assert.equal(adapter.identity(doc.getElementById(id)), null, `${id} must not supply a persistent identity`);
+  }
+  const turn = doc.getElementById("turn-fallback");
+  assert.equal(adapter.identity(turn), "turn:same-value", "A legacy append anchor is separate from message identity");
+  turn.setAttribute("data-message-id", "x".repeat(161));
+  assert.equal(adapter.identity(turn), null, "Invalid explicit message evidence must not fall back to its turn");
+  turn.setAttribute("data-message-id", "same-value");
+  assert.equal(adapter.identity(turn), "message:same-value");
+});
+
 test("diagnostics have an exact count schema and never include text or identifier values", () => {
   const doc = fixture('<main><article data-testid="conversation-turn-PRIVATE_CONVERSATION"><div id="PRIVATE_ELEMENT_ID" data-message-author-role="assistant" data-message-id="PRIVATE_MESSAGE_ID"><p>PRIVATE_BODY_TEXT</p></div></article><div data-turn="assistant"><p>Fallback</p></div><div data-message-author-role="user"></div><div data-message-author-role=""></div><div title="PRIVATE_TITLE" data-message-author-role="PRIVATE_ROLE" data-turn="PRIVATE_TURN"></div><iframe></iframe></main>');
   const report = plain(adapter.diagnostics(doc));

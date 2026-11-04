@@ -781,21 +781,41 @@ async function main() {
       await waitStatus(value => value.total === 3 && !value.paused && value.collapsed === 2, "SPA route retained the previous route pause state");
     });
 
-    await test("rescan recovers a replaced body and observes subsequent answers", async () => {
+    await test("rescan preserves same-conversation choices across body replacement and observes new answers", async () => {
+      await page.locator("[data-cgf-toggle]").first().click();
       await page.evaluate(() => {
+        const answers = [...document.querySelectorAll("[data-cgf-message]")];
+        const selected = answers[0].getAttribute("data-message-id");
+        const latest = answers[answers.length - 1].getAttribute("data-message-id");
         const nextBody = document.createElement("body");
-        nextBody.innerHTML = '<main id="body-replacement-thread"><div id="body-replacement-first" data-message-author-role="assistant"><div class="markdown">替换整个 body 后的回答。</div></div></main>';
+        const thread = document.createElement("main");
+        thread.id = "body-replacement-thread";
+        for (const [id, messageId] of [["body-replacement-first", selected], ["body-replacement-latest", latest]]) {
+          const answer = document.createElement("div");
+          answer.id = id;
+          answer.dataset.messageAuthorRole = "assistant";
+          answer.dataset.messageId = messageId;
+          const body = document.createElement("div");
+          body.className = "markdown";
+          body.textContent = "同一对话中的回答在整个 body 替换后重新挂载。";
+          answer.append(body);
+          thread.append(answer);
+        }
+        nextBody.append(thread);
         document.body.replaceWith(nextBody);
       });
       const recovered = await command("rescan");
       assert.equal(recovered.ok, true);
-      assert.equal(recovered.total, 1);
+      assert.equal(recovered.total, 2);
       assert.equal(recovered.expanded, 1);
-      await waitDomCounts(1, 0);
+      await waitDomCounts(2, 1);
+      await waitCollapsed("body-replacement-first", false);
+      await waitCollapsed("body-replacement-latest", true);
       await page.evaluate(() => {
         const answer = document.createElement("div");
         answer.id = "body-replacement-second";
         answer.dataset.messageAuthorRole = "assistant";
+        answer.dataset.messageId = "body-replacement-new-message";
         const body = document.createElement("div");
         body.className = "markdown";
         body.textContent = "必须通过重新绑定的 observer 发现这条新回答。";
@@ -804,7 +824,7 @@ async function main() {
       });
       // Observation only after the explicit recovery: a stale observer would
       // leave this second answer undiscovered until another status request.
-      await waitDomCounts(2, 1);
+      await waitDomCounts(3, 2);
       await waitCollapsed("body-replacement-first", true);
       await waitCollapsed("body-replacement-second", false);
     });
