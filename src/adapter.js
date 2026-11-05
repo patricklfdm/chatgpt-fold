@@ -24,7 +24,10 @@
     'form[data-chatgpt-composer] button[aria-label="Stop"]',
     'form[data-chatgpt-composer] button[aria-label="停止"]'
   ].join(",");
-  const STREAMING = '[data-is-streaming="true"], [aria-busy="true"], .result-streaming';
+  // The modern turn can own the generation signal while its answer root/ID
+  // changes. Match a known positive state, never every non-complete value.
+  // streamingElements still requires an active, unambiguous answer owner.
+  const STREAMING = '[data-is-streaming="true"], [aria-busy="true"], .result-streaming, [data-talvt-turn-state="in_progress"]';
 
   function createScanContext() {
     // A scan owns these caches. Never retain visibility decisions across updates.
