@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "auditedOn": "2026-11-04",
+  "timezone": "America/Los_Angeles",
+  "stage": "0.2 entry validation",
+  "scope": "Unauthenticated public homepage plus one statically resolved async chunk; source text only, never executed.",
+  "filesInspected": 39,
+  "initialActionCount": 29,
+  "initialActionTypes": [
+    "app.appearance.get",
+    "app.appearance.get_available_themes",
+    "app.appearance.set_mode",
+    "app.appearance.set_theme",
+    "app.get_summary",
+    "app.help",
+    "windows.fire_confetti",
+    "windows.nav.back",
+    "windows.nav.forward",
+    "windows.review.collapse_all",
+    "windows.review.expand_all",
+    "windows.review.file_set_expanded",
+    "windows.review.scroll",
+    "windows.review.scroll_to_file",
+    "windows.review.set_fullscreen",
+    "windows.review.set_view",
+    "windows.review.toggle",
+    "windows.show_home",
+    "windows.show_thread",
+    "windows.sidebar.project_set_collapsed",
+    "windows.sidebar.project_set_show_all",
+    "windows.sidebar.scroll",
+    "windows.sidebar.section_set_collapsed",
+    "windows.sidebar.select_project",
+    "windows.sidebar.toggle",
+    "windows.tabs.open",
+    "windows.terminal.toggle",
+    "windows.timeline.scroll",
+    "windows.timeline.scroll_to_turn"
+  ],
+  "assets": [
+    {
+      "url": "https://chatgpt.com/cdn/assets/633146.2285f1d8aa.js",
+      "sha256": "7381a6f23fc7212a631ed53abb8d2769f6f23503f8e2812befad6480c2d98de5",
+      "meaning": "runtime maps 642472 to assets/async/642472.41eecdbbaa.js; exports internal module loader"
+    },
+    {
+      "url": "https://chatgpt.com/cdn/assets/async/642472.41eecdbbaa.js",
+      "sha256": "405316ebda4f6b14f25f57d4068ee6870220d411f1592ac4658330850e2fa612",
+      "meaning": "SLK0 app action registry; initial action list has no per-answer mount/unmount"
+    },
+    {
+      "url": "https://chatgpt.com/cdn/assets/646436.9dd5128297.js",
+      "sha256": "11f9b5323f1bb2e0e0686a0221215047f93fac713e36aa8e5eca5fd8c562f594",
+      "meaning": "wZGO/Uepx dispatch; sv7c timeline scroll helpers"
+    }
+  ],
+  "literalScan": {
+    "data-talvt-turn-state": [],
+    "data-turn-key": [],
+    "data-content-search-turn-key": [
+      {
+        "file": "646436.9dd5128297.js",
+        "count": 1
+      }
+    ],
+    "virtualiz": [],
+    "mountTurn": [],
+    "unmountTurn": [],
+    "appActionRegistry": [
+      {
+        "file": "646436.9dd5128297.js",
+        "count": 1
+      },
+      {
+        "file": "642472.41eecdbbaa.js",
+        "count": 1
+      }
+    ]
+  },
+  "conclusion": "Registry help describes Codex Desktop UI actions; review/sidebar collapse is not assistant answer lifecycle. Timeline actions scroll existing DOM. Does not prove the logged-in ChatGPT renderer has no private lifecycle entry.",
+  "nextEvidence": "Actual user renderer asset path and source call stack for native node removal/remount, captured with a DOM change breakpoint; no conversation text or whole state export is needed."
+}

@@ -13,6 +13,7 @@
     "test:paint": "node tests/browser-first-paint.cjs",
     "test:state": "node tests/browser-open-state.cjs",
     "test:maintenance": "node tests/browser-maintenance.cjs",
+    "test:native-probe": "node tests/native-lifecycle-probe.cjs",
     "bench:memory": "node tests/memory-benchmark.cjs"
   }
 }
