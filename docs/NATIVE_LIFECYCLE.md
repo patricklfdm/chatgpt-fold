@@ -81,6 +81,28 @@ copy(__CGF_NATIVE_REPORT_V1__);
 
 ## 从结果定位实际执行入口
 
+### 简便的第一步：当前页面的前端文件清单
+
+未登录首页的公开资源样本没有覆盖用户正在使用的现代渲染器。先取得实际页面引用或资源记录中可见的公共静态脚本地址，可以补齐这个调查缺口，不需要先操作 DOM 断点。
+
+文件：[experiments/renderer-asset-inventory.js](../experiments/renderer-asset-inventory.js)。操作只有三步：
+
+1. 打开要检查的 ChatGPT 对话页和 DevTools 的 Console，保持页面的 `top` 上下文。
+2. 粘贴整个脚本并运行。无须在 Elements 选节点，不用滚动、折叠回答或设置断点。
+3. 运行下面一行，把复制的 JSON 报告提供给开发者分析：
+
+```js
+copy(__CGF_ASSET_REPORT_V1__);
+```
+
+该脚本读取 `document.scripts` 的外部地址和当前 Resource Timing 记录。只接受精确 HTTPS origin 与静态路径白名单：`chatgpt.com/cdn/assets/`、`chatgpt.com/_next/static/` 和 `cdn.oaistatic.com/assets/`，并要求 JS/MJS 文件路径。输出去掉 query/hash，拒绝凭据、非默认端口及其他路径和来源；不读取内联脚本、正文、消息身份、页面标题或会话内容。
+
+最多检查最近 512 个 script 元素和最近 4096 个资源记录，过滤前单个候选最长 4096 字符，保留 256 个去重地址，每个输出地址最多 1024 字符；超出这些上限时标记 `truncated`。资源 API 不可用时仍输出已取得的 DOM 资源清单，并记录固定原因。脚本不会发请求、修改 DOM、添加计时器或观察器，也不会包装浏览器原生方法。它只把有界 JSON 字符串放在页面的 `__CGF_ASSET_REPORT_V1__` 变量中供复制。
+
+**这是当前可见的资源清单，不是节点移除调用栈。** script 元素可能尚未执行，资源记录也可能已被清空或受缓冲区限制，因此 `truncated: false` 不代表覆盖了全部执行过的模块。`coverage: "current-records-only"` 和 `nativeEntry: "not-tested"` 会保留这一区别。取得地址后先分析实际脚本；若仍不足以定位控制条件，再使用下面的 DOM 断点。
+
+### 需要同步调用位置时：DOM 断点
+
 被动观测必须与源代码定位分开。MutationObserver 回调发生在 DOM 修改之后，在回调里读取调用栈不能得到原始移除者的同步调用栈。
 
 Chrome 支持 DOM change breakpoints：在 Elements 对目标节点右键，选择 **Break on → Node removal**；对候选持久父壳可选择 **Subtree modifications**。它能在修改或移除该节点的代码处暂停。参考 [Chrome 官方断点文档](https://developer.chrome.com/docs/devtools/javascript/breakpoints/#dom-change-breakpoints)。
@@ -112,8 +134,11 @@ Chrome 支持 DOM change breakpoints：在 Elements 对目标节点右键，选�
 
 ```bash
 npm run test:native-probe
+npm run test:asset-inventory
 ```
 
 测试在合成页面检查探针识别、状态采样、清理、输出边界和拒绝歧义，不验证 ChatGPT 的真实原生入口。缺少浏览器或依赖时返回 NOT RUN，不作为通过。
 
 验证记录（2026-11-04，America/Los_Angeles）：在 Node.js 24.22.1、Chromium 153.0.8010.0 下运行 **12/12 组通过**；项目静态检查、探针语法检查和 `git diff --check` 通过。`manifest.json`、`src/`、`icons/` 与 0.1.7 基线一致。本次没有进行真实 ChatGPT 原生入口调用或内存收益测量。
+
+文件清单脚本 `0.2.0-assets.1` 在同一环境下 **7/7 组通过**：正常采集使用真实 Chromium 的脚本加载与 Resource Timing（请求全部由合成夹具拦截），隐私和容量边界使用明确标注的模拟资源记录。验证包括地址过滤、去重、各项上限、来源不可用、页面上下文，以及无 DOM／原生方法修改、无新增请求和异步监听。该结果不证明真实页面的资源覆盖率或原生入口可用。
