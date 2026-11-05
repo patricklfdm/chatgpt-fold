@@ -2,12 +2,13 @@
 // Exports public static script URLs only. No fetch, DOM writes, timers or hooks.
 (() => {
   "use strict";
-  const limits = { scriptElements: 512, resourceEntries: 4096, assets: 256,
+  const limits = { scriptElements: 512, linkElements: 512, resourceEntries: 4096, assets: 256,
     inputUrlLength: 4096, urlLength: 1024 };
   const report = {
-    schemaVersion: 1, probeVersion: "0.2.0-assets.1", outcome: "completed", reason: null,
-    limits, counts: { scriptElements: 0, resourceEntries: 0,
-      inspectedScriptElements: 0, inspectedResourceEntries: 0, includedAssets: 0 },
+    schemaVersion: 1, probeVersion: "0.2.0-assets.2", outcome: "completed", reason: null,
+    limits, counts: { scriptElements: 0, linkElements: 0, resourceEntries: 0,
+      inspectedScriptElements: 0, inspectedInlineScripts: 0, inspectedExternalScripts: 0,
+      inspectedLinkElements: 0, inspectedResourceEntries: 0, includedAssets: 0 },
     truncated: false, sourceWarnings: [], scripts: [],
     coverage: "current-records-only", nativeEntry: "not-tested"
   };
@@ -56,9 +57,28 @@
         if (start) report.truncated = true;
         for (let i = start; i < count; i += 1) {
           report.counts.inspectedScriptElements += 1;
-          add(scripts[i].src, "script-element");
+          const src = scripts[i].src;
+          if (src) report.counts.inspectedExternalScripts += 1;
+          else report.counts.inspectedInlineScripts += 1;
+          add(src, "script-element");
         }
       } catch { report.sourceWarnings.push("script-elements-unavailable"); }
+
+      try {
+        const links = document.querySelectorAll(
+          'link[rel~="modulepreload" i], link[rel~="preload" i][as="script" i]'
+        );
+        const count = links.length;
+        report.counts.linkElements = count;
+        const start = Math.max(0, count - limits.linkElements);
+        if (start) report.truncated = true;
+        for (let i = start; i < count; i += 1) {
+          report.counts.inspectedLinkElements += 1;
+          const source = links[i].rel.toLowerCase().split(/\s+/).includes("modulepreload")
+            ? "link-modulepreload" : "link-preload-script";
+          add(links[i].href, source);
+        }
+      } catch { report.sourceWarnings.push("link-elements-unavailable"); }
 
       try {
         const entries = performance.getEntriesByType("resource");

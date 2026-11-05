@@ -4,8 +4,9 @@
 /*
  * Manual asset inventory regressions, not native lifecycle integration.
  * All pages and requests are intercepted synthetic Chromium fixtures. Normal
- * collection uses real script loads and Resource Timing; privacy/limit cases
- * explicitly substitute Resource Timing records. No live ChatGPT is accessed.
+ * collection uses real script loads, preload links and Resource Timing;
+ * privacy/limit cases explicitly substitute Resource Timing records.
+ * No live ChatGPT is accessed.
  */
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -72,7 +73,7 @@ function checkReport(raw) {
   }
   const report = JSON.parse(raw);
   assert.equal(report.schemaVersion, 1);
-  assert.equal(report.probeVersion, "0.2.0-assets.1");
+  assert.equal(report.probeVersion, "0.2.0-assets.2");
   assert.equal(report.coverage, "current-records-only");
   assert.equal(report.nativeEntry, "not-tested");
   assert.ok(["completed", "rejected"].includes(report.outcome));
@@ -80,7 +81,10 @@ function checkReport(raw) {
   assert.ok(report.scripts.length <= report.limits.assets);
   assert.equal(report.counts.includedAssets, report.scripts.length);
   assert.ok(report.counts.inspectedScriptElements <= report.limits.scriptElements);
+  assert.ok(report.counts.inspectedLinkElements <= report.limits.linkElements);
   assert.ok(report.counts.inspectedResourceEntries <= report.limits.resourceEntries);
+  assert.equal(report.counts.inspectedInlineScripts + report.counts.inspectedExternalScripts,
+    report.counts.inspectedScriptElements);
   const urls = report.scripts.map(item => item.url);
   assert.equal(new Set(urls).size, urls.length, "The inventory contains duplicate canonical URLs");
   assert.deepEqual(urls, [...urls].sort(), "Public URLs should have stable ordering");
@@ -89,10 +93,11 @@ function checkReport(raw) {
     assert.equal(url.search + url.hash + url.username + url.password + url.port, "");
     assert.ok(item.url.length <= report.limits.urlLength);
     assert.deepEqual(item.sources, [...new Set(item.sources)].sort());
-    assert.ok(item.sources.every(value => ["script-element", "resource-timing"].includes(value)));
+    assert.ok(item.sources.every(value => ["script-element", "resource-timing",
+      "link-modulepreload", "link-preload-script"].includes(value)));
   }
   assert.ok(report.sourceWarnings.every(value =>
-    ["script-elements-unavailable", "resource-timing-unavailable"].includes(value)));
+    ["script-elements-unavailable", "link-elements-unavailable", "resource-timing-unavailable"].includes(value)));
   return report;
 }
 
@@ -105,6 +110,18 @@ async function addInertScripts(page, urls) {
       document.head.appendChild(script);
     }
   }, urls);
+}
+
+async function addLinks(page, definitions) {
+  await page.evaluate(values => {
+    const fragment = document.createDocumentFragment();
+    for (const attributes of values) {
+      const link = document.createElement("link");
+      for (const [name, value] of Object.entries(attributes)) link.setAttribute(name, value);
+      fragment.appendChild(link);
+    }
+    document.head.appendChild(fragment);
+  }, definitions);
 }
 
 async function setMockResources(page, urls) {
@@ -212,7 +229,7 @@ async function main() {
     } finally { await page.close(); }
   }
 
-  console.log("MODE: synthetic Chromium; real script/timing baseline, explicit timing mocks for boundaries; no live ChatGPT");
+  console.log("MODE: synthetic Chromium; real script/preload/timing baseline, explicit timing mocks for boundaries; no live ChatGPT");
   try {
     await test("actual script loads merge DOM and Resource Timing without query or fragment data", async page => {
       assert.equal(await page.evaluate(() => syntheticLoadedAssets), 2);
@@ -221,8 +238,60 @@ async function main() {
       assert.equal(report.reason, null);
       assert.equal(report.truncated, false);
       assert.deepEqual(report.sourceWarnings, []);
+      assert.equal(report.counts.inspectedInlineScripts, 1);
+      assert.equal(report.counts.inspectedExternalScripts, 2);
       assert.deepEqual(report.scripts, [FIRST, SECOND].sort().map(url =>
         ({ url, sources: ["resource-timing", "script-element"] })));
+    });
+
+    await test("inline bootstrap remains discoverable through modulepreload after Resource Timing is cleared", async page => {
+      const relative = `/cdn/assets/renderer-entry.js?inline=${PRIVATE.query}#${PRIVATE.fragment}`;
+      await page.setContent(`<!doctype html><html><head><title>${PRIVATE.title}</title>
+        <link rel="icon" href="data:,"><link rel="modulepreload" href="${relative}">
+        <script type="module">import "${relative}"; globalThis.inlineBootstrapReady = true;</script>
+        <script id="private-inline" type="application/json">{"value":"${PRIVATE.inline}"}</script>
+        </head><body>${PRIVATE.text}</body></html>`, { waitUntil: "load" });
+      assert.equal(await page.evaluate(() => globalThis.inlineBootstrapReady), true);
+      assert.equal(await page.evaluate(() => [...document.scripts].every(script => !script.src)), true);
+      await page.evaluate(() => performance.clearResourceTimings());
+      assert.equal(await page.evaluate(() => performance.getEntriesByType("resource").length), 0);
+      const report = await run(page);
+      assert.equal(report.outcome, "completed");
+      assert.equal(report.truncated, false);
+      assert.equal(report.counts.inspectedInlineScripts, 2);
+      assert.equal(report.counts.inspectedExternalScripts, 0);
+      assert.equal(report.counts.resourceEntries, 0);
+      assert.equal(report.counts.linkElements, 1);
+      assert.equal(report.counts.inspectedLinkElements, 1);
+      assert.deepEqual(report.scripts, [{ url: FIRST, sources: ["link-modulepreload"] }]);
+    });
+
+    await test("script preload links merge case-insensitive sources and exclude unrelated link types", async page => {
+      const fourth = "https://chatgpt.com/cdn/assets/preloaded-renderer.js";
+      await addLinks(page, [
+        { rel: "  MoDuLePrElOaD  ", href: `${FIRST}?cache=${PRIVATE.query}#${PRIVATE.fragment}` },
+        { rel: "PrElOaD", as: "ScRiPt", href: `${FIRST}?other=${PRIVATE.query}` },
+        { rel: "modulepreload", href: "/_next/static/chunks/virtual-window.js" },
+        { rel: "preload", as: "script", href: fourth },
+        { rel: "preload", as: "style", href: "https://chatgpt.com/cdn/assets/style-only.js" },
+        { rel: "preload", as: "image", href: "https://chatgpt.com/cdn/assets/image-only.js" },
+        { rel: "stylesheet", href: "https://chatgpt.com/cdn/assets/stylesheet-only.js" },
+        { rel: "preconnect", href: "https://chatgpt.com/cdn/assets/preconnect-only.js" },
+        { rel: "modulepreload", href: `https://chatgpt.com/backend-api/${PRIVATE.identity}.js` },
+        { rel: "modulepreload", href: "https://chatgpt.com/cdn/assets/styles.css" }
+      ]);
+      // This case tests link classification, independent of which preloads
+      // the browser fetches; the real fetch/timing path is tested above.
+      await setMockResources(page, [FIRST, SECOND]);
+      const report = await run(page);
+      assert.equal(report.counts.linkElements, 6);
+      assert.equal(report.counts.inspectedLinkElements, 6);
+      const byURL = Object.fromEntries(report.scripts.map(item => [item.url, item.sources]));
+      assert.deepEqual(Object.keys(byURL).sort(), [FIRST, SECOND, THIRD, fourth].sort());
+      assert.deepEqual(byURL[FIRST], ["link-modulepreload", "link-preload-script", "resource-timing", "script-element"]);
+      assert.deepEqual(byURL[SECOND], ["resource-timing", "script-element"]);
+      assert.deepEqual(byURL[THIRD], ["link-modulepreload"]);
+      assert.deepEqual(byURL[fourth], ["link-preload-script"]);
     });
 
     await test("static URL boundaries reject private routes, credentials, alternate origins and schemes", async page => {
@@ -257,16 +326,21 @@ async function main() {
       assert.ok(report.scripts.every(item => item.sources.length === 2));
     });
 
-    await test("collection and output caps remain bounded when script and resource lists are large", async page => {
+    await test("collection and output caps remain bounded when script, link and resource lists are large", async page => {
       await addInertScripts(page, Array.from({ length: 600 }, (_, index) =>
         `https://chatgpt.com/cdn/assets/dom-${index}.js`));
+      // Reuse one URL to exercise the link scan bound without making hundreds
+      // of distinct fixture network requests.
+      await addLinks(page, Array.from({ length: 600 }, () => ({ rel: "modulepreload", href: FIRST })));
       await setMockResources(page, Array.from({ length: 5000 }, (_, index) =>
         `https://chatgpt.com/cdn/assets/resource-${index}.js`));
       const report = await run(page);
       assert.equal(report.truncated, true);
       assert.ok(report.counts.scriptElements >= 600);
+      assert.equal(report.counts.linkElements, 600);
       assert.equal(report.counts.resourceEntries, 5000);
       assert.equal(report.counts.inspectedScriptElements, 512);
+      assert.equal(report.counts.inspectedLinkElements, 512);
       assert.equal(report.counts.inspectedResourceEntries, 4096);
       assert.equal(report.scripts.length, 256);
     });
@@ -292,6 +366,14 @@ async function main() {
       assert.equal(report.outcome, "completed");
       assert.deepEqual(report.sourceWarnings, ["resource-timing-unavailable"]);
       assert.deepEqual(report.scripts, [FIRST, SECOND].sort().map(url => ({ url, sources: ["script-element"] })));
+      await page.evaluate(message => {
+        Object.defineProperty(document, "querySelectorAll", { configurable: true,
+          value() { throw new Error(message); } });
+      }, PRIVATE.error);
+      report = await run(page);
+      assert.deepEqual(report.sourceWarnings, ["link-elements-unavailable", "resource-timing-unavailable"]);
+      assert.deepEqual(report.scripts, [FIRST, SECOND].sort().map(url => ({ url, sources: ["script-element"] })));
+      await page.evaluate(() => { delete document.querySelectorAll; });
       await setMockResources(page, [THIRD]);
       await page.evaluate(message => {
         Object.defineProperty(document, "scripts", { configurable: true,
@@ -315,7 +397,8 @@ async function main() {
         assert.equal(report.outcome, "rejected");
         assert.equal(report.reason, "wrong_page");
         assert.deepEqual(report.scripts, []);
-        assert.equal(report.counts.inspectedScriptElements + report.counts.inspectedResourceEntries, 0);
+        assert.equal(report.counts.inspectedScriptElements + report.counts.inspectedLinkElements +
+          report.counts.inspectedResourceEntries, 0);
       }
       await page.goto(`https://chatgpt.com/g/synthetic-project/c/${PRIVATE.route}`, { waitUntil: "load" });
       assert.equal((await run(page)).outcome, "completed");
@@ -332,7 +415,8 @@ async function main() {
       assert.equal(report.outcome, "rejected");
       assert.equal(report.reason, "not_top_frame");
       assert.deepEqual(report.scripts, []);
-      assert.equal(report.counts.inspectedScriptElements + report.counts.inspectedResourceEntries, 0);
+      assert.equal(report.counts.inspectedScriptElements + report.counts.inspectedLinkElements +
+        report.counts.inspectedResourceEntries, 0);
     });
 
     await test("repeated runs do not read content, mutate DOM/native methods, or start background work", async page => {

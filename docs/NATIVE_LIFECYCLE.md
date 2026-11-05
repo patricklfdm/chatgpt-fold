@@ -38,6 +38,23 @@
 
 结论：**将这条动作注册表线索降级为 UI 导航机制，下一步从实际页面的节点移除调用点反向定位。** 资源 URL、哈希及初始动作清单见 [native-entry-audit.json](research/native-entry-audit.json)。公开资源会随部署变化，哈希只说明此次读取的文本版本。
 
+### 实际页面文件清单的补充调查
+
+用户提供的 `0.2.0-assets.1` 报告含 14 个 script 元素、7 条资源记录，最终只有 4 个地址，且全部来自 Resource Timing。已读取这 4 份公开脚本文本：
+
+| 文件 | 已确认的主要职责 |
+| --- | --- |
+| `176045.ef0d1c4a2b.js` | 图片操作、图库加载和来源引用界面 |
+| `211607.8c083f91ce.js` | 账号／工作区切换及图标等素材 |
+| `405260.83650043e8.js` | 全局搜索数据、结果列表、弹窗和悬浮预览 |
+| `810969.83e87fa2aa.js` | 账户／Profile／帮助菜单 |
+
+这 4 份文本没有已识别的逐回答生命周期控制入口。搜索脚本中的 `virtualRef` 属于悬浮预览的锚点，不能作为对话虚拟化证据。此结论不扩展到它们的完整依赖图。
+
+同时确认了清单工具的采集遗漏：一次无 Cookie 的公开首页 HTML 读取中，9 个 script 元素都没有 `src`，而页面有 38 个 `modulepreload` 链接。在初始资源记录不再可见时，仅收集 script.src 和当前 Resource Timing 会漏掉这样的模块入口地址。因此 `assets.2` 增加读取 `link[rel=modulepreload]` 和脚本 preload 的 `href`，并补充内联／外部 script 计数；仍不读取内联脚本内容。公开首页的结构不证明用户会话页也保留了相同链接，需要新的实际页面清单确认。
+
+地址、文件哈希、源码标记位置和调查边界见 [user-renderer-assets-audit.json](research/user-renderer-assets-audit.json)。
+
 ## 单条回答观测工具
 
 文件：[experiments/native-lifecycle-probe.js](../experiments/native-lifecycle-probe.js)。在 DevTools 的页面 `top` Console 手动运行，不需要切换到扩展的隔离上下文。
@@ -95,11 +112,11 @@ copy(__CGF_NATIVE_REPORT_V1__);
 copy(__CGF_ASSET_REPORT_V1__);
 ```
 
-该脚本读取 `document.scripts` 的外部地址和当前 Resource Timing 记录。只接受精确 HTTPS origin 与静态路径白名单：`chatgpt.com/cdn/assets/`、`chatgpt.com/_next/static/` 和 `cdn.oaistatic.com/assets/`，并要求 JS/MJS 文件路径。输出去掉 query/hash，拒绝凭据、非默认端口及其他路径和来源；不读取内联脚本、正文、消息身份、页面标题或会话内容。
+该脚本读取 `document.scripts` 的外部地址、`modulepreload`／`preload as=script` 链接地址和当前 Resource Timing 记录。只接受精确 HTTPS origin 与静态路径白名单：`chatgpt.com/cdn/assets/`、`chatgpt.com/_next/static/` 和 `cdn.oaistatic.com/assets/`，并要求 JS/MJS 文件路径。输出去掉 query/hash，拒绝凭据、非默认端口及其他路径和来源；不读取内联脚本内容、正文、消息身份、页面标题或会话内容。
 
-最多检查最近 512 个 script 元素和最近 4096 个资源记录，过滤前单个候选最长 4096 字符，保留 256 个去重地址，每个输出地址最多 1024 字符；超出这些上限时标记 `truncated`。资源 API 不可用时仍输出已取得的 DOM 资源清单，并记录固定原因。脚本不会发请求、修改 DOM、添加计时器或观察器，也不会包装浏览器原生方法。它只把有界 JSON 字符串放在页面的 `__CGF_ASSET_REPORT_V1__` 变量中供复制。
+最多检查最近 512 个 script 元素、512 个候选 preload 链接和 4096 个资源记录，过滤前单个候选最长 4096 字符，保留 256 个去重地址，每个输出地址最多 1024 字符；超出这些上限时标记 `truncated`。`inspectedInlineScripts`／`inspectedExternalScripts` 区分已检查的 script 是否带有外部地址，只计数、不读取文本。某个来源不可用时仍输出其他来源结果，并记录固定原因。脚本不会发请求、修改 DOM、添加计时器或观察器，也不会包装浏览器原生方法。它只把有界 JSON 字符串放在页面的 `__CGF_ASSET_REPORT_V1__` 变量中供复制。
 
-**这是当前可见的资源清单，不是节点移除调用栈。** script 元素可能尚未执行，资源记录也可能已被清空或受缓冲区限制，因此 `truncated: false` 不代表覆盖了全部执行过的模块。`coverage: "current-records-only"` 和 `nativeEntry: "not-tested"` 会保留这一区别。取得地址后先分析实际脚本；若仍不足以定位控制条件，再使用下面的 DOM 断点。
+**这是当前可见的资源清单，不是节点移除调用栈。** script 元素可能尚未执行，preload 也不证明文件已执行，资源记录可能已被清空或受缓冲区限制，因此 `truncated: false` 不代表覆盖了全部执行过的模块。`coverage: "current-records-only"` 和 `nativeEntry: "not-tested"` 会保留这一区别。取得地址后先分析实际脚本；若仍不足以定位控制条件，再使用下面的 DOM 断点。
 
 ### 需要同步调用位置时：DOM 断点
 
@@ -142,3 +159,5 @@ npm run test:asset-inventory
 验证记录（2026-11-04，America/Los_Angeles）：在 Node.js 24.22.1、Chromium 153.0.8010.0 下运行 **12/12 组通过**；项目静态检查、探针语法检查和 `git diff --check` 通过。`manifest.json`、`src/`、`icons/` 与 0.1.7 基线一致。本次没有进行真实 ChatGPT 原生入口调用或内存收益测量。
 
 文件清单脚本 `0.2.0-assets.1` 在同一环境下 **7/7 组通过**：正常采集使用真实 Chromium 的脚本加载与 Resource Timing（请求全部由合成夹具拦截），隐私和容量边界使用明确标注的模拟资源记录。验证包括地址过滤、去重、各项上限、来源不可用、页面上下文，以及无 DOM／原生方法修改、无新增请求和异步监听。该结果不证明真实页面的资源覆盖率或原生入口可用。
+
+`0.2.0-assets.2` 在同一环境下 **9/9 组通过**：新增真实内联模块入口和 `modulepreload` 的场景，在主动清空测试页 Resource Timing 后仍取得入口地址；另验证预加载类型／大小写、相对地址、四种来源去重和无关 link 排除。原测试同时补充了 512 个 link 的上限、内联／外部计数与 link 来源失败处理。
