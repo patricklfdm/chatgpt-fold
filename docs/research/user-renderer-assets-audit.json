@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "auditedOn": "2026-11-04",
+  "timezone": "America/Los_Angeles",
+  "scope": "Four user-reported public JavaScript URLs, read as source text only; no execution or private API access.",
+  "inventoryInput": {
+    "probeVersion": "0.2.0-assets.1",
+    "scriptElements": 14,
+    "resourceEntries": 7,
+    "includedAssets": 4,
+    "allIncludedSources": "resource-timing",
+    "truncated": false
+  },
+  "assets": [
+    {
+      "url": "https://chatgpt.com/cdn/assets/async/176045.ef0d1c4a2b.js",
+      "bytes": 62977,
+      "sha256": "15f42319cea85ed7394e00b682c0d8014e352a911147c825ef2eec4b3d38bf45",
+      "roles": [
+        "Image clipboard conversion and context-menu actions (open, copy, download, add to composer).",
+        "Generated-image gallery lazy loader and MCP source-citation UI."
+      ],
+      "knownRendererMarkerCounts": {
+        "data-talvt-turn-state": 0,
+        "data-turn-key": 0,
+        "data-markdown-text-style": 0
+      },
+      "evidenceMarkers": [
+        {
+          "marker": "Could not read image for clipboard copy",
+          "characterOffset": 540
+        },
+        {
+          "marker": "Open image in new tab",
+          "characterOffset": 2384
+        },
+        {
+          "marker": "GeneratedImageGallery,{fallback",
+          "characterOffset": 12715
+        },
+        {
+          "marker": "Couldn't open source",
+          "characterOffset": 16371
+        }
+      ]
+    },
+    {
+      "url": "https://chatgpt.com/cdn/assets/async/211607.8c083f91ce.js",
+      "bytes": 101107,
+      "sha256": "ec191dbfb8cb54aded4d1e1ecd4de2703d177509dd5901307a37c76b37b8fa6f",
+      "roles": [
+        "Account/workspace switcher, add-account/logout/recovery dialogs and workspace labels.",
+        "Bundled icons, browser logos and pet sprite asset references."
+      ],
+      "knownRendererMarkerCounts": {
+        "data-talvt-turn-state": 0,
+        "data-turn-key": 0,
+        "data-markdown-text-style": 0
+      },
+      "evidenceMarkers": [
+        {
+          "marker": "workspace-switcher-trigger",
+          "characterOffset": 64732
+        },
+        {
+          "marker": "codex.profileDropdown.accountSwitcherLogout.title",
+          "characterOffset": 88098
+        },
+        {
+          "marker": "workspaceSwitcher.creationDateIdentifier",
+          "characterOffset": 100433
+        },
+        {
+          "marker": "assets/codex-spritesheet-v6",
+          "characterOffset": 62569
+        }
+      ]
+    },
+    {
+      "url": "https://chatgpt.com/cdn/assets/async/405260.83650043e8.js",
+      "bytes": 169137,
+      "sha256": "770c1416c05a03927e04c6b3d2844379045aa0a61cbe43428029afdf758738d0",
+      "roles": [
+        "Global search data, result lists, search dialog and hover preview, with supporting UI assets."
+      ],
+      "knownRendererMarkerCounts": {
+        "data-talvt-turn-state": 0,
+        "data-turn-key": 0,
+        "data-markdown-text-style": 0
+      },
+      "evidenceMarkers": [
+        {
+          "marker": "global-search-hover-preview",
+          "characterOffset": 84107
+        },
+        {
+          "marker": "chatgpt.global_search.modal.title",
+          "characterOffset": 95295
+        },
+        {
+          "marker": "virtualRef",
+          "characterOffset": 84011
+        },
+        {
+          "marker": "IntersectionObserver",
+          "characterOffset": 64801
+        }
+      ]
+    },
+    {
+      "url": "https://chatgpt.com/cdn/assets/async/810969.83e87fa2aa.js",
+      "bytes": 77453,
+      "sha256": "779a2dbb4a29baf550f8acf6a9424993e91c210d1334a8ebc6641c649eadc1bb",
+      "roles": [
+        "Profile/account dropdown, help menu and supporting icons."
+      ],
+      "knownRendererMarkerCounts": {
+        "data-talvt-turn-state": 0,
+        "data-turn-key": 0,
+        "data-markdown-text-style": 0
+      },
+      "evidenceMarkers": [
+        {
+          "marker": "codex.profileDropdown.previewEnvironments.toggle",
+          "characterOffset": 13973
+        },
+        {
+          "marker": "browserHelp.helpCenter",
+          "characterOffset": 38305
+        },
+        {
+          "marker": "accountSwitchReturnHref",
+          "characterOffset": 53417
+        }
+      ]
+    }
+  ],
+  "publicHomepageCheck": {
+    "url": "https://chatgpt.com/",
+    "scope": "Public server HTML fetched without cookies; not the user conversation DOM.",
+    "scriptElements": 9,
+    "scriptElementsWithSrc": 0,
+    "modulepreloadLinks": 38
+  },
+  "finding": "No identified per-answer lifecycle controller in these four asset texts. The search bundle virtualRef concerns a hover preview. This does not exclude controllers in their dependencies or the actual renderer.",
+  "inventoryGap": "assets.1 omitted link rel=modulepreload and link rel=preload as=script. Inline module scripts and missing historical Resource Timing entries can therefore leave primary bundle URLs undiscovered.",
+  "fix": "assets.2 includes both preload link sources and counts inspected inline/external scripts; keeps the same static URL allowlist and bounded read-only behavior.",
+  "nextEvidence": "An updated inventory from the actual conversation page. The public homepage result alone does not prove which preload links remain in the user DOM."
+}
