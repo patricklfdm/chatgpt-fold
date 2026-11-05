@@ -626,6 +626,187 @@ async function main() {
       assertFoldedFrames(replacement, "An anonymous replacement root was mistaken for the active reply");
     }, { ...DEFAULTS, keepRecent: 0 });
 
+    await test("a modern in-progress reply stays open after the previous tail unmounts", async page => {
+      await page.evaluate(async () => {
+        const pending = paintFixture.makePendingTurn("native-pending");
+        pending.setAttribute("data-talvt-turn-state", "in_progress");
+        document.getElementById("thread").append(pending);
+        paintFixture.addStop();
+        await new Promise(requestAnimationFrame);
+      });
+      const older = await page.evaluate(async () => {
+        document.getElementById("turn-latest").remove();
+        return paintFixture.frames("answer-middle");
+      });
+      assertFoldedFrames(older, "Losing the tail transferred native generation protection to history");
+      assertOperableFrames(older, "An unrelated historical answer became locked during generation");
+
+      const generated = await page.evaluate(async () => {
+        document.getElementById("turn-native-pending").append(
+          paintFixture.makeTurn("native-pending").querySelector("#answer-native-pending"));
+        return paintFixture.frames("answer-native-pending");
+      });
+      assertGeneratingFrames(generated, "The new native reply folded because its previous tail was absent");
+      const updated = await page.evaluate(async () => {
+        document.querySelector("#answer-native-pending p").firstChild.appendData(" More streamed text.");
+        return paintFixture.frames("answer-native-pending");
+      });
+      assertGeneratingFrames(updated, "Ordinary streamed text lost the native turn's protection");
+    });
+
+    await test("native generation survives a message ID change and replacement answer root", async page => {
+      const initial = await page.evaluate(async () => {
+        paintFixture.addStop();
+        const turn = paintFixture.makeTurn("native-target");
+        turn.setAttribute("data-talvt-turn-state", "in_progress");
+        document.getElementById("thread").append(turn);
+        return paintFixture.frames("answer-native-target");
+      });
+      assertGeneratingFrames(initial, "The initial native target did not acquire generation protection");
+
+      const changed = await page.evaluate(async () => {
+        const answer = document.getElementById("answer-native-target");
+        answer.setAttribute("data-chatgpt-search-message-ids", "message-native-final");
+        answer.setAttribute("data-chatgpt-selection-message-id", "message-native-final");
+        answer.querySelector("p").textContent = "The native final response is still being generated.";
+        return paintFixture.frames("answer-native-target");
+      });
+      assertGeneratingFrames(changed, "Changing the active message identity folded an in-progress reply");
+
+      const replaced = await page.evaluate(async () => {
+        const answer = paintFixture.makeTurn("native-target").querySelector("#answer-native-target");
+        answer.setAttribute("data-chatgpt-search-message-ids", "message-native-final");
+        answer.setAttribute("data-chatgpt-selection-message-id", "message-native-final");
+        document.getElementById("answer-native-target").replaceWith(answer);
+        return paintFixture.frames("answer-native-target");
+      });
+      assertGeneratingFrames(replaced, "Replacing the active root lost its native turn's generation protection");
+    });
+
+    await test("native generation overrides the expansion cap temporarily and releases on completion", async page => {
+      const initial = await page.evaluate(async () => {
+        document.getElementById("turn-latest").setAttribute("data-talvt-turn-state", "complete");
+        return paintFixture.frames("answer-latest");
+      });
+      assertFoldedFrames(initial, "An already registered completed reply ignored keepRecent zero");
+      const started = await page.evaluate(async () => {
+        document.getElementById("turn-latest").setAttribute("data-talvt-turn-state", "in_progress");
+        return paintFixture.frames("answer-latest");
+      });
+      assertGeneratingFrames(started, "A registered reply did not open when its native turn started generation");
+
+      const openedHistory = await page.evaluate(async () => {
+        document.querySelector("#answer-middle [data-cgf-control]").click();
+        const [current, history] = await Promise.all([
+          paintFixture.frames("answer-latest"), paintFixture.frames("answer-middle")
+        ]);
+        return { current, history };
+      });
+      assertGeneratingFrames(openedHistory.current, "Opening history at the cap folded the actively generating reply");
+      assertVisibleFrames(openedHistory.history, "Generation protection displaced a manual history choice");
+      assertOperableFrames(openedHistory.history, "A manually opened historical answer inherited generation protection");
+
+      const completed = await page.evaluate(async () => {
+        document.getElementById("turn-latest").setAttribute("data-talvt-turn-state", "complete");
+        const [current, history] = await Promise.all([
+          paintFixture.frames("answer-latest"), paintFixture.frames("answer-middle")
+        ]);
+        return { current, history };
+      });
+      assertFoldedFrames(completed.current, "Temporary native protection became a persistent open choice");
+      assertOperableFrames(completed.current, "Completion left the native generation control disabled");
+      assertVisibleFrames(completed.history, "Completing generation discarded a manual history choice");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("a native pending user turn leaves the previous completed reply operable", async page => {
+      const pending = await page.evaluate(async () => {
+        const turn = paintFixture.makePendingTurn("native-thinking");
+        turn.setAttribute("data-talvt-turn-state", "in_progress");
+        document.getElementById("thread").append(turn);
+        return paintFixture.frames("answer-latest");
+      });
+      assertVisibleFrames(pending, "A pending native turn changed the previous reply's expansion");
+      assertOperableFrames(pending, "A native thinking turn locked the previous completed reply");
+
+      const folded = await page.evaluate(async () => {
+        document.querySelector("#answer-latest [data-cgf-control]").click();
+        paintFixture.addStop();
+        return paintFixture.frames("answer-latest");
+      });
+      assertFoldedFrames(folded, "A pending native turn or composer Stop reopened the previous reply");
+      assertOperableFrames(folded, "Adding Stop to native thinking disabled the previous reply's control");
+      assert.equal(await page.locator("#turn-native-thinking [data-cgf-control]").count(), 0,
+        "A pending question acquired an assistant folding control");
+    });
+
+    await test("native turn state protects generation when the global Stop control disappears", async page => {
+      const initial = await page.evaluate(async () => {
+        paintFixture.addStop();
+        const turn = paintFixture.makeTurn("native-stop-gap");
+        turn.setAttribute("data-talvt-turn-state", "in_progress");
+        document.getElementById("thread").append(turn);
+        return paintFixture.frames("answer-native-stop-gap");
+      });
+      assertGeneratingFrames(initial, "The native reply failed to acquire its initial protection");
+      const stopGap = await page.evaluate(async () => {
+        document.getElementById("generation-stop").remove();
+        return paintFixture.frames("answer-native-stop-gap");
+      });
+      assertGeneratingFrames(stopGap, "Removing the global Stop control folded a native in-progress reply");
+
+      const finished = await page.evaluate(async () => {
+        document.getElementById("turn-native-stop-gap").setAttribute("data-talvt-turn-state", "complete");
+        return paintFixture.frames("answer-native-stop-gap");
+      });
+      assertFoldedFrames(finished, "The native reply remained permanently open after completion");
+      assertOperableFrames(finished, "The native reply retained stale generation protection after completion");
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("native-hidden in-progress markers cannot reopen historical content", async page => {
+      for (const mode of ["hidden", "aria-hidden", "display", "visibility", "presentation"]) {
+        const samples = await page.evaluate(async mode => {
+          document.getElementById("hidden-native-marker")?.remove();
+          const marker = document.createElement("div");
+          marker.id = "hidden-native-marker";
+          marker.setAttribute("data-talvt-turn-state", "in_progress");
+          if (mode === "hidden") marker.hidden = true;
+          if (mode === "aria-hidden") marker.setAttribute("aria-hidden", "true");
+          if (mode === "display") marker.style.display = "none";
+          if (mode === "visibility") marker.style.visibility = "hidden";
+          if (mode === "presentation") {
+            marker.setAttribute("data-app-action-timeline-scroll", "");
+            marker.setAttribute("role", "presentation");
+          }
+          document.getElementById("answer-old").append(marker);
+          return paintFixture.frames("answer-old");
+        }, mode);
+        assertFoldedFrames(samples, `A native ${mode} marker reopened historical content`);
+        assertOperableFrames(samples, `A native ${mode} marker disabled a historical control`);
+      }
+    });
+
+    await test("unknown and completed native turn states do not imply generation", async page => {
+      for (const state of ["", "complete", "pending", "streaming", "in-progress", "IN_PROGRESS", "other"]) {
+        const samples = await page.evaluate(async state => {
+          document.getElementById("turn-latest").setAttribute("data-talvt-turn-state", state);
+          return paintFixture.frames("answer-latest");
+        }, state);
+        assertFoldedFrames(samples, `Native turn state ${JSON.stringify(state)} reopened completed content`);
+        assertOperableFrames(samples, `Native turn state ${JSON.stringify(state)} claimed generation ownership`);
+      }
+    }, { ...DEFAULTS, keepRecent: 0 });
+
+    await test("an ambiguous in-progress ancestor cannot expand multiple answers", async page => {
+      const answers = await page.evaluate(async () => {
+        document.getElementById("thread").setAttribute("data-talvt-turn-state", "in_progress");
+        return Promise.all(["old", "middle", "latest"].map(key => paintFixture.frames(`answer-${key}`)));
+      });
+      for (const samples of answers) {
+        assertFoldedFrames(samples, "A broad native generation marker reopened the conversation history");
+        assertOperableFrames(samples, "A broad native generation marker locked unrelated answers");
+      }
+    }, { ...DEFAULTS, keepRecent: 0 });
+
     await test("a streaming marker inside a collapsed answer restores it before paint", async page => {
       const samples = await page.evaluate(async () => {
         document.querySelector('#answer-old [data-markdown-text-style="assistant-message"]').classList.add("result-streaming");
