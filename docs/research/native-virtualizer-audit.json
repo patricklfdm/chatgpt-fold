@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "auditVersion": "0.2.0-native-virtualizer.1",
+  "auditedOn": "2026-11-05",
+  "timezone": "UTC",
+  "scope": "Static read-only tracing of public first-party JavaScript text from the user-provided asset inventory; downloaded code was never executed.",
+  "input": {
+    "probeVersion": "0.2.0-assets.2",
+    "outcome": "completed",
+    "truncated": false,
+    "scriptElements": 14,
+    "inspectedInlineScripts": 13,
+    "inspectedExternalScripts": 1,
+    "linkElements": 81,
+    "resourceEntries": 182,
+    "includedAssets": 86,
+    "coverage": "current-records-only",
+    "nativeEntry": "not-tested"
+  },
+  "corpus": {
+    "scannedAssets": 86,
+    "downloadedAssets": 45,
+    "reusedAssets": 41,
+    "totalBytes": 25547728,
+    "focusedTraceAssets": 9,
+    "identityDigestSha256": "74b911b1d1dcdf15bb48ac999b43192f689dc6b17de36a6b04bc15a0307cf9b2",
+    "identityDigestFormat": "Sorted by URL; UTF-8 lines of URL + TAB + SHA256 + TAB + decimal byte length + LF, including final LF. The digest identifies the local 86-text corpus; focused source identities are recorded below.",
+    "cachedTextQualification": "Cached texts matched exact inventory static URLs and were rehashed; those 41 URLs were not refetched in this investigation."
+  },
+  "offsetUnit": "zero-based Unicode code-point offset in the original UTF-8-decoded source; not bytes, prettified line numbers, or JavaScript UTF-16 offsets",
+  "assets": [
+    {
+      "id": "S1",
+      "url": "https://chatgpt.com/cdn/assets/227195.8114536a59.js",
+      "bytes": 82073,
+      "sha256": "ca67f62174cb297f43e1e0222bb45f63d6352aee787fd50b2bafbc9630524be6",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "if6d",
+          "offset": 34306,
+          "anchor": "if6d:(function",
+          "finding": "React 轮次虚拟列表定义。"
+        },
+        {
+          "module": "if6d",
+          "offset": 35139,
+          "anchor": "function w(e)",
+          "finding": "按视口和高度布局计算连续范围。"
+        },
+        {
+          "module": "if6d",
+          "offset": 36972,
+          "anchor": "retainedTurnKeys:tn",
+          "finding": "合并参数和 store 中的额外保留 keys。"
+        },
+        {
+          "module": "if6d",
+          "offset": 41686,
+          "anchor": "eW.slice(tZ.startIndex,tZ.endIndex)",
+          "finding": "渲染集合先取连续范围。"
+        },
+        {
+          "module": "if6d",
+          "offset": 41772,
+          "anchor": "for(let e of new Set(tu))",
+          "finding": "追加当前布局中范围外要求保留的 entries。"
+        },
+        {
+          "module": "if6d",
+          "offset": 50831,
+          "anchor": "n.unobserve(t),tD.current.delete(t)",
+          "finding": "行 ref 清理时解除观察并删除局部节点引用。"
+        },
+        {
+          "module": "if6d",
+          "offset": 53751,
+          "anchor": "getEntriesInViewport:nn",
+          "finding": "onApiChange 的完整 API 对象开始。"
+        },
+        {
+          "module": "if6d",
+          "offset": 57715,
+          "anchor": "tg.scrollToDistanceFromBottomPx(a,\"instant\",\"user\")",
+          "finding": "导航路径会实际改变滚动位置。"
+        },
+        {
+          "module": "if6d",
+          "offset": 60965,
+          "anchor": "t1.map",
+          "finding": "仅为选定集合创建 React 行包装和 RowComponent。"
+        },
+        {
+          "module": "if6d",
+          "offset": 62758,
+          "anchor": "[&_[data-virtualized-turn-content]]:[content-visibility:visible]",
+          "finding": "挂载的行包装强制对应后代 CSS content visibility 为 visible。"
+        },
+        {
+          "module": "if6d",
+          "offset": 63026,
+          "anchor": "function B(e)",
+          "finding": "范围迟滞；旧范围已经包含新范围时予以保留。"
+        },
+        {
+          "module": "g3o5",
+          "offset": 76507,
+          "anchor": "g3o5:(function",
+          "finding": "额外保留的引用计数及各持有方自己的清理句柄。"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "url": "https://chatgpt.com/cdn/assets/443947.908173334b.js",
+      "bytes": 290242,
+      "sha256": "0a7accb832d8c203afd87fcc482fb659ca0d63a7aa878e44e665291179dfa641",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "V9xx",
+          "offset": 35301,
+          "anchor": "V9xx:(function",
+          "finding": "正常和共享 ChatGPT 会话页面模块。"
+        },
+        {
+          "module": "V9xx",
+          "offset": 70158,
+          "anchor": "n(\"if6d\")",
+          "finding": "会话页面导入虚拟列表模块。"
+        },
+        {
+          "module": "V9xx",
+          "offset": 70353,
+          "anchor": "function aM(",
+          "finding": "将 entry 转为实际轮次 renderer 的 props。"
+        },
+        {
+          "module": "V9xx",
+          "offset": 75493,
+          "anchor": "function aR(",
+          "finding": "列表 RowComponent 包装。"
+        },
+        {
+          "module": "V9xx",
+          "offset": 77153,
+          "anchor": "function aY(",
+          "finding": "传入 entries、RowComponent 和保留 keys 的列表调用者。"
+        },
+        {
+          "module": "V9xx",
+          "offset": 186124,
+          "anchor": "[th,tp]=(0,y.useState)(null)",
+          "finding": "原生列表 API 保存于私有 React state；随后向父 ref 提供 scrollToMessage。"
+        },
+        {
+          "module": "V9xx",
+          "offset": 199708,
+          "anchor": "onApiChange:tp",
+          "finding": "把列表 API 回调接入该私有 state。"
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "url": "https://chatgpt.com/cdn/assets/897257.d6fedcb095.js",
+      "bytes": 601681,
+      "sha256": "5951543bb2046114b2f87b31c70ff53ac56fdb6cd81a191002df04b12ee83883",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "CMzj",
+          "offset": 37496,
+          "anchor": "CMzj:(function",
+          "finding": "实际轮次 renderer 所在模块。"
+        },
+        {
+          "module": "CMzj",
+          "offset": 318682,
+          "anchor": "function cG(",
+          "finding": "轮次组件定义。"
+        },
+        {
+          "module": "CMzj",
+          "offset": 333831,
+          "anchor": "\"data-talvt-turn-state\":e2.status",
+          "finding": "把派生轮次状态写为 DOM 输出属性。"
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "url": "https://chatgpt.com/cdn/assets/417574.1c35786ad3.js",
+      "bytes": 58643,
+      "sha256": "30ef09213b8c1a0788b3df24f5fc0ec68fb8ca3d31160b7fd4824f0a2e25d9c0",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "AORd",
+          "offset": 28176,
+          "anchor": "AORd:(function",
+          "finding": "绘制与可见性观测模块。"
+        },
+        {
+          "module": "AORd",
+          "offset": 39759,
+          "anchor": "n.closest(\"[data-talvt-turn-state]\")",
+          "finding": "读取属性寻找观测宿主。"
+        },
+        {
+          "module": "AORd",
+          "offset": 42360,
+          "anchor": "a.dataset.talvtTurnState",
+          "finding": "读取轮次状态以分类观测。"
+        },
+        {
+          "module": "AORd",
+          "offset": 42447,
+          "anchor": "y.recordLastVisible",
+          "finding": "记录可见性结果。"
+        }
+      ]
+    },
+    {
+      "id": "S5",
+      "url": "https://chatgpt.com/cdn/assets/524643.03fb071249.js",
+      "bytes": 525869,
+      "sha256": "c4fa544bb05a7eaddcb617adfb4b2a50a96a8f2f51a686d92729a0f49b59c602",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "OF8q",
+          "offset": 163198,
+          "anchor": "OF8q:(function",
+          "finding": "内容包装器保留原始 children，并使用 CSS content visibility。"
+        }
+      ]
+    },
+    {
+      "id": "S6",
+      "url": "https://chatgpt.com/cdn/assets/899308.c4a465d78f.js",
+      "bytes": 53893,
+      "sha256": "120dc3642ca4a16a1f7a11cb5b3e688e8c374e4eb0211aeb29e7975db046111b",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "GRDa",
+          "offset": 23550,
+          "anchor": "GRDa:(function",
+          "finding": "普通布局包装，转发 children。"
+        },
+        {
+          "module": "r9ev",
+          "offset": 42002,
+          "anchor": "r9ev:(function",
+          "finding": "活动详情折叠组件。"
+        },
+        {
+          "module": "r9ev",
+          "offset": 42285,
+          "anchor": "unmountOnCollapse:A",
+          "finding": "可选卸载参数，默认 false；本地 state 控制展开。"
+        }
+      ]
+    },
+    {
+      "id": "S7",
+      "url": "https://chatgpt.com/cdn/assets/731863.0ff6d7d48b.js",
+      "bytes": 1977714,
+      "sha256": "a52a53108602257346d6301fd0f706c195683a50749252ebaa4ab139120d99dd",
+      "textSource": "reused-exact-url-cache",
+      "evidence": [
+        {
+          "module": "tnfs",
+          "offset": 1057830,
+          "anchor": "tnfs:(function",
+          "finding": "依据 expanded 条件输出子组件，经 presence 和退出动画处理。"
+        }
+      ]
+    },
+    {
+      "id": "S8",
+      "url": "https://chatgpt.com/cdn/assets/673108.fb5f4728ad.js",
+      "bytes": 2116443,
+      "sha256": "d9c71c5fc1b77bac9c53d5fe970ebb769d1f57829ffb2871dc6ad5084c684adb",
+      "textSource": "reused-exact-url-cache",
+      "evidence": [
+        {
+          "module": "OWtl",
+          "offset": 732607,
+          "anchor": "OWtl:(function",
+          "finding": "定义 AppScope；本次未验证 live provider 的生命周期。"
+        }
+      ]
+    },
+    {
+      "id": "S9",
+      "url": "https://chatgpt.com/cdn/assets/416239.33bf206532.js",
+      "bytes": 72455,
+      "sha256": "6453527858d8be518e8bfbe5a8c0227db714ba492cdda0fa6e0cfb5a924ffb87",
+      "textSource": "downloaded-this-investigation",
+      "evidence": [
+        {
+          "module": "nMdB",
+          "offset": 71485,
+          "anchor": "nMdB:(function",
+          "finding": "布局变化后的短时滚动锚定，不是窗口集合控制器。"
+        }
+      ]
+    }
+  ],
+  "verifiedCallChain": [
+    "V9xx.sJ",
+    "V9xx.s6",
+    "V9xx.aY",
+    "if6d.a",
+    "V9xx.aR",
+    "V9xx.aM",
+    "CMzj.cG"
+  ],
+  "nativeVirtualizer": {
+    "renderedSet": "entries in the current contiguous rendered range, union entries requested by positive retention keys and present in the current layout",
+    "rangeInputs": [
+      "viewport height",
+      "distance from bottom",
+      "measured or estimated entry heights",
+      "cumulative geometry",
+      "overscan"
+    ],
+    "usualOverscanCount": 2,
+    "hysteresis": "Keeps the previous rendered range when it already contains the newly required range; offscreen does not imply immediate unmount.",
+    "onApiChangeMethods": [
+      "getEntriesInViewport",
+      "getEntryGeometry",
+      "measureTurnBeforePaint",
+      "scrollToKey"
+    ],
+    "apiStorage": "Private React state in V9xx.s6; the parent receives a private scrollToMessage imperative handle.",
+    "perVisibleAnswerExclusionFound": false,
+    "retentionScope": "AppScope",
+    "retentionOwnership": "Each holder releases only its own positive reference count; removing a retention claim cannot exclude an entry still inside the rendered range.",
+    "scopeQualification": "No live provider identity or lifetime inspection; no claim of cross-tab sharing."
+  },
+  "inferenceToMeasure": {
+    "kind": "unmeasured-inference",
+    "hypothesis": "If folding reduces native measured row heights, more rows may fit in the rendered range and mount hidden answer subtrees. Last-turn minimum height, overscan, hysteresis and update timing can change this effect."
+  },
+  "integrationDecision": "Do not use navigation, retention release, or DOM state attributes as an in-place answer-unmount controller. Validate a renderer-level body mount boundary or measure fold/window interactions before production integration.",
+  "notTested": [
+    "live native controller acquisition or invocation",
+    "live per-answer body exclusion while its fold header remains visible",
+    "exit animation completion and actual unmount timing",
+    "native component local-state restoration",
+    "net memory benefit or garbage-collection timing",
+    "a fixed bound on total page memory",
+    "all deployments, unloaded modules, or alternate live render paths"
+  ],
+  "limitations": [
+    "Asset declaration or preload does not prove module execution.",
+    "Static child selection supports the native windowing mechanism but does not identify the active user-page call stack.",
+    "Current API findings are limited to the traced modules and call chain.",
+    "Only literal occurrences of the unmountOnCollapse property name were searched for direct call sites; indirect props or unloaded resources remain possible.",
+    "Conversation data, entries, numerical caches and external owners may remain after a row subtree is removed."
+  ],
+  "production": {
+    "extensionVersion": "0.1.7",
+    "runtimeChanged": false,
+    "nativeBridgeAdded": false,
+    "chatDataStored": false,
+    "thirdPartyBundleBodiesCommitted": false
+  }
+}
