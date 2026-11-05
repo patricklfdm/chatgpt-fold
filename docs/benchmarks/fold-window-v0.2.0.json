@@ -1,0 +1,1713 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "browser": "153.0.8010.0",
+  "node": "v24.22.1",
+  "sourceSha256": {
+    "manifest.json": "1c4e481f3a855ef46bc82ae398b87d14762a9dda76f726eb6013a2b14525ad7a",
+    "src/shared.js": "0f1a8df4a63fd95d8bd74609589a3d9228c935f161248c15ffee15822816dfb6",
+    "src/adapter.js": "c5a191558d7d45fef1f24cc32c88321de15b742e3a0d9495c4fd52a858a9058d",
+    "src/content.js": "ff5bd1ad2b17635bdc5bf66f860592faf066a296a26bf9a6e0cc5867645780c5",
+    "src/content.css": "d0e01610171a75d5e57121cc2e93ed6516b7fe6e8572ebb18d78f0bde75ded28",
+    "tests/fixtures/fold-window.js": "352601a99d1b947e857a68c4cf91fcf3976cb6849deea1257b7f4da2f776c0aa",
+    "tests/fold-window-probe.cjs": "0344f50705feec75de5865ea02bd99119a2c1cfe90252b75c056407348927794",
+    "experiments/fold-window-probe.js": "30d99efaf05651c69154e7a516795954bdca5d998bca399605f61cd22978033a"
+  },
+  "scope": "Synthetic Chromium pages only; no account or live ChatGPT access; no private renderer or retention invocation.",
+  "measurement": {
+    "extensionExecution": "real CDP isolated world with mocked chrome APIs; main-world probe has no controller access",
+    "tabTotalMemory": "not-measured",
+    "gc": "fixture comparisons record metrics before and after two explicit CDP collections; probe itself never forces GC",
+    "nativeModel": "independent measured-height virtual list with optional containing-range hysteresis; not ChatGPT's production renderer",
+    "memoryMeaning": "CDP JS/embedder metrics and DOM counters are partial measurements, cannot be summed into RSS or total tab memory"
+  },
+  "fixtures": [
+    {
+      "mode": "measured-height-window",
+      "samples": [
+        {
+          "phase": "A_folded",
+          "counts": {
+            "mountedAnswers": 12,
+            "connectedElements": 1021,
+            "extensionElements": 48,
+            "nonControlElements": 973,
+            "intendedCollapsed": 12,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "measured-height-window",
+              "hysteresis": false,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 12,
+              "range": {
+                "start": 46,
+                "end": 58
+              },
+              "measuredHeightMin": 85.5,
+              "measuredHeightMax": 740,
+              "scrollTop": 34788,
+              "scrollHeight": 82374,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 7,
+              "createdCount": 12,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 12,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2747332,
+              "JSHeapTotalSize": 5562368,
+              "LayoutObjects": 1804,
+              "Documents": 4,
+              "Nodes": 1813,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 4,
+              "nodes": 1813,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2747332,
+              "totalSize": 5562368,
+              "embedderHeapUsedSize": 3817368,
+              "backingStorageSize": 14898
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 1920632,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 143,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 1920632,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 724800,
+              "backingStorageSize": 1729
+            }
+          }
+        },
+        {
+          "phase": "B_css_bypassed",
+          "counts": {
+            "mountedAnswers": 5,
+            "connectedElements": 433,
+            "extensionElements": 20,
+            "nonControlElements": 413,
+            "intendedCollapsed": 5,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "measured-height-window",
+              "hysteresis": false,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 5,
+              "range": {
+                "start": 46,
+                "end": 51
+              },
+              "measuredHeightMin": 740,
+              "measuredHeightMax": 847.75,
+              "scrollTop": 36313,
+              "scrollHeight": 91521,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 9,
+              "createdCount": 12,
+              "removedCount": 7
+            }
+          },
+          "controller": {
+            "records": 5,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2052376,
+              "JSHeapTotalSize": 3203072,
+              "LayoutObjects": 1799,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2052376,
+              "totalSize": 3203072,
+              "embedderHeapUsedSize": 2746744,
+              "backingStorageSize": 5860
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 1930892,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 721,
+              "Documents": 1,
+              "Nodes": 765,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 765,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 1930892,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 960880,
+              "backingStorageSize": 3964
+            }
+          }
+        },
+        {
+          "phase": "A_restored",
+          "counts": {
+            "mountedAnswers": 12,
+            "connectedElements": 1021,
+            "extensionElements": 48,
+            "nonControlElements": 973,
+            "intendedCollapsed": 12,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "measured-height-window",
+              "hysteresis": false,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 12,
+              "range": {
+                "start": 46,
+                "end": 58
+              },
+              "measuredHeightMin": 85.5,
+              "measuredHeightMax": 740,
+              "scrollTop": 34789,
+              "scrollHeight": 82374,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 13,
+              "createdCount": 19,
+              "removedCount": 7
+            }
+          },
+          "controller": {
+            "records": 12,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2339244,
+              "JSHeapTotalSize": 3465216,
+              "LayoutObjects": 1799,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2339244,
+              "totalSize": 3465216,
+              "embedderHeapUsedSize": 2938688,
+              "backingStorageSize": 10977
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 1971944,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 143,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 1971944,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 746256,
+              "backingStorageSize": 3964
+            }
+          }
+        }
+      ],
+      "fixtureOnly": true,
+      "liveChatGPT": false,
+      "inference": "height-driven overmounting is reproducible in this synthetic model"
+    },
+    {
+      "mode": "window-with-hysteresis",
+      "samples": [
+        {
+          "phase": "A_folded",
+          "counts": {
+            "mountedAnswers": 12,
+            "connectedElements": 1021,
+            "extensionElements": 48,
+            "nonControlElements": 973,
+            "intendedCollapsed": 12,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "measured-height-window",
+              "hysteresis": true,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 12,
+              "range": {
+                "start": 46,
+                "end": 58
+              },
+              "measuredHeightMin": 85.5,
+              "measuredHeightMax": 740,
+              "scrollTop": 34788,
+              "scrollHeight": 82374,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 7,
+              "createdCount": 12,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 12,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2847144,
+              "JSHeapTotalSize": 5562368,
+              "LayoutObjects": 1804,
+              "Documents": 4,
+              "Nodes": 1813,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 4,
+              "nodes": 1813,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2847144,
+              "totalSize": 5562368,
+              "embedderHeapUsedSize": 3829440,
+              "backingStorageSize": 14898
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 1924820,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 143,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 1924820,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 724800,
+              "backingStorageSize": 1729
+            }
+          }
+        },
+        {
+          "phase": "B_css_bypassed",
+          "counts": {
+            "mountedAnswers": 12,
+            "connectedElements": 1021,
+            "extensionElements": 48,
+            "nonControlElements": 973,
+            "intendedCollapsed": 12,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "measured-height-window",
+              "hysteresis": true,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 12,
+              "range": {
+                "start": 46,
+                "end": 58
+              },
+              "measuredHeightMin": 740,
+              "measuredHeightMax": 847.75,
+              "scrollTop": 36313,
+              "scrollHeight": 91521,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 9,
+              "createdCount": 12,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 12,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2086588,
+              "JSHeapTotalSize": 3203072,
+              "LayoutObjects": 1799,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2086588,
+              "totalSize": 3203072,
+              "embedderHeapUsedSize": 2753688,
+              "backingStorageSize": 6811
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 1942192,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 1715,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 1942192,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 1732752,
+              "backingStorageSize": 2539
+            }
+          }
+        },
+        {
+          "phase": "A_restored",
+          "counts": {
+            "mountedAnswers": 12,
+            "connectedElements": 1021,
+            "extensionElements": 48,
+            "nonControlElements": 973,
+            "intendedCollapsed": 12,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "measured-height-window",
+              "hysteresis": true,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 12,
+              "range": {
+                "start": 46,
+                "end": 58
+              },
+              "measuredHeightMin": 85.5,
+              "measuredHeightMax": 740,
+              "scrollTop": 34789,
+              "scrollHeight": 82374,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 11,
+              "createdCount": 12,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 12,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2095436,
+              "JSHeapTotalSize": 3203072,
+              "LayoutObjects": 1799,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2095436,
+              "totalSize": 3203072,
+              "embedderHeapUsedSize": 2342552,
+              "backingStorageSize": 6782
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 1953180,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 143,
+              "Documents": 1,
+              "Nodes": 1801,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 1801,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 1953180,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 726776,
+              "backingStorageSize": 2539
+            }
+          }
+        }
+      ],
+      "fixtureOnly": true,
+      "liveChatGPT": false,
+      "inference": "a previous rendered superset can mask the mounted-count change"
+    },
+    {
+      "mode": "all-rows-mounted",
+      "samples": [
+        {
+          "phase": "A_folded",
+          "counts": {
+            "mountedAnswers": 120,
+            "connectedElements": 10093,
+            "extensionElements": 480,
+            "nonControlElements": 9613,
+            "intendedCollapsed": 120,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "all-rows-mounted",
+              "hysteresis": false,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 120,
+              "range": {
+                "start": 0,
+                "end": 120
+              },
+              "measuredHeightMin": 85.5,
+              "measuredHeightMax": 85.5,
+              "scrollTop": 4681,
+              "scrollHeight": 11688,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 6,
+              "createdCount": 120,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 120,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 3136868,
+              "JSHeapTotalSize": 7135232,
+              "LayoutObjects": 17896,
+              "Documents": 4,
+              "Nodes": 17797,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 4,
+              "nodes": 17797,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 3136868,
+              "totalSize": 7135232,
+              "embedderHeapUsedSize": 26896088,
+              "backingStorageSize": 95587
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 2031872,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 1331,
+              "Documents": 1,
+              "Nodes": 17785,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 17785,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2031872,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 3621016,
+              "backingStorageSize": 1711
+            }
+          }
+        },
+        {
+          "phase": "B_css_bypassed",
+          "counts": {
+            "mountedAnswers": 120,
+            "connectedElements": 10093,
+            "extensionElements": 480,
+            "nonControlElements": 9613,
+            "intendedCollapsed": 120,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "all-rows-mounted",
+              "hysteresis": false,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 120,
+              "range": {
+                "start": 0,
+                "end": 120
+              },
+              "measuredHeightMin": 847.75,
+              "measuredHeightMax": 847.75,
+              "scrollTop": 41269,
+              "scrollHeight": 103158,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 8,
+              "createdCount": 120,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 120,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2770676,
+              "JSHeapTotalSize": 4251648,
+              "LayoutObjects": 17771,
+              "Documents": 1,
+              "Nodes": 17785,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 17785,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2770676,
+              "totalSize": 4251648,
+              "embedderHeapUsedSize": 16008128,
+              "backingStorageSize": 43631
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 2036768,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 17051,
+              "Documents": 1,
+              "Nodes": 17785,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 17785,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2036768,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 13820776,
+              "backingStorageSize": 2521
+            }
+          }
+        },
+        {
+          "phase": "A_restored",
+          "counts": {
+            "mountedAnswers": 120,
+            "connectedElements": 10093,
+            "extensionElements": 480,
+            "nonControlElements": 9613,
+            "intendedCollapsed": 120,
+            "intendedExpanded": 0,
+            "fixture": {
+              "mode": "all-rows-mounted",
+              "hysteresis": false,
+              "count": 120,
+              "overscan": 2,
+              "mounted": 120,
+              "range": {
+                "start": 0,
+                "end": 120
+              },
+              "measuredHeightMin": 85.5,
+              "measuredHeightMax": 85.5,
+              "scrollTop": 4681,
+              "scrollHeight": 11688,
+              "viewportHeight": 720,
+              "viewportTop": 20,
+              "layoutCount": 10,
+              "createdCount": 120,
+              "removedCount": 0
+            }
+          },
+          "controller": {
+            "records": 120,
+            "disconnectedRecords": 0,
+            "openIntents": 0,
+            "active": true,
+            "paused": false
+          },
+          "beforeGC": {
+            "performance": {
+              "JSHeapUsedSize": 2780504,
+              "JSHeapTotalSize": 3727360,
+              "LayoutObjects": 17891,
+              "Documents": 1,
+              "Nodes": 17785,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 17785,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2780504,
+              "totalSize": 3727360,
+              "embedderHeapUsedSize": 16309696,
+              "backingStorageSize": 43602
+            }
+          },
+          "afterGC": {
+            "performance": {
+              "JSHeapUsedSize": 2059648,
+              "JSHeapTotalSize": 2940928,
+              "LayoutObjects": 1331,
+              "Documents": 1,
+              "Nodes": 17785,
+              "JSEventListeners": 25
+            },
+            "dom": {
+              "documents": 1,
+              "nodes": 17785,
+              "jsEventListeners": 25
+            },
+            "runtimeHeap": {
+              "available": true,
+              "usedSize": 2059648,
+              "totalSize": 2940928,
+              "embedderHeapUsedSize": 3746248,
+              "backingStorageSize": 2521
+            }
+          }
+        }
+      ],
+      "fixtureOnly": true,
+      "liveChatGPT": false,
+      "inference": "CSS hiding alone leaves the fully mounted fixture DOM connected"
+    }
+  ],
+  "tests": [
+    {
+      "name": "full original-timing A/B/A keeps the same semantic anchor and restores the CSS gate",
+      "passed": true,
+      "timing": "original",
+      "report": {
+        "schemaVersion": 1,
+        "probeVersion": "0.2.0-fold-window.1",
+        "outcome": "completed",
+        "reason": null,
+        "browser": "Chrome/153.0.8010.0",
+        "extensionVersion": "not-observable-from-page-world",
+        "limits": {
+          "durationMs": 90000,
+          "elements": 50000,
+          "nativeElements": 30000,
+          "answers": 64,
+          "turns": 128,
+          "identityLength": 192,
+          "ancestorDepth": 64,
+          "phases": 3,
+          "samplesPerPhase": 3
+        },
+        "timing": {
+          "settleMs": 6000,
+          "sampleMs": 1500,
+          "pollMs": 250,
+          "anchorWaitMs": 2500
+        },
+        "phases": [
+          {
+            "phase": "A_folded",
+            "condition": "fold-css-enabled",
+            "snapshots": [
+              {
+                "elapsedMs": 6035,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1,
+                  "errorPx": 0,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34788,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 7536,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1,
+                  "errorPx": 0,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34788,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 9037,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1,
+                  "errorPx": 0,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34788,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              }
+            ],
+            "countsStable": true,
+            "geometryStable": true,
+            "medianCounts": {
+              "nativeTurnWrappers": 12,
+              "registeredAnswers": 12,
+              "nativeTurnElements": 960,
+              "assistantBodies": 12
+            }
+          },
+          {
+            "phase": "B_css_bypassed",
+            "condition": "fold-css-bypassed",
+            "snapshots": [
+              {
+                "elapsedMs": 15063,
+                "counts": {
+                  "documentElements": 433,
+                  "scopeElements": 421,
+                  "nativeTurnElements": 400,
+                  "extensionElements": 20,
+                  "nativeTurnWrappers": 5,
+                  "registeredAnswers": 5,
+                  "assistantBodies": 5,
+                  "markedCollapsedAnswers": 5,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1.5,
+                  "errorPx": -0.5,
+                  "turnHeightPx": 848,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": true,
+                  "contentDisplayHidden": false
+                },
+                "scroll": {
+                  "top": 36313,
+                  "height": 91521,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 16564,
+                "counts": {
+                  "documentElements": 433,
+                  "scopeElements": 421,
+                  "nativeTurnElements": 400,
+                  "extensionElements": 20,
+                  "nativeTurnWrappers": 5,
+                  "registeredAnswers": 5,
+                  "assistantBodies": 5,
+                  "markedCollapsedAnswers": 5,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1.5,
+                  "errorPx": -0.5,
+                  "turnHeightPx": 848,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": true,
+                  "contentDisplayHidden": false
+                },
+                "scroll": {
+                  "top": 36313,
+                  "height": 91521,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 18065,
+                "counts": {
+                  "documentElements": 433,
+                  "scopeElements": 421,
+                  "nativeTurnElements": 400,
+                  "extensionElements": 20,
+                  "nativeTurnWrappers": 5,
+                  "registeredAnswers": 5,
+                  "assistantBodies": 5,
+                  "markedCollapsedAnswers": 5,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1.5,
+                  "errorPx": -0.5,
+                  "turnHeightPx": 848,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": true,
+                  "contentDisplayHidden": false
+                },
+                "scroll": {
+                  "top": 36313,
+                  "height": 91521,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              }
+            ],
+            "countsStable": true,
+            "geometryStable": true,
+            "medianCounts": {
+              "nativeTurnWrappers": 5,
+              "registeredAnswers": 5,
+              "nativeTurnElements": 400,
+              "assistantBodies": 5
+            }
+          },
+          {
+            "phase": "A_restored",
+            "condition": "fold-css-enabled",
+            "snapshots": [
+              {
+                "elapsedMs": 24095,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -2,
+                  "errorPx": -1,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34789,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 25596,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -2,
+                  "errorPx": -1,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34789,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 27097,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -2,
+                  "errorPx": -1,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34789,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              }
+            ],
+            "countsStable": true,
+            "geometryStable": true,
+            "medianCounts": {
+              "nativeTurnWrappers": 12,
+              "registeredAnswers": 12,
+              "nativeTurnElements": 960,
+              "assistantBodies": 12
+            }
+          }
+        ],
+        "measurement": {
+          "comparison": "within-page-css-gate-switch",
+          "extensionController": "running-in-both-conditions",
+          "tabTotalMemory": "not-measured",
+          "jsHeap": "performance.memory estimate only; incomplete and possibly stale",
+          "gc": "not-forced",
+          "netMemoryBenefit": "not-established",
+          "nativeController": "not-called",
+          "data": "counts and geometry only; no text, identities, title or URL in report",
+          "caveat": "Same-page switch response; native range hysteresis and cache history are not reset."
+        },
+        "cleanup": {
+          "gate": "already-original",
+          "scroll": "anchor-aligned-at-cleanup",
+          "resourcesReleased": true
+        },
+        "events": {
+          "mutationBatches": 6,
+          "alignments": 0
+        },
+        "summary": {
+          "allPhasesComplete": true,
+          "comparisonValid": true,
+          "countsStableAll": true,
+          "geometryStableAll": true,
+          "foldedCountsRecovered": true,
+          "restoredFoldedMinusBypassed": {
+            "nativeTurnWrappers": 7,
+            "registeredAnswers": 7,
+            "nativeTurnElements": 560,
+            "assistantBodies": 7
+          },
+          "netMemoryBenefit": "not-established"
+        }
+      }
+    },
+    {
+      "name": "strong manual-open intent survives native unmounts during the CSS-only comparison",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "native containing-range hysteresis is observed without claiming a memory verdict",
+      "passed": true,
+      "timing": "accelerated",
+      "report": {
+        "schemaVersion": 1,
+        "probeVersion": "0.2.0-fold-window.1",
+        "outcome": "completed",
+        "reason": null,
+        "browser": "Chrome/153.0.8010.0",
+        "extensionVersion": "not-observable-from-page-world",
+        "limits": {
+          "durationMs": 90000,
+          "elements": 50000,
+          "nativeElements": 30000,
+          "answers": 64,
+          "turns": 128,
+          "identityLength": 192,
+          "ancestorDepth": 64,
+          "phases": 3,
+          "samplesPerPhase": 3
+        },
+        "timing": {
+          "settleMs": 600,
+          "sampleMs": 120,
+          "pollMs": 40,
+          "anchorWaitMs": 1800
+        },
+        "phases": [
+          {
+            "phase": "A_folded",
+            "condition": "fold-css-enabled",
+            "snapshots": [
+              {
+                "elapsedMs": 620,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1,
+                  "errorPx": 0,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34788,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 741,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1,
+                  "errorPx": 0,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34788,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 863,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1,
+                  "errorPx": 0,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34788,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              }
+            ],
+            "countsStable": true,
+            "geometryStable": true,
+            "medianCounts": {
+              "nativeTurnWrappers": 12,
+              "registeredAnswers": 12,
+              "nativeTurnElements": 960,
+              "assistantBodies": 12
+            }
+          },
+          {
+            "phase": "B_css_bypassed",
+            "condition": "fold-css-bypassed",
+            "snapshots": [
+              {
+                "elapsedMs": 1486,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1.5,
+                  "errorPx": -0.5,
+                  "turnHeightPx": 848,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": true,
+                  "contentDisplayHidden": false
+                },
+                "scroll": {
+                  "top": 36313,
+                  "height": 91521,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 1608,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1.5,
+                  "errorPx": -0.5,
+                  "turnHeightPx": 848,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": true,
+                  "contentDisplayHidden": false
+                },
+                "scroll": {
+                  "top": 36313,
+                  "height": 91521,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 1729,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -1.5,
+                  "errorPx": -0.5,
+                  "turnHeightPx": 848,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": true,
+                  "contentDisplayHidden": false
+                },
+                "scroll": {
+                  "top": 36313,
+                  "height": 91521,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              }
+            ],
+            "countsStable": true,
+            "geometryStable": true,
+            "medianCounts": {
+              "nativeTurnWrappers": 12,
+              "registeredAnswers": 12,
+              "nativeTurnElements": 960,
+              "assistantBodies": 12
+            }
+          },
+          {
+            "phase": "A_restored",
+            "condition": "fold-css-enabled",
+            "snapshots": [
+              {
+                "elapsedMs": 2348,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -2,
+                  "errorPx": -1,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34789,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 2469,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -2,
+                  "errorPx": -1,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34789,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              },
+              {
+                "elapsedMs": 2590,
+                "counts": {
+                  "documentElements": 1021,
+                  "scopeElements": 1009,
+                  "nativeTurnElements": 960,
+                  "extensionElements": 48,
+                  "nativeTurnWrappers": 12,
+                  "registeredAnswers": 12,
+                  "assistantBodies": 12,
+                  "markedCollapsedAnswers": 12,
+                  "markedExpandedAnswers": 0
+                },
+                "anchor": {
+                  "matched": true,
+                  "offsetPx": -2,
+                  "errorPx": -1,
+                  "turnHeightPx": 86,
+                  "intendedCollapsed": true,
+                  "bodyHasLayoutBox": false,
+                  "contentDisplayHidden": true
+                },
+                "scroll": {
+                  "top": 34789,
+                  "height": 82374,
+                  "viewport": 720
+                },
+                "jsHeapEstimate": {
+                  "usedBytes": 10000000,
+                  "allocatedBytes": 10000000,
+                  "limitBytes": 3760000000
+                }
+              }
+            ],
+            "countsStable": true,
+            "geometryStable": true,
+            "medianCounts": {
+              "nativeTurnWrappers": 12,
+              "registeredAnswers": 12,
+              "nativeTurnElements": 960,
+              "assistantBodies": 12
+            }
+          }
+        ],
+        "measurement": {
+          "comparison": "within-page-css-gate-switch",
+          "extensionController": "running-in-both-conditions",
+          "tabTotalMemory": "not-measured",
+          "jsHeap": "performance.memory estimate only; incomplete and possibly stale",
+          "gc": "not-forced",
+          "netMemoryBenefit": "not-established",
+          "nativeController": "not-called",
+          "data": "counts and geometry only; no text, identities, title or URL in report",
+          "caveat": "Same-page switch response; native range hysteresis and cache history are not reset."
+        },
+        "cleanup": {
+          "gate": "already-original",
+          "scroll": "anchor-aligned-at-cleanup",
+          "resourcesReleased": true
+        },
+        "events": {
+          "mutationBatches": 2,
+          "alignments": 0
+        },
+        "summary": {
+          "allPhasesComplete": true,
+          "comparisonValid": true,
+          "countsStableAll": true,
+          "geometryStableAll": true,
+          "foldedCountsRecovered": true,
+          "restoredFoldedMinusBypassed": {
+            "nativeTurnWrappers": 0,
+            "registeredAnswers": 0,
+            "nativeTurnElements": 0,
+            "assistantBodies": 0
+          },
+          "netMemoryBenefit": "not-established"
+        }
+      }
+    },
+    {
+      "name": "fixed DOM and unavailable heap estimates stay distinct from an unmount result",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "external extension pause during bypass is respected and never re-enabled by cleanup",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "new generation during bypass aborts and restores the owned CSS gate",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "trusted wheel input aborts without fighting the user's new scroll position",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "route changes abort rather than aligning a different conversation",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "body replacement aborts and releases references to the old measurement context",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "hidden-page transition aborts (explicitly mocked visibility state)",
+      "passed": true,
+      "timing": "accelerated",
+      "visibilityState": "explicit test override; not an OS backgrounding test"
+    },
+    {
+      "name": "viewport resizing invalidates cross-phase geometry",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "answer edits are not accepted as geometry-only samples",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "external fold-policy changes invalidate the comparison without resetting private intentions",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "transient class generation signal between polling ticks aborts",
+      "passed": true,
+      "timing": "accelerated",
+      "signal": "set and cleared synchronously before MutationObserver delivery"
+    },
+    {
+      "name": "transient aria-busy generation signal between polling ticks aborts",
+      "passed": true,
+      "timing": "accelerated",
+      "signal": "set and cleared synchronously before MutationObserver delivery"
+    },
+    {
+      "name": "a gate marker without effective fold CSS is rejected before sampling",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "deadline during bypass releases all resources and restores the owned gate",
+      "passed": true,
+      "timing": "accelerated plus a 1300 ms test-only deadline"
+    },
+    {
+      "name": "manual stop, duplicate start, and repeated run clean up without a stale prior report",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "ambiguous duplicate native turn keys are rejected before changing display",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "too many registered answers reject before any CSS bypass",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "excessive connected DOM rejects before any CSS bypass",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "missing active extension rejects without touching the gate",
+      "passed": true,
+      "timing": "accelerated"
+    },
+    {
+      "name": "wrong origin is rejected even with extension-like synthetic markup",
+      "passed": true,
+      "timing": "accelerated"
+    }
+  ],
+  "testTiming": {
+    "originalTiming": "Repository source, including the full 6 s settle / 1.5 s sample delays",
+    "acceleratedTiming": "In-memory test copy only: 600 ms settle, 120 ms sample, 40 ms poll, 1800 ms anchor wait",
+    "acceleratedSourceSha256": "f5a8099705f97fdafdb426998bf27bd4c29c1eaa8bd27b2e424428dcc50e9b67"
+  }
+}
