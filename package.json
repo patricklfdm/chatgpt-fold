@@ -19,6 +19,8 @@
     "test:body-host": "node tests/assistant-body-host.cjs",
     "study:memory": "node experiments/long-session-memory.cjs",
     "test:long-session": "node --test tests/long-session-stats.cjs tests/long-session-cli.cjs",
+    "study:compare": "node experiments/fixed-conversation-memory.cjs",
+    "test:comparison": "node --test tests/fixed-conversation-stats.cjs tests/fixed-conversation-cli.cjs",
     "bench:memory": "node tests/memory-benchmark.cjs"
   }
 }

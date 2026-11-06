@@ -3,9 +3,11 @@ on:
   pull_request:
     paths:
       - 'experiments/long-session-memory.cjs'
+      - 'experiments/fixed-conversation-memory.cjs'
       - 'experiments/process-memory/**'
       - 'tests/windows-process-memory.cjs'
       - 'tests/long-session-*.cjs'
+      - 'tests/fixed-conversation-*.cjs'
       - '.github/workflows/windows-memory-study.yml'
 permissions:
   contents: read
@@ -18,6 +20,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Check sampling protocol and terminal orchestration
-        run: node --test tests/long-session-stats.cjs tests/long-session-cli.cjs
+        run: node --test tests/long-session-stats.cjs tests/long-session-cli.cjs tests/fixed-conversation-stats.cjs tests/fixed-conversation-cli.cjs
       - name: Read Windows process counters and detect exit
         run: node tests/windows-process-memory.cjs
