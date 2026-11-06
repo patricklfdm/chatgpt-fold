@@ -245,7 +245,10 @@ function installProbeAudit() {
   for (const name of ["MutationObserver", "ResizeObserver", "IntersectionObserver"]) {
     const NativeObserver = globalThis[name];
     globalThis[name] = class extends NativeObserver {
-      observe(...args) { super.observe(...args); observers.add(this); }
+      observe(...args) {
+        assertNoTextHistory(name, args[1]);
+        super.observe(...args); observers.add(this);
+      }
       disconnect() { super.disconnect(); observers.delete(this); }
     };
   }
@@ -261,6 +264,17 @@ function installProbeAudit() {
     if (index !== -1) listeners.splice(index, 1);
   };
   let contentReads = 0;
+  function assertNoTextHistory(name, options) {
+    if (name === "MutationObserver" && options?.characterDataOldValue) {
+      contentReads += 1; throw new Error("The probe requested private text history");
+    }
+  }
+  for (const [proto, key] of [[CharacterData.prototype, "data"], [CharacterData.prototype, "length"], [Node.prototype, "nodeValue"]]) {
+    const original = Object.getOwnPropertyDescriptor(proto, key);
+    Object.defineProperty(proto, key, { ...original, get() {
+      contentReads += 1; throw new Error("The probe tried to read raw character data or its length");
+    } });
+  }
   const descriptor = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
   Object.defineProperty(Node.prototype, "textContent", { ...descriptor, get() {
     contentReads += 1; throw new Error("The probe tried to read chat text");
@@ -278,7 +292,7 @@ function checkReport(raw) {
   assert.ok(!raw.includes("SYNTHETIC_PRIVATE_"), "The probe report exported synthetic chat, identity, title, or route data");
   const report = JSON.parse(raw);
   assert.equal(report.schemaVersion, 1);
-  assert.equal(report.probeVersion, "0.2.0-fold-window.1");
+  assert.equal(report.probeVersion, "0.2.0-fold-window.2");
   assert.ok(["completed", "aborted", "rejected", "stopped"].includes(report.outcome));
   assert.ok(Array.isArray(report.phases));
   assert.ok(report.phases.length <= 3);
@@ -321,9 +335,17 @@ async function finished(run, timeout = 95000) {
 function acceleratedSource(source) {
   // Only this in-memory test copy is shortened. The full-cycle regression uses
   // the exact source bytes and original 6 s / 1.5 s timings from the repository.
-  const marker = /const TIMING = \{ settleMs: \d+, sampleMs: \d+, pollMs: \d+, anchorWaitMs: \d+ \};/g;
+  const marker = /const TIMING = \{[^}]+\};/g;
   assert.equal([...source.matchAll(marker)].length, 1, "Probe timing declaration changed; review accelerated test setup");
-  return source.replace(marker, "const TIMING = { settleMs: 600, sampleMs: 120, pollMs: 40, anchorWaitMs: 1800 };");
+  return source.replace(marker, declaration => {
+    const overrides = { settleMs: 600, sampleMs: 120, pollMs: 40, anchorWaitMs: 1800, quietMs: 450, extraSettleMs: 650 };
+    for (const [name, value] of Object.entries(overrides)) {
+      const field = new RegExp(`\\b${name}: \\d+`);
+      assert.ok(field.test(declaration), `Missing timing field ${name}`);
+      declaration = declaration.replace(field, `${name}: ${value}`);
+    }
+    return declaration;
+  });
 }
 
 function completedComparison(report, expectedGrowth) {
@@ -348,6 +370,7 @@ function completedComparison(report, expectedGrowth) {
   assert.equal(report.summary.allPhasesComplete, true);
   assert.equal(report.summary.countsStableAll, true);
   assert.equal(report.summary.comparisonValid, true);
+  assert.equal(report.summary.mode, "strict");
   assert.equal(report.summary.netMemoryBenefit, "not-established");
   assert.equal(report.summary.foldedCountsRecovered, true);
   const delta = report.summary.restoredFoldedMinusBypassed.registeredAnswers;
@@ -439,9 +462,10 @@ async function probeRegressions(browser, source, result, persist) {
     return { timing: "accelerated" };
   });
 
-  await test("new generation during bypass aborts and restores the owned CSS gate", async run => {
+  await test("generation takes precedence over an answer mutation in the same bypass batch", async run => {
     await startProbe(run, fast); await waitBypassed(run);
     await run.page.evaluate(() => {
+      document.querySelector(".synthetic-answer-body p").append("synthetic pending change");
       const stop = document.createElement("button"); stop.dataset.testid = "stop-button";
       stop.textContent = "Synthetic Stop"; document.body.append(stop);
     });
@@ -500,12 +524,102 @@ async function probeRegressions(browser, source, result, persist) {
     return { timing: "accelerated" };
   });
 
-  await test("answer edits are not accepted as geometry-only samples", async run => {
+  await test("structural settling yields nine descriptive samples even if new elements contain different prose", async run => {
+    // A renderer may replace a whole element including descendant text. This
+    // deliberate semantic change must NOT be certified equivalent by the probe.
+    const replaceElement = async () => run.page.evaluate(() => {
+      const old = document.querySelector(".synthetic-answer-body p");
+      const replacement = old.cloneNode(false);
+      replacement.append("SYNTHETIC_PRIVATE_REPLACEMENT_w83c");
+      old.replaceWith(replacement);
+    });
     await startProbe(run, fast); await waitBypassed(run);
-    await run.page.evaluate(() => document.querySelector('[data-markdown-text-style="assistant-message"] p')
-      .append(document.createElement("em")));
+    await replaceElement();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    await replaceElement(); // A later batch must restart the quiet period.
+    await waitPhase(run, "A_restored"); await replaceElement();
     const report = await finished(run, 15000);
-    assert.equal(report.outcome, "aborted"); assert.equal(report.reason, "answer_content_changed");
+    assert.equal(report.outcome, "completed", report.reason);
+    assert.equal(report.summary.mode, "settled-descriptive");
+    assert.equal(report.summary.comparisonValid, false);
+    assert.equal(report.summary.restoredFoldedMinusBypassed, null);
+    assert.equal(report.summary.netMemoryBenefit, "not-established");
+    assert.deepEqual(report.phases.map(phase => phase.snapshots.length), [3, 3, 3]);
+    assert.ok(report.phases[1].bodyChanges.settlingBatches >= 2);
+    assert.ok(report.phases[2].bodyChanges.settlingBatches >= 1);
+    for (const phase of report.phases.slice(1)) {
+      assert.equal(phase.geometryStable, true); assert.equal(phase.countsStable, true);
+      assert.ok(phase.snapshots[0].elapsedMs >= phase.bodyChanges.lastAtMs + report.timing.quietMs - 2,
+        "Sampling started before the quiet period following the last structural change");
+    }
+    return { timing: "accelerated", report };
+  });
+
+  for (const kind of ["character-data", "child-list-text"]) {
+    await test(`direct ${kind} edit during B settling aborts without reading private text`, async run => {
+      await startProbe(run, fast); await waitBypassed(run);
+      await run.page.evaluate(kind => {
+        const p = document.querySelector(".synthetic-answer-body p");
+        if (kind === "character-data") p.firstChild.appendData("SYNTHETIC_PRIVATE_EDIT_w83c");
+        else p.append("SYNTHETIC_PRIVATE_EDIT_w83c");
+      }, kind);
+      const report = await finished(run, 15000);
+      assert.equal(report.outcome, "aborted"); assert.equal(report.reason, "answer_content_changed");
+      assert.equal(report.trigger.phase, "B_css_bypassed"); assert.equal(report.trigger.stage, "settling");
+      assert.equal(report.trigger.kind, kind);
+      assert.ok(["anchor", "other-turn"].includes(report.trigger.location));
+      assert.equal(report.summary.comparisonValid, false);
+      assert.equal(report.cleanup.gate, "restored");
+      return { timing: "accelerated" };
+    });
+  }
+
+  await test("element-only body changes in the initial folded baseline still abort", async run => {
+    await startProbe(run, fast);
+    await run.page.evaluate(() => document.querySelector(".synthetic-answer-body p").append(document.createElement("b")));
+    const report = await finished(run, 15000);
+    assert.equal(report.reason, "answer_content_changed"); assert.equal(report.trigger.phase, "A_folded");
+    assert.equal(report.trigger.kind, "child-list-elements"); assert.equal(report.cleanup.gate, "not-modified");
+    return { timing: "accelerated" };
+  });
+
+  await test("element replacement after the first B sample invalidates that phase", async run => {
+    // Inject immediately after the first B snapshot without racing wall-clock
+    // timers. The optional heap estimate is deliberately unavailable here.
+    await run.page.evaluate(() => {
+      let changed = false;
+      Object.defineProperty(performance, "memory", { configurable: true, get() {
+        if (!changed && document.documentElement.getAttribute("data-cgf-active") !== "true") {
+          changed = true;
+          queueMicrotask(() => {
+            const span = document.querySelector(".synthetic-code-line span");
+            span.replaceWith(span.cloneNode(true));
+          });
+        }
+        return undefined;
+      } });
+    });
+    await startProbe(run, fast);
+    const report = await finished(run, 15000);
+    assert.equal(report.reason, "answer_content_changed"); assert.equal(report.phases[1].snapshots.length, 1);
+    assert.equal(report.trigger.phase, "B_css_bypassed"); assert.equal(report.trigger.stage, "sampling");
+    assert.equal(report.trigger.kind, "child-list-elements"); assert.equal(report.summary.comparisonValid, false);
+    assert.equal(report.cleanup.gate, "restored");
+    return { timing: "accelerated", report };
+  });
+
+  await test("continuous completed-turn structural changes reach a bounded settling cutoff", async run => {
+    await startProbe(run, fast); await waitBypassed(run);
+    const deadline = Date.now() + 5000;
+    while (Date.now() < deadline && await run.page.evaluate(() => {
+      if (!globalThis.__CGF_FOLD_WINDOW_PROBE_V1__) return false;
+      const p = document.querySelector(".synthetic-answer-body p"), e = document.createElement("i");
+      p.append(e); e.remove(); return true;
+    })) await new Promise(resolve => setTimeout(resolve, 70));
+    const report = await finished(run, 2000);
+    assert.equal(report.outcome, "aborted"); assert.equal(report.reason, "body_never_settled");
+    assert.equal(report.phases[1].snapshots.length, 0); assert.ok(report.phases[1].bodyChanges.settlingBatches > 2);
+    assert.equal(report.summary.mode, "incomplete"); assert.equal(report.cleanup.gate, "restored");
     return { timing: "accelerated" };
   });
 
@@ -650,6 +764,17 @@ async function waitBypassed(run, timeout = 20000) {
     await new Promise(resolve => setTimeout(resolve, 60));
   }
   throw new Error("Probe did not enter its CSS-bypassed phase");
+}
+
+async function waitPhase(run, phase, timeout = 10000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const current = await run.page.evaluate(api => globalThis[api]?.status().phase, API);
+    assert.ok(current, `Probe ended before ${phase}`);
+    if (current === phase) return;
+    await new Promise(resolve => setTimeout(resolve, 25));
+  }
+  throw new Error(`Probe did not reach ${phase}`);
 }
 
 async function main() {

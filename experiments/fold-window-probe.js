@@ -10,10 +10,11 @@
   const STOP = 'button[data-testid="stop-button"],button[data-testid="stop-generating-button"],button[aria-label="Stop generating"],button[aria-label="Stop streaming"],button[aria-label="停止生成"],button[aria-label="停止生成回复"],form button[aria-label="Stop"],form button[aria-label="停止"]';
   const GENERATING = '[data-talvt-turn-state="in_progress"],[data-is-streaming="true"],.result-streaming,[aria-busy="true"]';
   const LIMITS = { durationMs: 90000, elements: 50000, nativeElements: 30000,
-    answers: 64, turns: 128, identityLength: 192, ancestorDepth: 64, phases: 3, samplesPerPhase: 3 };
-  const TIMING = { settleMs: 6000, sampleMs: 1500, pollMs: 250, anchorWaitMs: 2500 };
+    answers: 64, turns: 128, identityLength: 192, ancestorDepth: 64, phases: 3, samplesPerPhase: 3,
+    recordsPerBatch: 2048, childrenPerRecord: 256 };
+  const TIMING = { settleMs: 6000, sampleMs: 1500, pollMs: 250, anchorWaitMs: 2500, quietMs: 1250, extraSettleMs: 4500 };
   const PHASES = ["A_folded", "B_css_bypassed", "A_restored"];
-  const report = { schemaVersion: 1, probeVersion: "0.2.0-fold-window.1", outcome: "running", reason: null,
+  const report = { schemaVersion: 1, probeVersion: "0.2.0-fold-window.2", outcome: "running", reason: null, trigger: null,
     browser: navigator.userAgent.match(/(?:Chrome|Chromium)\/[\d.]+/)?.[0] || "unknown",
     extensionVersion: "not-observable-from-page-world", limits: LIMITS, timing: TIMING, phases: [],
     measurement: { comparison: "within-page-css-gate-switch", extensionController: "running-in-both-conditions",
@@ -29,13 +30,15 @@
   let originalOffset = 0, originalScrollTop = 0, viewport = null;
   let observer = null, deadline = null, timer = null, wake = null;
   let mutationBatches = 0, alignments = 0, interacted = false;
+  let phase = null, stage = null, lastStructureAt = null;
 
   function fail(reason) { throw new Error(reason); }
   const reasons = new Set(["wrong_page", "not_top_frame", "unsupported_environment", "extension_not_active",
     "no_visible_folded_answer", "ambiguous_anchor", "anchor_lost", "anchor_fold_changed", "completion_unconfirmed",
     "alignment_failed", "generation_active", "route_changed", "body_changed", "scroller_changed", "page_hidden",
     "viewport_changed", "external_gate_change", "fold_policy_changed", "answer_content_changed", "element_limit",
-    "answer_limit", "turn_limit", "native_element_limit", "css_exposure_unconfirmed", "user_interaction", "pagehide", "deadline", "manual_stop"]);
+    "answer_limit", "turn_limit", "native_element_limit", "css_exposure_unconfirmed", "user_interaction", "pagehide", "deadline", "manual_stop",
+    "body_never_settled", "mutation_batch_limit"]);
 
   function routeValue() { return location.pathname + location.search + location.hash; }
   function active(node) {
@@ -215,6 +218,55 @@
       Math.abs(s.anchor.turnHeightPx - items[0].anchor.turnHeightPx) <= 2 && Math.abs(s.anchor.errorPx) <= 2);
     phase.medianCounts = Object.fromEntries(keys.map(key => [key, median(items.map(s => s.counts[key]))]));
   }
+  // Inspect immediate node TYPES only. An element can contain entirely different
+  // prose: admitting it never establishes content equivalence.
+  function changeKind(record) {
+    if (record.type === "characterData") return "character-data";
+    const count = record.addedNodes.length + record.removedNodes.length;
+    if (!count || count > LIMITS.childrenPerRecord) return "child-list-other";
+    let onlyElements = true;
+    for (const list of [record.addedNodes, record.removedNodes]) {
+      for (const node of list) {
+        if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.CDATA_SECTION_NODE) return "child-list-text";
+        if (node.nodeType !== Node.ELEMENT_NODE) onlyElements = false;
+      }
+    }
+    return onlyElements ? "child-list-elements" : "child-list-other";
+  }
+  function classifyBody(body, rows) {
+    const row = body.closest(TURN), key = row?.getAttribute("data-turn-key");
+    if (!key || key.length > LIMITS.identityLength || !rows.includes(row) ||
+        rows.some(other => other !== row && other.getAttribute("data-turn-key") === key)) {
+      return { completed: false, location: "unresolved" };
+    }
+    const root = body.closest(ANSWER), state = root?.closest("[data-talvt-turn-state]");
+    const completed = Boolean(root && row.contains(root) && state && row.contains(state) &&
+      state.getAttribute("data-talvt-turn-state") === "complete" && row.querySelectorAll(ANSWER).length === 1);
+    return { completed, location: key === anchorKey ? "anchor" : "other-turn" };
+  }
+  function observeBodies(records) {
+    const scope = scrollerRef.deref();
+    let rows = null, last = null;
+    for (const record of records) {
+      if (record.type !== "characterData" && record.type !== "childList") continue;
+      const node = record.target.nodeType === 1 ? record.target : record.target.parentElement;
+      if (!node?.isConnected || node.closest(OWN) || !scope?.contains(node)) continue;
+      const body = node.closest(BODY);
+      if (!body) continue;
+      rows ??= outerTurns(scope);
+      const context = classifyBody(body, rows), kind = changeKind(record);
+      last = { phase: phaseName, stage, kind, location: context.location, atMs: Math.round(performance.now() - started) };
+      if (stage !== "settling" || phaseName === "A_folded" || kind !== "child-list-elements" || !context.completed) {
+        report.trigger = last; fail("answer_content_changed");
+      }
+    }
+    if (last) {
+      lastStructureAt = performance.now();
+      phase.bodyChanges.settlingBatches += 1;
+      phase.bodyChanges.lastAtMs = last.atMs;
+      phase.bodyChanges.lastLocation = last.location;
+    }
+  }
   function finish(outcome, reason = null) {
     if (finished) return globalThis[OUT];
     finished = true; running = false;
@@ -251,8 +303,11 @@
     report.outcome = outcome; report.reason = reason;
     report.events = { mutationBatches, alignments };
     const complete = outcome === "completed" && report.phases.length === 3 && report.phases.every(p => p.snapshots.length === LIMITS.samplesPerPhase);
-    const comparable = complete && report.phases.every(p => p.countsStable && p.geometryStable);
+    const stable = complete && report.phases.every(p => p.countsStable && p.geometryStable);
+    const tolerated = report.phases.some(p => p.bodyChanges.settlingBatches > 0);
+    const comparable = stable && !tolerated;
     report.summary = { allPhasesComplete: complete, comparisonValid: comparable,
+      mode: !complete ? "incomplete" : !stable ? "unstable" : tolerated ? "settled-descriptive" : "strict",
       countsStableAll: complete && report.phases.every(p => p.countsStable), geometryStableAll: complete && report.phases.every(p => p.geometryStable),
       foldedCountsRecovered: null, restoredFoldedMinusBypassed: null, netMemoryBenefit: "not-established" };
     if (comparable) {
@@ -275,16 +330,33 @@
     for (const name of PHASES) {
       if (!running) return;
       guard(); phaseName = name;
+      stage = "settling"; lastStructureAt = null;
+      phase = { phase: name, condition: name === "B_css_bypassed" ? "fold-css-bypassed" : "fold-css-enabled",
+        bodyChanges: { settlingBatches: 0, lastAtMs: null, lastLocation: null }, snapshots: [] };
+      report.phases.push(phase);
+      const earliest = performance.now() + TIMING.settleMs, latest = earliest + TIMING.extraSettleMs;
       if (name !== "A_folded") {
         expectedGate = name === "B_css_bypassed" ? sentinel : "true";
         changedGate = true;
         document.documentElement.setAttribute(GATE, expectedGate);
       }
-      const phase = { phase: name, condition: name === "B_css_bypassed" ? "fold-css-bypassed" : "fold-css-enabled", snapshots: [] };
-      report.phases.push(phase);
       console.info("CGF 对照 " + name + "：请保持页面不操作。");
-      const until = performance.now() + TIMING.settleMs;
-      while (running && performance.now() < until) { guard(); await align(); await wait(TIMING.pollMs); }
+      while (running) {
+        await align();
+        if (!running) return;
+        const readyAt = lastStructureAt === null ? earliest : Math.max(earliest, lastStructureAt + TIMING.quietMs);
+        // Even waiting until the transition cutoff would not give a full quiet
+        // interval. Do not reset the hard limit as more mutations arrive.
+        if (readyAt > latest) {
+          report.trigger = { phase: name, stage, kind: "child-list-elements", location: phase.bodyChanges.lastLocation,
+            atMs: phase.bodyChanges.lastAtMs };
+          fail("body_never_settled");
+        }
+        const remaining = readyAt - performance.now();
+        if (remaining <= 0) break;
+        await wait(Math.min(remaining, TIMING.pollMs));
+      }
+      stage = "sampling";
       for (let index = 0; running && index < LIMITS.samplesPerPhase; index += 1) {
         await align();
         if (!running) return;
@@ -327,20 +399,21 @@
         if (routeValue() !== route) fail("route_changed");
         if (bodyRef.deref() !== document.body || htmlRef.deref() !== document.documentElement) fail("body_changed");
         if (document.documentElement.getAttribute(GATE) !== expectedGate) fail("external_gate_change");
+        if (records.length > LIMITS.recordsPerBatch) fail("mutation_batch_limit");
+        // Hard lifecycle signals win over body reconciliation in the same delivery.
+        if (generationActive()) fail("generation_active");
         for (const record of records) {
           const node = record.target.nodeType === 1 ? record.target : record.target.parentElement;
           if (!node?.isConnected || node.closest(OWN)) continue;
           if (record.attributeName === "data-cgf-collapsed" && record.oldValue !== null &&
               record.oldValue !== node.getAttribute("data-cgf-collapsed")) fail("fold_policy_changed");
-          if ((record.type === "characterData" || record.type === "childList") && node.closest(BODY) &&
-              scrollerRef.deref()?.contains(node)) fail("answer_content_changed");
           const pastGeneration = (record.attributeName === "data-talvt-turn-state" && record.oldValue === "in_progress") ||
             (record.attributeName === "data-is-streaming" && record.oldValue === "true") ||
             (record.attributeName === "aria-busy" && record.oldValue === "true") ||
             (record.attributeName === "class" && /(?:^|\s)result-streaming(?:\s|$)/.test(record.oldValue || ""));
           if (pastGeneration && active(node)) fail("generation_active");
         }
-        if (generationActive()) fail("generation_active");
+        observeBodies(records);
       } catch (error) { handleFailure(error); }
     });
     observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true,
