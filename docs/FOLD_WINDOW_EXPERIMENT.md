@@ -180,4 +180,4 @@ node tests/fold-window-probe.cjs --output artifacts/fold-window/verified.json
 
 输出路径必须尚不存在。缺少 Playwright 或 Chromium 时返回 `NOT RUN` 和退出码 2，不算通过；可用 `CHROME_PATH` 指定浏览器位置。仅重跑合成机制和 CDP 对照时加 `--fixture-only`。
 
-真实页面取得有效报告后，再判断是否需要控制正文挂载边界；本阶段不增加 retention、私有 React 修改或生产页面桥接。
+已取得一次完整的真实页严格对照：同一位置的布局随样式切换、测得的挂载数量不变。后续的[助手正文挂载边界调查](ASSISTANT_BODY_BOUNDARY.md)据此区分可保留的外壳与可调用的控制输入；本实验不增加 retention、私有 React 修改或生产页面桥接。
