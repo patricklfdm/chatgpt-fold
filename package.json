@@ -16,6 +16,7 @@
     "test:native-probe": "node tests/native-lifecycle-probe.cjs",
     "test:asset-inventory": "node tests/renderer-asset-inventory.cjs",
     "test:fold-window": "node tests/fold-window-probe.cjs",
+    "test:body-host": "node tests/assistant-body-host.cjs",
     "bench:memory": "node tests/memory-benchmark.cjs"
   }
 }
