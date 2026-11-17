@@ -134,8 +134,9 @@
     // Volatile evidence for the SAME live node only, never a history key. Unit
     // positions may be reused for another answer when the page window changes.
     const values = UNIT_ATTRIBUTES.map(name => element.getAttribute(name) || "");
-    values.push(element.closest('[data-turn="assistant"][data-turn-id]')?.getAttribute("data-turn-id") || "");
-    values.push(element.closest("[data-turn-key]")?.getAttribute("data-turn-key") || "");
+    for (const name of ["data-turn-id", "data-turn-key", "data-content-search-turn-key"]) {
+      values.push(element.closest(`[${name}]`)?.getAttribute(name) || "");
+    }
     return values.some(value => value.length > 512) ? null : JSON.stringify(values);
   }
 

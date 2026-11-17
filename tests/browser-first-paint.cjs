@@ -239,7 +239,7 @@ async function main() {
   let passed = 0;
   let failed = 0;
 
-  async function test(name, action, settings = DEFAULTS) {
+  async function test(name, action, settings = DEFAULTS, beforeInject = null) {
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
@@ -247,6 +247,7 @@ async function main() {
       await page.addInitScript(chromeMock, { key: SETTINGS_KEY, settings, version: manifest.version });
       await page.goto(TEST_URL, { waitUntil: "domcontentloaded" });
       await page.evaluate(fixtureRuntime);
+      if (beforeInject) await page.evaluate(beforeInject);
       for (const entry of manifest.content_scripts) {
         for (const css of entry.css || []) await page.addStyleTag({ path: path.join(ROOT, css) });
         for (const js of entry.js || []) await page.addScriptTag({ path: path.join(ROOT, js) });
@@ -652,6 +653,30 @@ async function main() {
         return paintFixture.frames("answer-native-pending");
       });
       assertGeneratingFrames(updated, "Ordinary streamed text lost the native turn's protection");
+
+      const completed = await page.evaluate(async () => {
+        document.getElementById("generation-stop").remove();
+        document.getElementById("turn-native-pending").setAttribute("data-talvt-turn-state", "complete");
+        return paintFixture.frames("answer-native-pending");
+      });
+      assertVisibleFrames(completed, "Completing the new reply lost its default open state after the previous tail unmounted");
+      assertOperableFrames(completed, "The completed reply retained temporary generation protection");
+
+      const closed = await page.evaluate(async () => {
+        document.querySelector("#answer-native-pending [data-cgf-control]").click();
+        document.querySelector("#answer-native-pending p").firstChild.appendData(" Final metadata update.");
+        return paintFixture.frames("answer-native-pending");
+      });
+      assertFoldedFrames(closed, "A later text update undid an explicit close of the completed reply");
+      await page.evaluate(async () => {
+        document.getElementById("turn-native-pending").remove();
+        await paintFixture.frames("answer-middle");
+      });
+      const remounted = await page.evaluate(async () => {
+        document.getElementById("thread").append(paintFixture.makeTurn("native-pending"));
+        return paintFixture.frames("answer-native-pending");
+      });
+      assertFoldedFrames(remounted, "A completed reply reopened after an explicit close and native remount");
     });
 
     await test("native generation survives a message ID change and replacement answer root", async page => {
@@ -681,6 +706,106 @@ async function main() {
         return paintFixture.frames("answer-native-target");
       });
       assertGeneratingFrames(replaced, "Replacing the active root lost its native turn's generation protection");
+
+      const completed = await page.evaluate(async () => {
+        document.getElementById("generation-stop").remove();
+        document.getElementById("turn-native-target").setAttribute("data-talvt-turn-state", "complete");
+        return paintFixture.frames("answer-native-target");
+      });
+      assertVisibleFrames(completed, "Generation completion folded the reply after its identity and root changed");
+      assertOperableFrames(completed, "The replacement root stayed locked after generation completed");
+    });
+
+    for (const replacement of [false, true]) {
+      await test(`completion preserves the default open when the final identity arrives with ${replacement ? "a replacement root" : "the last update"}`, async page => {
+        const started = await page.evaluate(async () => {
+          const turn = paintFixture.makeTurn("finalizing");
+          turn.setAttribute("data-talvt-turn-state", "in_progress");
+          document.getElementById("thread").append(turn);
+          return paintFixture.frames("answer-finalizing");
+        });
+        assertGeneratingFrames(started, "The finalizing reply was not protected during generation");
+        const completed = await page.evaluate(async replacement => {
+          const current = document.getElementById("answer-finalizing");
+          const answer = replacement ? paintFixture.makeTurn("finalizing").querySelector("#answer-finalizing") : current;
+          answer.setAttribute("data-chatgpt-search-message-ids", "message-finalized");
+          answer.setAttribute("data-chatgpt-selection-message-id", "message-finalized");
+          if (replacement) current.replaceWith(answer);
+          document.getElementById("turn-finalizing").setAttribute("data-talvt-turn-state", "complete");
+          return paintFixture.frames("answer-finalizing");
+        }, replacement);
+        assertVisibleFrames(completed, "The completion batch lost the just-generated reply's default open state");
+        assertOperableFrames(completed, "The completion batch left the answer locked");
+      });
+    }
+
+    await test("a recycled native turn cannot transfer generation completion to another historical reply", async page => {
+      for (const replacement of [false, true]) {
+        const key = replacement ? "recycled-root" : "recycled-identity";
+        const started = await page.evaluate(async key => {
+          const turn = paintFixture.makeTurn(key);
+          turn.removeAttribute("data-turn-key");
+          turn.setAttribute("data-content-search-turn-key", `active-${key}`);
+          turn.setAttribute("data-talvt-turn-state", "in_progress");
+          document.getElementById("thread").append(turn);
+          return paintFixture.frames(`answer-${key}`);
+        }, key);
+        assertGeneratingFrames(started, "The native reply did not start generation before turn recycling");
+        const recycled = await page.evaluate(async ({ key, replacement }) => {
+          const turn = document.getElementById(`turn-${key}`);
+          const current = document.getElementById(`answer-${key}`);
+          const answer = replacement ? paintFixture.makeTurn(key).querySelector(`#answer-${key}`) : current;
+          // A positional unit key can stay unchanged while the virtualizer
+          // reuses this native turn for an unrelated historical message.
+          answer.setAttribute("data-chatgpt-search-message-ids", `historical-${key}`);
+          answer.setAttribute("data-chatgpt-selection-message-id", `historical-${key}`);
+          answer.querySelector("p").textContent = "An unrelated historical answer now occupies the recycled native turn.";
+          if (replacement) current.replaceWith(answer);
+          turn.setAttribute("data-content-search-turn-key", `history-${key}`);
+          turn.setAttribute("data-talvt-turn-state", "complete");
+          return paintFixture.frames(`answer-${key}`);
+        }, { key, replacement });
+        assertFoldedFrames(recycled, `A recycled native turn transferred the old generation's open to ${replacement ? "a replacement root" : "a different message"}`);
+        assertOperableFrames(recycled, "Recycled history inherited stale generation protection");
+      }
+    });
+
+    await test("completion keeps the newest answer open and reapplies the ordinary cap", async page => {
+      const started = await page.evaluate(async () => {
+        const turn = paintFixture.makeTurn("cap-current");
+        turn.setAttribute("data-talvt-turn-state", "in_progress");
+        document.getElementById("thread").append(turn);
+        return paintFixture.frames("answer-cap-current");
+      });
+      assertGeneratingFrames(started, "The capped reply was not protected during generation");
+      const during = await page.evaluate(async () => {
+        document.querySelector("#answer-middle [data-cgf-control]").click();
+        return Promise.all([paintFixture.frames("answer-cap-current"), paintFixture.frames("answer-middle")]);
+      });
+      assertGeneratingFrames(during[0], "Opening history folded the generating reply");
+      assertVisibleFrames(during[1], "History could not be opened while another answer generated");
+      const completed = await page.evaluate(async () => {
+        document.getElementById("turn-cap-current").setAttribute("data-talvt-turn-state", "complete");
+        return Promise.all([paintFixture.frames("answer-cap-current"), paintFixture.frames("answer-middle")]);
+      });
+      assertVisibleFrames(completed[0], "Completion folded the latest answer because history used the ordinary slot");
+      assertOperableFrames(completed[0], "The completed latest answer remained locked");
+      assertFoldedFrames(completed[1], "Completion exceeded the ordinary expansion cap");
+    });
+
+    await test("generation already active at extension startup remains open after completion", async page => {
+      const started = await page.evaluate(() => paintFixture.frames("answer-latest"));
+      assertGeneratingFrames(started, "Startup did not recognize the already-generating latest answer");
+      const completed = await page.evaluate(async () => {
+        document.getElementById("answer-latest").setAttribute("data-chatgpt-search-message-ids", "message-startup-final");
+        document.getElementById("answer-latest").setAttribute("data-chatgpt-selection-message-id", "message-startup-final");
+        document.getElementById("turn-latest").setAttribute("data-talvt-turn-state", "complete");
+        return paintFixture.frames("answer-latest");
+      });
+      assertVisibleFrames(completed, "A generation observed at startup folded when it completed");
+      assertOperableFrames(completed, "A startup generation remained locked after completion");
+    }, DEFAULTS, () => {
+      document.getElementById("turn-latest").setAttribute("data-talvt-turn-state", "in_progress");
     });
 
     await test("native generation overrides the expansion cap temporarily and releases on completion", async page => {
