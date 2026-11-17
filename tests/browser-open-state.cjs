@@ -539,6 +539,81 @@ async function main() {
       assertVisibleFrames(retained, 'Ambiguous history displaced a different valid open');
     });
 
+    await test('collapse all during generation remains effective when the reply completes', async page => {
+      await openOnly(page, ['a', 'b']);
+      const started = await page.evaluate(async () => {
+        const turn = openFixture.makeTurn('cancel-auto-open');
+        turn.setAttribute('data-talvt-turn-state', 'in_progress');
+        document.getElementById('thread').append(turn);
+        return openFixture.frames('answer-cancel-auto-open');
+      });
+      assertVisibleFrames(started, 'The generated reply did not open before collapse all');
+      const during = await page.evaluate(async () => {
+        await __CGF_OPEN_TEST__.send({ type: 'CGF_COMMAND', command: 'collapse-all' });
+        document.querySelector('#answer-cancel-auto-open p').firstChild.appendData(' Still generating.');
+        return Promise.all(['a', 'b', 'cancel-auto-open'].map(key => openFixture.frames(`answer-${key}`)));
+      });
+      assertFoldedFrames(during[0], 'Collapse all left the first ordinary answer open');
+      assertFoldedFrames(during[1], 'Collapse all left the second ordinary answer open');
+      assertVisibleFrames(during[2], 'Collapse all interrupted generation protection');
+      const completed = await page.evaluate(async () => {
+        document.getElementById('turn-cancel-auto-open').setAttribute('data-talvt-turn-state', 'complete');
+        return openFixture.frames('answer-cancel-auto-open');
+      });
+      assertFoldedFrames(completed, 'Generation completion undid the explicit collapse-all command');
+    });
+
+    await test('choosing zero recent answers during generation cancels the pending default open', async page => {
+      const started = await page.evaluate(async () => {
+        const turn = openFixture.makeTurn('zero-at-finish');
+        turn.setAttribute('data-talvt-turn-state', 'in_progress');
+        document.getElementById('thread').append(turn);
+        return openFixture.frames('answer-zero-at-finish');
+      });
+      assertVisibleFrames(started, 'The generated reply did not initially open with nonzero keepRecent');
+      const during = await page.evaluate(async () => {
+        await __CGF_OPEN_TEST__.setSettings({ enabled: true, keepRecent: 0, maxExpanded: 3 });
+        document.querySelector('#answer-zero-at-finish p').firstChild.appendData(' Still generating.');
+        return openFixture.frames('answer-zero-at-finish');
+      });
+      assertVisibleFrames(during, 'Changing keepRecent interrupted the in-progress reply');
+      const completed = await page.evaluate(async () => {
+        document.getElementById('turn-zero-at-finish').setAttribute('data-talvt-turn-state', 'complete');
+        return openFixture.frames('answer-zero-at-finish');
+      });
+      assertFoldedFrames(completed, 'Completion ignored keepRecent zero selected during generation');
+    });
+
+    await test('a generated final identity occupies one slot and preserves earlier opens within the cap', async page => {
+      await openOnly(page, ['a', 'b']);
+      const started = await page.evaluate(async () => {
+        const turn = openFixture.makeTurn('one-generated-slot');
+        turn.setAttribute('data-talvt-turn-state', 'in_progress');
+        document.getElementById('thread').append(turn);
+        return Promise.all(['a', 'b', 'one-generated-slot'].map(key => openFixture.frames(`answer-${key}`)));
+      });
+      for (const samples of started) assertVisibleFrames(samples, 'Starting generation exceeded the available ordinary capacity');
+      const completed = await page.evaluate(async () => {
+        const answer = document.getElementById('answer-one-generated-slot');
+        answer.setAttribute('data-chatgpt-search-message-ids', 'message-one-final-slot');
+        answer.setAttribute('data-chatgpt-selection-message-id', 'message-one-final-slot');
+        document.getElementById('turn-one-generated-slot').setAttribute('data-talvt-turn-state', 'complete');
+        return Promise.all(['a', 'b', 'one-generated-slot'].map(key => openFixture.frames(`answer-${key}`)));
+      });
+      for (const samples of completed) assertVisibleFrames(samples, 'The obsolete generation identity occupied an extra slot and evicted an earlier open');
+      assert.equal(await page.locator('[data-cgf-message][data-cgf-collapsed="false"]').count(), 3);
+      await retire(page, 'one-generated-slot');
+      const restored = await page.evaluate(async () => {
+        const turn = openFixture.makeTurn('one-generated-slot');
+        const answer = turn.querySelector('#answer-one-generated-slot');
+        answer.setAttribute('data-chatgpt-search-message-ids', 'message-one-final-slot');
+        answer.setAttribute('data-chatgpt-selection-message-id', 'message-one-final-slot');
+        document.getElementById('thread').append(turn);
+        return Promise.all(['a', 'b', 'one-generated-slot'].map(key => openFixture.frames(`answer-${key}`)));
+      });
+      for (const samples of restored) assertVisibleFrames(samples, 'Remounting the completed identity lost one of three retained opens');
+    });
+
     await test('temporary streaming protection alone does not create or evict remembered opens', async page => {
       // keepRecent=0 starts all ordinary answers folded; only user actions add
       // intentions. Generation is a temporary exception to the ordinary cap.

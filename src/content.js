@@ -31,6 +31,7 @@
       this.knownLatest = null;
       this.stopVisible = false;
       this.stopTarget = null;
+      this.pendingGeneration = null;
       this.openIntents = new Map();
       this.records = new Map();
       this.order = [];
@@ -148,6 +149,7 @@
       const first = Math.max(0, this.order.length - this.settings.keepRecent);
       this.openIntents.clear();
       for (const record of this.order.slice(first)) this.rememberOpen(record);
+      if (this.pendingGeneration) this.pendingGeneration.autoOpen = this.settings.keepRecent > 0;
       this.rememberLatest();
     }
 
@@ -168,6 +170,68 @@
     bindStopTarget(record) {
       // One scalar key; never retain a message node or a copy of its contents.
       if (this.stopVisible && record) this.stopTarget = record.intentKey;
+    }
+
+    syncGenerationIntent(streaming) {
+      const last = this.order[this.order.length - 1];
+      let pending = this.pendingGeneration;
+      let target = null;
+      if (pending) {
+        // A unique message ID survives native windowing. A live record can
+        // also receive its final ID while finishing the same generation.
+        target = this.order.find(record => record.intentKey === pending.key &&
+          (typeof pending.key === "string" || (pending.hint !== null && record.identityHint === pending.hint)));
+        if (!target) target = this.order.find(record => record.id === pending.id &&
+          pending.hint !== null && record.identityHint === pending.hint && streaming.has(record.element));
+        if (!target) {
+          // Completion can replace both the root and its ID in one batch.
+          // Only the SAME native turn, still owning exactly one answer, can
+          // bridge that change. A WeakRef never keeps an unmounted tree alive.
+          const turn = pending.turn?.deref();
+          if (turn?.isConnected && pending.turnHint !== null && adapter.identityHint(turn) === pending.turnHint &&
+              ["in_progress", "complete"].includes(turn.getAttribute("data-talvt-turn-state"))) {
+            const matches = this.order.filter(record => turn.contains(record.element));
+            if (matches.length === 1) target = matches[0];
+          }
+        }
+        if (target) {
+          if (pending.key !== target.intentKey) {
+            const rank = this.openIntents.get(pending.key);
+            this.openIntents.delete(pending.key);
+            if (rank !== undefined) this.openIntents.set(target.intentKey,
+              Math.max(rank, this.openIntents.get(target.intentKey) || 0));
+            this.trimOpenIntents();
+          }
+          pending.id = target.id;
+          pending.key = target.intentKey;
+          pending.hint = target.identityHint;
+          if (!streaming.has(target.element)) {
+            // Promote only the confirmed generated tail, once. Later updates
+            // and history remounts must still respect a manual collapse.
+            if (target === last) {
+              if (pending.autoOpen && this.settings.keepRecent > 0) this.rememberOpen(target);
+              this.rememberLatest();
+            }
+            this.pendingGeneration = pending = null;
+          }
+        }
+      }
+      if (!last || !streaming.has(last.element)) return;
+      if (!pending || target !== last) {
+        pending = this.pendingGeneration = {
+          id: last.id, key: last.intentKey, hint: last.identityHint,
+          autoOpen: this.settings.keepRecent > 0, turn: null, turnHint: null
+        };
+        if (pending.autoOpen) this.rememberOpen(last);
+      }
+      const turn = last.element.closest('[data-talvt-turn-state="in_progress"]');
+      if (turn && this.order.filter(record => turn.contains(record.element)).length === 1) {
+        if (pending.turn?.deref() !== turn) pending.turn = new WeakRef(turn);
+        pending.turnHint = adapter.identityHint(turn);
+      }
+      // Explicit generation establishes a new tail even if the previous tail
+      // was already unmounted. This also restores ordinary append discovery.
+      this.rememberLatest();
     }
 
     rememberOpen(record) {
@@ -288,6 +352,7 @@
         this.knownLatest = null;
         this.stopVisible = false;
         this.stopTarget = null;
+        this.pendingGeneration = null;
         this.openIntents.clear();
       }
       this.scanRoots.clear();
@@ -556,6 +621,7 @@
       const streaming = adapter.streamingElements(document, this.records);
       const stopTarget = this.stopTarget === null ? null : this.order.find(record => record.intentKey === this.stopTarget);
       if (stopTarget) streaming.add(stopTarget.element);
+      this.syncGenerationIntent(streaming);
       const selection = document.getSelection();
       const focused = document.activeElement;
       for (const record of this.order) {
@@ -726,6 +792,7 @@
         if (this.settings.enabled) this.startActive();
       } else if (name === "collapse-all" && this.active) {
         this.openIntents.clear();
+        if (this.pendingGeneration) this.pendingGeneration.autoOpen = false;
         this.applyPolicy();
       } else if (name === "recent" && this.active) {
         this.setRecent();
